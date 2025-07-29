@@ -1,0 +1,15 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-war" name="iuorio_pj:Web exploded">
+    <output-path>$PROJECT_DIR$/out/artifacts/iuorio_pj_Web_exploded</output-path>
+    <root id="root">
+      <element id="javaee-facet-resources" facet="iuorio_pj/web/Web" />
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="iuorio_pj" />
+        </element>
+      </element>
+      <element id="module-output" name="prog" />
+      <element id="dir-copy" path="$PROJECT_DIR$/prog/src/main/webapp" />
+    </root>
+  </artifact>
+</component>
