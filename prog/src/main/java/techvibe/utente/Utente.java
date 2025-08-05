@@ -6,7 +6,7 @@ import java.util.List;
 
 public class Utente {
 
-    private int IdAccount;
+    private int IdUtente;
     private String Nome;
     private String Cognome;
     private String Email;
@@ -21,8 +21,8 @@ public class Utente {
         super();
     }
 
-    public int getIdAccount() {
-        return IdAccount;
+    public int getIdUtente() {
+        return IdUtente;
     }
 
     public String getNome() {
@@ -51,8 +51,8 @@ public class Utente {
 
 
 
-    public void setIdAccount(int idAccount) {
-        IdAccount = idAccount;
+    public void setIdUtente(int idAccount) {
+        IdUtente = idAccount;
     }
 
     public void setNome(String nome) {

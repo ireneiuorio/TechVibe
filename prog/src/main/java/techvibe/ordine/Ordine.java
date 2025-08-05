@@ -2,7 +2,10 @@ package techvibe.ordine;
 
 import techvibe.carrello.Carrello;
 import techvibe.categoria.Categoria;
+import techvibe.prodotto.Prodotto;
 import techvibe.utente.Utente;
+
+import java.util.List;
 
 public class Ordine {
     private int IdOrdine;
@@ -14,7 +17,7 @@ public class Ordine {
     private Utente utente;
     private Categoria categoria;
     private Carrello carrello;
-
+    private List<Prodotto> prodotti;
 
 
     public Ordine() {
@@ -90,5 +93,13 @@ public class Ordine {
 
     public void setCarrello(Carrello carrello) {
         this.carrello = carrello;
+    }
+
+    public List<Prodotto> getProdotti() {
+        return prodotti;
+    }
+
+    public void setProdotti(List<Prodotto> prodotti) {
+        this.prodotti = prodotti;
     }
 }

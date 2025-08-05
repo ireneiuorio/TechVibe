@@ -1,5 +1,7 @@
 package techvibe.carrello;
 
+import techvibe.prodotto.Prodotto;
+
 import java.util.List;
 
 public class Carrello {
@@ -20,6 +22,14 @@ public class Carrello {
         return total;
     }
 
+    public boolean addProdotto(Prodotto prodotto,int quantita)
+    {
+        return items.add(new CarrelloItem(prodotto,quantita));
+    }
+
+    public List<CarrelloItem> getItems() {
+        return items;
+    }
 
 
 

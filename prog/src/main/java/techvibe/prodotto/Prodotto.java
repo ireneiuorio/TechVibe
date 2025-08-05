@@ -1,5 +1,7 @@
 package techvibe.prodotto;
 
+import techvibe.categoria.Categoria;
+
 public class Prodotto {
     private int IdProdotto;
     private double DimensioneSchermo;
@@ -12,6 +14,7 @@ public class Prodotto {
     private String Colore;
     private int Storage;
     private int Ram;
+    private Categoria categoria;
 
     public Prodotto() {
     }
@@ -102,5 +105,13 @@ public class Prodotto {
 
     public void setRam(int ram) {
         Ram = ram;
+    }
+
+    public Categoria getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(Categoria categoria) {
+        this.categoria = categoria;
     }
 }
