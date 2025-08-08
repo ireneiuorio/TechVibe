@@ -7,6 +7,7 @@ import techvibe.categoria.CategoriaDao;
 import techvibe.categoria.CategoriaExtractor;
 import techvibe.prodotto.Prodotto;
 import techvibe.prodotto.ProdottoExtractor;
+import techvibe.search.Paginator;
 import techvibe.storage.QueryBuilder;
 import techvibe.storage.SqlDao;
 import techvibe.utente.Utente;
@@ -26,20 +27,15 @@ public class SqlOrdineDao extends SqlDao implements OrdineDao <SQLException> {
 
 
     @Override
-    public List<Ordine> fetchOrdineConProdotto(int IdUtente) throws SQLException {
+    public List<Ordine> fetchOrdineConProdotto(int IdUtente, Paginator paginator) throws SQLException {
         try (Connection conn = source.getConnection()) {
-            QueryBuilder queryBuilder = new QueryBuilder("ordine_prodotto", "op");
-            StringBuilder builder = new StringBuilder();
-            queryBuilder.select().innerJoin("ordine", "ord").on("op.ordine_fk=ord.id");
-            queryBuilder.innerJoin("prodotto", "pro").on("pp.prodotto_fk =ord.id");
-            queryBuilder.outerJoin(true, "categoria", "cat").on("cat.id=pro.categoria_fk");
 
-            queryBuilder.where("ord.utente_fk=?");
-
-
-            try (PreparedStatement ps = conn.prepareStatement(queryBuilder.generateQuery())) {
+            String query=OrdineQuery.fetchOrdineConProdotti();
+            try (PreparedStatement ps = conn.prepareStatement(query)) {
                 System.out.println(ps.toString());
                 ps.setInt(1, IdUtente);
+                ps.setInt(2, paginator.getOffeset());
+                ps.setInt(3, paginator.getLimit());
                 ResultSet set = ps.executeQuery();
 
                 Map<Integer, Ordine> ordineMap = new LinkedHashMap<>();
@@ -73,30 +69,37 @@ public class SqlOrdineDao extends SqlDao implements OrdineDao <SQLException> {
 
 
     @Override
-    public List<Ordine> fetchOrdini() throws SQLException {
+    public List<Ordine> fetchOrdini(Paginator paginator) throws SQLException {
         try (Connection conn = source.getConnection()) {
-            QueryBuilder queryBuilder = new QueryBuilder("ordine", "ord");
-            queryBuilder.select(); // SELECT * FROM ordine AS ord
-            try (PreparedStatement ps = conn.prepareStatement(queryBuilder.generateQuery())) {
-                ResultSet set = ps.executeQuery();
-
-                List<Ordine> ordini = new ArrayList<>();
-                OrdineExtractor ordineExtractor = new OrdineExtractor();
-
-                while (set.next()) {
-                    ordini.add(ordineExtractor.extract(set));
+            String query=OrdineQuery.fetchOrdini();
+            try(PreparedStatement ps=conn.prepareStatement(query))
+            {
+                ps.setInt(1,paginator.getOffeset());
+                ps.setInt(2,paginator.getLimit());
+                ResultSet set=ps.executeQuery();
+                OrdineExtractor ordineExtractor=new OrdineExtractor();
+                List<Ordine>o=new ArrayList<>();
+                while(set.next())
+                {
+                    o.add(ordineExtractor.extract(set));
                 }
-                return ordini;
+                return o;
             }
-        }
+
+            }
+
+
+
     }
+
+
 
     @Override
     public Optional<Ordine> fetchOrdine(int id) throws SQLException {
         try (Connection conn = source.getConnection()) {
-            QueryBuilder queryBuilder = new QueryBuilder("ordine", "ord");
-            queryBuilder.select().where("ord.id = ?");
-            try (PreparedStatement ps = conn.prepareStatement(queryBuilder.generateQuery())) {
+            String query=OrdineQuery.fetchOrdine();
+
+            try (PreparedStatement ps = conn.prepareStatement(query)){
                 ps.setInt(1, id);
                 ResultSet set = ps.executeQuery();
 
@@ -131,62 +134,40 @@ public class SqlOrdineDao extends SqlDao implements OrdineDao <SQLException> {
 
     @Override
     public boolean createOrdine(Ordine ordine) throws SQLException {
-        try (Connection conn = source.getConnection()) {
-            conn.setAutoCommit(false); // Inizio transazione
-            try {
-                // --- Inserimento ordine ---
-                QueryBuilder qbOrdine = new QueryBuilder("ordine", "ord");
-                qbOrdine.insert("stato", "totale", "scontototale", "metododispedizione", "metododipagamento", "utente_fk");
 
-                try (PreparedStatement psOrd = conn.prepareStatement(qbOrdine.generateQuery(), PreparedStatement.RETURN_GENERATED_KEYS)) {
-                    psOrd.setString(1, ordine.getStato());
-                    psOrd.setDouble(2, ordine.getTotale());
-                    psOrd.setDouble(3, ordine.getScontoTotale());
-                    psOrd.setString(4, ordine.getMetodoDiSpedizione());
-                    psOrd.setString(5, ordine.getMetodoDiPagamento());
-                    psOrd.setInt(6, ordine.getUtente().getIdUtente());
-                    int rowsOrd = psOrd.executeUpdate();
-
-                    if (rowsOrd != 1) {
-                        conn.rollback();
-                        return false;
-                    }
-
-                    int ordineId;
-                    try (ResultSet generatedKeys = psOrd.getGeneratedKeys()) {
-                        if (generatedKeys.next()) {
-                            ordineId = generatedKeys.getInt(1);
-                            ordine.setIdOrdine(ordineId);
-                        } else {
-                            throw new SQLException("Creazione ordine fallita, nessun ID generato.");
-                        }
-                    }
-
-                    // --- Inserimento prodotti del carrello ---
-                    if (ordine.getCarrello() != null && ordine.getCarrello().getItems() != null) {
-                        QueryBuilder qbProdotti = new QueryBuilder("ordine_prodotto", "op");
-                        qbProdotti.insert("ordine_fk", "prodotto_fk", "quantita");
-
-                        try (PreparedStatement psProd = conn.prepareStatement(qbProdotti.generateQuery())) {
-                            for (CarrelloItem item : ordine.getCarrello().getItems()) {
-                                psProd.setInt(1, ordineId);
-                                psProd.setInt(2, item.getProdotto().getIdProdotto());
-                                psProd.setInt(3, item.getQuantita());
-                                psProd.addBatch();
-                            }
-                            psProd.executeBatch();
-                        }
-                    }
+        try(Connection conn=source.getConnection())
+        {
+            conn.setAutoCommit(false);
+            String query=OrdineQuery.createOrdine();
+            String query2=OrdineQuery.insertCart();
+            try(
+                PreparedStatement ps=conn.prepareStatement(query);
+                PreparedStatement psAssoc=conn.prepareStatement(query2);
+            ){
+                int rows=ps.executeUpdate();
+                int total=rows;
+                for(CarrelloItem item: ordine.getCarrello().getItems()){
+                    psAssoc.setInt(1,item.getProdotto().getIdProdotto());
+                    psAssoc.setInt(2,ordine.getIdOrdine());
+                    psAssoc.setInt(3,item.getQuantita());
+                    total+=psAssoc.executeUpdate();
                 }
-
-                conn.commit();
-                return true;
-            } catch (SQLException ex) {
-                conn.rollback();
-                throw ex;
-            } finally {
-                conn.setAutoCommit(true);
+                if(total==(rows+ordine.getTotale())) {
+                    conn.commit();
+                    conn.setAutoCommit(true);
+                    return true;
+                }else {
+                    conn.rollback(); // se qualcosa va storto annulla tutte le azioni
+                    conn.setAutoCommit(true);
+                    return false;
+                }
             }
+
+
         }
+
+
+
     }
+
 }

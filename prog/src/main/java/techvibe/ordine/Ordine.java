@@ -17,7 +17,7 @@ public class Ordine {
     private Utente utente;
     private Categoria categoria;
     private Carrello carrello;
-    private List<Prodotto> prodotti;
+
 
 
     public Ordine() {
@@ -95,11 +95,5 @@ public class Ordine {
         this.carrello = carrello;
     }
 
-    public List<Prodotto> getProdotti() {
-        return prodotti;
-    }
 
-    public void setProdotti(List<Prodotto> prodotti) {
-        this.prodotti = prodotti;
-    }
 }
