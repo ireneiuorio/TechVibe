@@ -28,6 +28,9 @@
     src: url('../font/Poppins-BoldItalic.otf');
 }
 
+
+
+
 :root {
     font-family: 'Poppins', sans-serif;
     font-style: normal;
@@ -35,12 +38,19 @@
     font-size: clamp(14px, 1.5vw, 18px);
 
     --white: #FAFAFA;
-    --light-blue: #A8D0E6;
-    --dark-gray: #2C2C2C;
-    --blue: #4A90E2;
-    --light-gray: #E5E5E5;
-    --success: #4CAF50;
-    --error: #E53935;
+    --light-gray: #EAEAEA;
+    --dark-gray: #1F1F1F;
+
+    --primary: #1D3557;
+    --primary-light: #457B9D;
+    --primary-dark: #0B253D;
+
+    --success: #2E8B57;
+    --error: #C94C4C;
+
+    --accent: #A8DADC;
+    --highlight: #F1FAEE;
+    --light-blu: #A8D0E6;
 }
 
 
@@ -118,7 +128,7 @@ input, select, textarea {
 }
 
 button.primary{
-    background-color: var(--light-blue);
+    background-color: var(--light-blu);
     color: var(--white);
 }
 
@@ -126,32 +136,36 @@ button.primary:hover{
     filter: brightness(110%);
 }
 
-.table{
+
+
+table {
     border-collapse: collapse;
-    background-color: var(--light-gray);
+    background-color: var(--white);
+    border-color: var(--light-gray);
 }
 
-.table > thead{
+.table > thead {
     visibility:hidden;
+    font-weight: bold;
+    font-size: inherit;
 }
 
-.table tr{
-    border: 1px solid var(--light-gray);
-    margin-bottom: .5rem;
+.table tr {
+    border: 1px solid black !important;
+    margin-bottom:.5rem;
     padding: .5rem;
     display: block;
 }
 
-/* FIX: border-bottom completo */
-.table > tbody td{
+.table >tbody td{
     display: block;
-    border-bottom: 1px solid var(--light-gray);
+    border: 1px solid var(--primary-dark);
     text-align: right;
 }
 
-.table > tbody td:before{
+.table>tbody td:before{
     content: attr(data-head);
-    float: left;
+    float:left;
     font-weight: bold;
     text-transform: uppercase;
 }

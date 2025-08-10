@@ -8,7 +8,7 @@
 
   <style>
     .app {
-      background-image: linear-gradient(var(--light-blue), var(--white));
+      background-image: linear-gradient(var(--primary-light), var(--white));
     }
     .login {
       padding: 1rem;
@@ -22,7 +22,7 @@
   </style>
 </head>
 <body>
-<form class="app grid-x justify-center align-center" action="/techvibe/crm/dashboard" method="get">
+<form class="app grid-x justify-center align-center" action="${pageContext.request.contextPath}/crm/home" method="get">
   <fieldset class="grid-y cell w50 login">
     <h2>Login Pannello Admin</h2>
 
@@ -39,3 +39,5 @@
 </form>
 </body>
 </html>
+
+

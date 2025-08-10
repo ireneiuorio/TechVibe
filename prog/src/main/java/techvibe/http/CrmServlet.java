@@ -1,24 +1,17 @@
 package techvibe.http;
 
-import jakarta.servlet.*;
-import jakarta.servlet.http.*;
-import jakarta.servlet.annotation.*;
-
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebServlet(name = "CrmServlet", value = "/crm/*")
-public class CrmServlet extends Controller {
+@WebServlet("/crm/home")
+public class CrmServlet extends HttpServlet {
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-       String path=getPath(request);
-       switch(path){
-           case "/dashboard":
-               request.getRequestDispatcher(view("crm/home")).forward(request,response);
-               break;
-           default:
-               response.sendError(HttpServletResponse.SC_NOT_FOUND,"Risorsa non trovata");
-       }
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        request.getRequestDispatcher("/WEB-INF/views/crm/home.jsp").forward(request, response);
     }
-
-
 }

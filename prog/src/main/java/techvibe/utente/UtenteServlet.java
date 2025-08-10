@@ -18,15 +18,14 @@ public class UtenteServlet extends HttpServlet {
 
 
             case "/secret":
-                // DEBUG: stampa dove sta cercando la JSP
-                System.out.println("realPath=" + getServletContext().getRealPath("/WEB-INF/views/crm/secret.jsp"));
                 request.getRequestDispatcher("/WEB-INF/views/crm/secret.jsp").forward(request, response);
                 return;
-
             case "/":
                 response.setContentType("text/plain;charset=UTF-8");
                 response.getWriter().println("OK /utente/");
                 return;
+
+
 
             default:
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, "Not found: " + path);

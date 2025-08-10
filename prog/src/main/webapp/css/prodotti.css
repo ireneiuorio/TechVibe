@@ -1,0 +1,21 @@
+.prodotti-table {
+    margin: 2rem;
+    border-collapse: collapse;
+    width: 75%;
+    height: 75%;
+
+}
+.prodotti-table>thead{
+    background-color:var(--primary-light);
+    color: var(--white);
+    border: 1px solid black;
+    padding: 8px;
+    text-align: center;
+}
+
+.prodotti-table th,
+.prodotti-table td {
+    border: 1px solid black;
+    padding: 8px;
+    text-align: center;
+}

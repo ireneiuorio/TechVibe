@@ -1,0 +1,76 @@
+
+.app{
+    display: flex;
+    felx-flow: row wrap;
+}
+
+.top-bar,.sidebar{
+    background-color:var(--primary-light);
+    padding: .5rem;
+
+}
+.menu > a{
+    text-decoration: none;
+    color: var(--white);
+    padding: 1rem;
+}
+
+.menu > img{
+    cursor: pointer;
+}
+.sidebar{
+    flex-basis: 230px;
+    transition: all.3s ease-in-out;
+}
+
+.content{
+    background-color:var(--white);
+    flex: 1;
+    transition: all.3s ease-in-out;
+}
+
+.sidebar.collapse{
+    transform: translate3d(-230px, 0, 0);
+}
+
+.content.full-width{
+    margin-left:-230px
+}
+
+.info{
+    text-align: right;
+    font-style:italic;
+    font-weight: normal;
+    padding-right:1rem;
+    border:1px solid var(--white);
+}
+.body{
+    flex-grow: 1;
+
+}
+
+.top-bar>.account{
+    display:none;
+
+}
+
+.top-bar>.command{
+    flex:1;
+
+}
+.top-bar>*{
+    color:var(--white);
+    margin-right: 8px
+}
+
+.top-bar>svg{
+    cursor: pointer;
+}
+
+@media screen and (min-width: 769px)
+{
+    .top-bar>.account{
+        display:block;
+    }
+
+}
