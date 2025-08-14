@@ -1,5 +1,6 @@
 package techvibe.categoria;
 
+import techvibe.components.Paginator;
 import techvibe.prodotto.Prodotto;
 import techvibe.prodotto.ProdottoExtractor;
 import techvibe.storage.QueryBuilder;
@@ -22,24 +23,31 @@ public class SqlCategoriaDao extends SqlDao implements CategoriaDao <SQLExceptio
     }
 
 
-    public List<Categoria> fetchCategorie() throws SQLException {
+    public List<Categoria> fetchCategorie(Paginator paginator) throws SQLException {
         try (Connection conn = source.getConnection()) {
-            QueryBuilder queryBuilder = new QueryBuilder("categoria", "cat");
-            queryBuilder.select();
+            QueryBuilder qb = new QueryBuilder("categoria", "cat");
+            // SELECT * FROM categoria AS cat LIMIT ?, ?
+            String sql = qb
+                    .select()
+                    .limit(true) // true => "LIMIT ?, ?" (offset, limit)
+                    .generateQuery();
 
-            try (PreparedStatement ps = conn.prepareStatement(queryBuilder.generateQuery())) {
-                ResultSet set = ps.executeQuery();
-                CategoriaExtractor categoriaExtractor = new CategoriaExtractor();
-                List<Categoria> categorie = new ArrayList<>();
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setInt(1, paginator.getOffset());
+                ps.setInt(2, paginator.getLimit());
 
-                while (set.next()) {
-                    categorie.add(categoriaExtractor.extract(set));
-
+                try (ResultSet set = ps.executeQuery()) {
+                    CategoriaExtractor categoriaExtractor = new CategoriaExtractor();
+                    List<Categoria> categorie = new ArrayList<>();
+                    while (set.next()) {
+                        categorie.add(categoriaExtractor.extract(set));
+                    }
+                    return categorie;
                 }
-                return categorie;
             }
         }
     }
+
 
     public boolean createCategoria(Categoria categoria) throws SQLException {
         try (Connection conn = source.getConnection()) {
@@ -69,32 +77,68 @@ public class SqlCategoriaDao extends SqlDao implements CategoriaDao <SQLExceptio
     }
 
     @Override
-    public Optional<Categoria> fetchCategoriaEProdotti(int idCategoria) throws SQLException {
+    public Optional<Categoria> fetchCategoriaEProdotti(int idCategoria, Paginator paginator) throws SQLException {
         try (Connection conn = source.getConnection()) {
-            QueryBuilder queryBuilder = new QueryBuilder("categoria", "cat");
-            queryBuilder.select().innerJoin("prodotto", "pro").on("cat.id = pro.categoria_fk").where("cat.id=?");
-            try (PreparedStatement ps = conn.prepareStatement(queryBuilder.generateQuery())) {
+            QueryBuilder qb = new QueryBuilder("categoria", "cat");
+
+            // SELECT * FROM categoria AS cat
+            // INNER JOIN prodotto pro ON cat.id = pro.categoria_fk
+            // WHERE cat.id = ?
+            // LIMIT ?, ?
+            String sql = qb
+                    .select()
+                    .innerJoin("prodotto", "pro")
+                    .on("cat.id = pro.categoria_fk")
+                    .where("cat.id = ?")
+                    .limit(true) // => LIMIT ?, ?  (offset, limit)
+                    .generateQuery();
+
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setInt(1, idCategoria);
-                ResultSet set = ps.executeQuery();
-                CategoriaExtractor categoriaExtractor = new CategoriaExtractor();
-                Categoria categoria = null;
+                ps.setInt(2, paginator.getOffset());
+                ps.setInt(3, paginator.getLimit());
 
-                if (set.next()) {
-                    categoria = categoriaExtractor.extract(set);
-                    categoria.setProdotti(new ArrayList<>());
-                    ProdottoExtractor prodottoExtractor = new ProdottoExtractor();
-                    categoria.getProdotti().add(prodottoExtractor.extract(set));
-                    while (set.next()) {
+                try (ResultSet set = ps.executeQuery()) {
+                    CategoriaExtractor categoriaExtractor = new CategoriaExtractor();
+                    Categoria categoria = null;
+
+                    if (set.next()) {
+                        categoria = categoriaExtractor.extract(set);
+                        categoria.setProdotti(new ArrayList<>());
+
+                        ProdottoExtractor prodottoExtractor = new ProdottoExtractor();
                         categoria.getProdotti().add(prodottoExtractor.extract(set));
+
+                        while (set.next()) {
+                            categoria.getProdotti().add(prodottoExtractor.extract(set));
+                        }
                     }
-
+                    return Optional.ofNullable(categoria);
                 }
-                return Optional.ofNullable(categoria);
-
-
             }
         }
     }
+
+
+    public int countAll() throws SQLException {
+        try (Connection conn = source.getConnection()) {
+            QueryBuilder qb = new QueryBuilder("categoria", "cat");
+
+            String sql = qb
+                    .select("COUNT(*) AS total")
+                    .generateQuery()
+                    .replace("cat.COUNT(*)", "COUNT(*)"); // rimuove alias davanti a COUNT(*)
+
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ResultSet rs = ps.executeQuery();
+                if (rs.next()) {
+                    return rs.getInt("total");
+                }
+                return 0;
+            }
+        }
+    }
+
 
 
 }

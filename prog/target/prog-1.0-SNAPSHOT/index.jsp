@@ -11,10 +11,13 @@
 </head>
 <body>
 
+
 <%
-    // Reindirizza il browser alla servlet che gestisce /utente/secret
+
     response.sendRedirect("./utente/secret");
 %>
+
+
 
 
 </body>

@@ -2,6 +2,10 @@ package techvibe.utente;
 
 import techvibe.ordine.Ordine;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.List;
 
 public class Utente {
@@ -67,8 +71,15 @@ public class Utente {
         Email = email;
     }
 
-    public void setPassword(String password) {
-        Password = password;
+    public void setPassword(String password) throws NoSuchAlgorithmException {
+        MessageDigest digest=MessageDigest.getInstance("SHA-512");
+        byte[] hashedPwd =digest.digest(password.getBytes(StandardCharsets.UTF_8));
+        StringBuilder builder=new StringBuilder();
+        for(byte bit:hashedPwd)
+        {
+            builder.append(String.format("%02x",bit));
+        }
+        this.Password=builder.toString();
     }
 
     public void setTelefono(String telefono) {
@@ -94,5 +105,8 @@ public class Utente {
 
     public void setAdmin(boolean admin) {
         this.admin = admin;
+    }
+    public void setPasswordHash(String alreadyHashed) {
+        this.Password = alreadyHashed; // non ricalcola l'hash
     }
 }

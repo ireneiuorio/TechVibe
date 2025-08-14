@@ -1,5 +1,8 @@
 package techvibe.utente;
 
+import org.apache.taglibs.standard.tag.el.sql.QueryTag;
+import techvibe.components.Paginator;
+import techvibe.prodotto.ProdottoExtractor;
 import techvibe.storage.QueryBuilder;
 import techvibe.storage.ResultSetExtractor;
 import techvibe.storage.SqlDao;
@@ -22,27 +25,34 @@ public class SqlUtenteDao extends SqlDao implements UtenteDao<SQLException> {
         super(source);
     }
 
-    //senza le relazioni, solo dati di questa tabella
-    @Override
-    public List<Utente> fetchUtenti(int start, int end) throws SQLException {
-        try (Connection conn = source.getConnection()) { //source si occupa di darmi la connessione in maniera safe
-            QueryBuilder queryBuilder = new QueryBuilder("account", "acc");
-            String query = queryBuilder.select().limit(true).generateQuery();
-            try (PreparedStatement ps = conn.prepareStatement(query)) {
-                ps.setInt(1, start);
-                ps.setInt(2, end);
+    // nuova firma
+    public List<Utente> fetchUtenti(Paginator paginator) throws SQLException {
+        try (Connection conn = source.getConnection()) {
+            // se la tabella è "utente"
+            QueryBuilder qb = new QueryBuilder("utente", "ute");
 
-                ResultSet set = ps.executeQuery();
-                UtenteExtractor utenteExtractor = new UtenteExtractor();
-                List<Utente> utenti = new ArrayList<>();
-                while (set.next()) {
-                    utenti.add(utenteExtractor.extract(set));
+            String sql = qb
+                    .select()      // SELECT * FROM utente AS ute
+                    .limit(true)   // ... LIMIT ?, ?
+                    .generateQuery();
+
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                // In MySQL/MariaDB: LIMIT offset, row_count
+                ps.setInt(1, paginator.getOffset());
+                ps.setInt(2, paginator.getLimit());
+
+                try (ResultSet rs = ps.executeQuery()) {
+                    UtenteExtractor extractor = new UtenteExtractor();
+                    List<Utente> utenti = new ArrayList<>();
+                    while (rs.next()) {
+                        utenti.add(extractor.extract(rs));
+                    }
+                    return utenti;
                 }
-
-                return utenti;
             }
         }
     }
+
 
     @Override
     public Optional<Utente> fetchUtente(int id) throws SQLException {
@@ -84,14 +94,13 @@ public class SqlUtenteDao extends SqlDao implements UtenteDao<SQLException> {
 
     @Override
     public Boolean deleteAccount(int id) throws SQLException {
-        try(Connection conn=source.getConnection()){
-            QueryBuilder queryBuilder=new QueryBuilder("utente","ute");
+        try (Connection conn = source.getConnection()) {
+            QueryBuilder queryBuilder = new QueryBuilder("utente", "ute");
             queryBuilder.delete().where("id=?");
-            try(PreparedStatement ps=conn.prepareStatement(queryBuilder.generateQuery()))
-            {
-                ps.setInt(1,id);
-                int rows=ps.executeUpdate();
-                return rows==1;
+            try (PreparedStatement ps = conn.prepareStatement(queryBuilder.generateQuery())) {
+                ps.setInt(1, id);
+                int rows = ps.executeUpdate();
+                return rows == 1;
 
             }
 
@@ -114,4 +123,47 @@ public class SqlUtenteDao extends SqlDao implements UtenteDao<SQLException> {
             }
         }
     }
+
+    @Override
+    public Optional<Utente> findUtente(String email, String passwordHash, boolean admin) throws SQLException {
+        String sql = new QueryBuilder("utente", "ute")
+                .select()
+                .where("ute.email = ? AND ute.passwordhash = ? AND ute.isadmin = ?")
+                .generateQuery();
+
+        try (Connection c = source.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+
+            // 2) BIND: usa l'hash già calcolato dalla servlet
+            ps.setString(1, email);
+            ps.setString(2, passwordHash);
+            ps.setBoolean(3, admin); //
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    Utente u = new UtenteExtractor().extract(rs); // la password NON si setta nell'extractor
+                    return Optional.of(u);
+                }
+                return Optional.empty();
+            }
+        }
+
+
+
+
+
+
+}
+    public int countAll() throws SQLException {
+        final String sql = "SELECT COUNT(*) AS total FROM utente ute";
+        try (Connection c = source.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            return rs.next() ? rs.getInt("total") : 0;
+        }
+    }
+
+
+
+
 }

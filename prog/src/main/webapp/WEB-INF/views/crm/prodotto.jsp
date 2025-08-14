@@ -1,21 +1,22 @@
-<!DOCTYPE html>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %> <!-- Aggiunta qui in alto -->
+
+<!DOCTYPE html>
 <html>
 <head>
     <title></title>
 
-<jsp:include page="../partials/head.jsp">
-    <jsp:param name="title" value="TechVibe"/>
-    <jsp:param name="styles" value="crm,dashboard"/>
-    <jsp:param name="scripts" value="crm,home"/>
-</jsp:include>
+    <jsp:include page="../partials/head.jsp">
+        <jsp:param name="title" value="Gestione Prodotto"/>
+        <jsp:param name="styles" value="crm,dashboard"/>
+        <jsp:param name="scripts" value="crm"/>
+    </jsp:include>
 
-<style>
-    .product-form>{
-        margin-bottom: 5rem;
-
-    }
-</style>
+    <style>
+        .product-form {
+            margin-bottom: 5rem;
+        }
+    </style>
 </head>
 <body>
 
@@ -25,68 +26,81 @@
         <%@include file="../partials/crm/header.jsp"%>
         <div class="body grid-x justify-center">
 
-            <form method="get" action="prog_war/prodotti/create">
-                <fieldset class="grid-y cell product-form">
-                    <legend>Crea Prodotto</legend>
-                    <label for="IdProdotto" class="field cell w50">
-                        <input id="IdProdotto" name="IdProdotto" placeholder="Id Prodotto" type="text">
-                    </label>
+            <section class="grid-y cell w75">
 
-                    <label for="Modello" class="field cell w50">
-                        <input id="Modello" name="Modello" placeholder="Modello" type="text">
-                    </label>
 
-                    <label for="Marca" class="field cell w50">
-                        <input id="Marca" name="Marca" placeholder="Marca" type="text">
-                    </label>
+                <jsp:include page="../partials/site/alert.jsp" />
 
-                    <label for="SistemaOperativo" class="field cell w50">
-                        <input id="SistemaOperativo" name="SistemaOperativo" placeholder="Sistema Operativo" type="text">
-                    </label>
+                <form method="post" action="${pageContext.request.contextPath}/UploadMultiplo" enctype="multipart/form-data">
+                    <fieldset class="grid-y cell product-form">
+                        <legend>Crea Prodotto</legend>
 
-                    <label for="Connettivita" class="field cell w50">
-                        <input id="Connettivita" name="Connettivita" placeholder="Connettività" type="text">
-                    </label>
+                        <label class="field cell w50">
+                            <input id="Modello" name="modello" placeholder="Modello" type="text" required>
+                        </label>
 
-                    <label for="Colore" class="field cell w50">
-                        <input id="Colore" name="Colore" placeholder="Colore" type="text">
-                    </label>
+                        <label class="field cell w50">
+                            <input id="Marca" name="marca" placeholder="Marca" type="text" required>
+                        </label>
 
-                    <label for="Storage" class="field cell w50">
-                        <input id="Storage" name="Storage" placeholder="Storage" type="text">
-                    </label>
+                        <label class="field cell w50">
+                            <input id="SistemaOperativo" name="sistemaOperativo" placeholder="Sistema Operativo" type="text">
+                        </label>
 
-                    <label for="Ram" class="field cell w50">
-                        <input id="Ram" name="Ram" placeholder="Ram" type="text">
-                    </label>
+                        <label class="field cell w50">
+                            <input id="Connettivita" name="connettivita" placeholder="Connettività" type="text">
+                        </label>
 
-                    <label for="QuantitaDisponibile" class="field cell w50">
-                        <input id="QuantitaDisponibile" name="QuantitaDisponibile" placeholder="Quantità disponibile" type="number" min="0">
-                    </label>
+                        <label class="field cell w50">
+                            <input id="Colore" name="colore" placeholder="Colore" type="text">
+                        </label>
 
-                    <label for="Prezzo" class="field cell w50">
-                        <input id="Prezzo" name="Prezzo" placeholder="Prezzo" type="number" step="0.01" min="0">
-                    </label>
+                        <label class="field cell w50">
+                            <input id="Storage" name="storage" placeholder="Storage" type="number" min="0">
+                        </label>
 
-                    <label for="CategoriaId" class="field cell w50">
-                        <select name="CategoriaId" id="CategoriaId">
-                            <option value="1">Smartphone</option>
-                            <option value="2">Tablet</option>
-                        </select>
+                        <label class="field cell w50">
+                            <input id="Ram" name="ram" placeholder="Ram" type="number" min="0">
+                        </label>
 
-                    </label>
-                    <label for="cover" class="field cell w50">
-                        <input type="file" name="cover" id="cover">
-                    </label>
+                        <label class="field cell w50">
+                            <input id="QuantitaDisponibile" name="qtDisponibile" placeholder="Quantità disponibile" type="number" min="0">
+                        </label>
 
-                    <button type="submit" class="cell w50 btn primary">Crea Prodotto</button>
+                        <label class="field cell w50">
+                            <input id="Prezzo" name="prezzo" placeholder="Prezzo" type="number" step="0.01" min="0">
+                        </label>
 
-                </fieldset>
-            </form>
+                        <label class="field cell w50">
+                            <input id="DimensioneSchermo" name="dimensioneSchermo" placeholder="Dimensione schermo (pollici)" type="number" step="0.1" min="0">
+                        </label>
+
+                        <label class="field cell w50">
+                            <select name="idCategoria" id="CategoriaId">
+                                <option value="1">Smartphone</option>
+                                <option value="2">Tablet</option>
+                            </select>
+                        </label>
+
+                        <label>Immagini (max 4):</label>
+                        <input type="file" name="file" accept="image/*" multiple
+                               onchange="if(this.files.length>4){alert('Massimo 4 immagini'); this.value='';}">
+
+
+                        <button type="submit" class="cell w75 btn primary">Carica immagini e crea</button>
+
+                    </fieldset>
+                </form>
+
+
         </div>
 
-        <%@include file="../partials/crm/footer.jsp"%>
-    </section>
+            </section>
+
+
+
+
+
 
 </main>
 

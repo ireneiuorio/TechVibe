@@ -8,19 +8,26 @@ import java.sql.SQLException;
 public class ProdottoExtractor implements ResultSetExtractor<Prodotto> {
 
     @Override
-    public Prodotto extract(ResultSet resultSet) throws SQLException {
+    public Prodotto extract(ResultSet rs) throws SQLException {
         Prodotto prodotto = new Prodotto();
-        prodotto.setIdProdotto(resultSet.getInt("pro.id"));
-        prodotto.setDimensioneSchermo(resultSet.getDouble("pro.dimensioneschermo"));
-        prodotto.setConnettivita(resultSet.getString("pro.connettivita"));
-        prodotto.setPrezzo(resultSet.getDouble("pro.prezzo"));
-        prodotto.setModello(resultSet.getString("pro.modello"));
-        prodotto.setMarca(resultSet.getString("pro.marca"));
-        prodotto.setSistemaOperativo(resultSet.getString("pro.sistemaoperativo"));
-        prodotto.setQtDisponibile(resultSet.getInt("pro.qtdisponibile"));
-        prodotto.setColore(resultSet.getString("pro.colore"));
-        prodotto.setStorage(resultSet.getInt("pro.storage"));
-        prodotto.setRam(resultSet.getInt("pro.ram"));
+        prodotto.setIdProdotto(rs.getInt("pro.idprodotto"));
+        prodotto.setDimensioneSchermo(rs.getDouble("pro.dimschermo"));
+        prodotto.setConnettivita(rs.getString("pro.connettivita"));
+        prodotto.setPrezzo(rs.getDouble("pro.prezzo"));
+        prodotto.setModello(rs.getString("pro.modello"));
+        prodotto.setMarca(rs.getString("pro.marca"));
+        prodotto.setSistemaOperativo(rs.getString("pro.sistemaoperativo"));
+        prodotto.setQtDisponibile(rs.getInt("pro.qtdisponibile"));
+        prodotto.setColore(rs.getString("pro.colore"));
+        prodotto.setStorage(rs.getInt("pro.storagedispositivo"));
+        prodotto.setRam(rs.getInt("pro.ram"));
+
+        prodotto.setCover(rs.getString("pro.immagine1"));
+        prodotto.setImmagine1(rs.getString("pro.immagine2"));
+        prodotto.setImmagine2(rs.getString("pro.immagine3"));
+        prodotto.setImmagine3(rs.getString("pro.immagine4"));
+
         return prodotto;
     }
+
 }

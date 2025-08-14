@@ -7,7 +7,6 @@
     </style>
   </defs>
 
-
   <path d="M35 10 L55 22 V46 L35 58 L15 46 V22 Z" class="outline"/>
   <!-- T -->
   <line x1="23" y1="28" x2="47" y2="28" class="outline"/>
@@ -16,6 +15,5 @@
   <circle cx="23" cy="28" r="2.5" class="dot"/>
   <circle cx="47" cy="28" r="2.5" class="dot"/>
 
-
-  <text x="75" y="48" class="text">Techvibe</text>
+  <text x="75" y="48" class="text">TechVibe</text>
 </svg>

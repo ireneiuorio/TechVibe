@@ -1,7 +1,7 @@
 
 .app{
     display: flex;
-    felx-flow: row wrap;
+    flex-flow: row nowrap;
 }
 
 .top-bar,.sidebar{
@@ -9,10 +9,11 @@
     padding: .5rem;
 
 }
-.menu > a{
+.menu > a {
     text-decoration: none;
     color: var(--white);
     padding: 1rem;
+    font-size: 0.9rem;
 }
 
 .menu > img{
@@ -21,6 +22,8 @@
 .sidebar{
     flex-basis: 230px;
     transition: all.3s ease-in-out;
+
+
 }
 
 .content{
@@ -74,3 +77,4 @@
     }
 
 }
+

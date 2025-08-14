@@ -2,6 +2,7 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
+  <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
   <jsp:include page="/WEB-INF/views/partials/head.jsp">
     <jsp:param name="title" value="Login Admin"/>
   </jsp:include>
@@ -22,10 +23,20 @@
   </style>
 </head>
 <body>
-<form class="app grid-x justify-center align-center" action="${pageContext.request.contextPath}/crm/home" method="get">
-  <fieldset class="grid-y cell w50 login">
-    <h2>Login Pannello Admin</h2>
 
+
+
+<c:if test="${not empty loginError}">
+  <div class="notification error">
+      ${loginError}
+  </div>
+</c:if>
+
+<form class="app grid-x justify-center align-center" action="${pageContext.request.contextPath}/utente/secret" method="post">
+
+  <fieldset class="grid-y cell w50 login">
+
+    <h2>Login Pannello Admin</h2>
     <span>Email</span>
     <label for="email" class="field">
       <input type="email" name="email" id="email" placeholder="Email">
@@ -36,7 +47,10 @@
     </label>
     <button class="btn primary" type="submit">Accedi</button>
   </fieldset>
+
 </form>
+
+
 </body>
 </html>
 

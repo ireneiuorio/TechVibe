@@ -1,0 +1,30 @@
+
+
+.navbar .dropdown:hover .dropdown-menu {
+    display: block;
+}
+
+
+.shopping-cart{
+    position: relative;
+}
+
+.shopping-cart> .badge{
+    position: absolute;
+    top:0;
+    left:100%;
+    font-size: .7rem;
+}
+
+.main{
+    flex: 1;
+    margin: .5rem;
+}
+
+.details{
+    background-color: var(--primary-light);
+    color: var(--white);
+    text-transform: uppercase;
+    font-size: .7rem;
+    text-align: center;
+}

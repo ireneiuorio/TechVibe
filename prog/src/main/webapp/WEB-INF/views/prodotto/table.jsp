@@ -1,52 +1,62 @@
-<table class="prodotti-table">
-  <caption><a href="./prodotti/create">Lista Prodotti</a></caption>
-<thead>
-<tr>
-  <th>IdProdotto</th>
-  <th>Url</th>
-  <th>Modello</th>
-  <th>Marca</th>
-  <th>Prezzo</th>
-  <th>Qt</th>
-  <th>Dimensione Schermo</th>
-  <th>Connettività</th>
-  <th>Sistema Operativo</th>
-  <th>Colore</th>
-  <th>Storage</th>
-  <th>Ram</th>
-  <th>IdCategoria</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-  <td data-head="IdProdotto">Id1</td>
-  <td data-head="Url">Url1</td>
-  <td data-head="Modello">Modello1</td>
-  <td data-head="Marca">Marca1</td>
-  <td data-head="Prezzo">Prezzo1</td>
-  <td data-head="Qt">Qt1</td>
-  <td data-head="Dimensione Schermo">15.6"</td>
-  <td data-head="Connett">Wi-Fi, Bluetooth</td>
-  <td data-head="Sistema Operativo">Windows 11</td>
-  <td data-head="Colore">Nero</td>
-  <td data-head="Storage">512GB</td>
-  <td data-head="Ram">16GB</td>
-  <td data-head="IdCategoria">Cat01</td>
-</tr>
-<tr>
-  <td data-head="IdProdotto">Id2</td>
-  <td data-head="Url">Url2</td>
-  <td data-head="Modello">Modello2</td>
-  <td data-head="Marca">Marca2</td>
-  <td data-head="Prezzo">Prezzo2</td>
-  <td data-head="Qt">Qt2</td>
-  <td data-head="Dimensione Schermo">6.5"</td>
-  <td data-head="Connett">4G, Wi-Fi</td>
-  <td data-head="Sistema Operativo">Android 14</td>
-  <td data-head="Colore">Bianco</td>
-  <td data-head="Storage">128GB</td>
-  <td data-head="Ram">8GB</td>
-  <td data-head="IdCategoria">Cat02</td>
-</tr>
-</tbody>
-</table>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
+<!-- Contenitore principale -->
+<div class="prodotti-container">
+  <!-- Pulsante per creare un nuovo prodotto -->
+  <a href="${pageContext.request.contextPath}/prodotti/create" class="btn primary">Crea Prodotto</a>
+
+  <!-- Wrapper scrollabile per la tabella -->
+  <div class="table-wrapper">
+    <table class="prodotti-table">
+      <thead>
+      <tr>
+        <th>IdProdotto</th>
+        <th>Dimensione Schermo</th>
+        <th>Connettività</th>
+        <th>Prezzo</th>
+        <th>Modello</th>
+        <th>Marca</th>
+        <th>Sistema Operativo</th>
+        <th>Qt Disponibile</th>
+        <th>Colore</th>
+        <th>Storage</th>
+        <th>RAM</th>
+        <th>Cover</th>
+        <th>Immagine 1</th>
+        <th>Immagine 2</th>
+        <th>Immagine 3</th>
+      </tr>
+      </thead>
+      <tbody>
+      <c:choose>
+        <c:when test="${empty prodotti}">
+          <tr>
+            <td colspan="15">Nessun prodotto presente</td>
+          </tr>
+        </c:when>
+        <c:otherwise>
+          <c:forEach items="${prodotti}" var="prodotto">
+            <tr>
+              <td><a href="${pageContext.request.contextPath}/prodotti/show?idp=${prodotto.idProdotto}">${prodotto.idProdotto}</a></td>
+              <td>${prodotto.dimensioneSchermo}</td>
+              <td>${prodotto.connettivita}</td>
+              <td>${prodotto.prezzo}</td>
+              <td>${prodotto.modello}</td>
+              <td>${prodotto.marca}</td>
+              <td>${prodotto.sistemaOperativo}</td>
+              <td>${prodotto.qtDisponibile}</td>
+              <td>${prodotto.colore}</td>
+              <td>${prodotto.storage}</td>
+              <td>${prodotto.ram}</td>
+              <td>${prodotto.cover}</td>
+              <td>${prodotto.immagine1}</td>
+              <td>${prodotto.immagine2}</td>
+              <td>${prodotto.immagine3}</td>
+            </tr>
+          </c:forEach>
+        </c:otherwise>
+      </c:choose>
+      </tbody>
+    </table>
+  </div>
+</div>

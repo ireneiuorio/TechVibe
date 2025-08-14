@@ -5,6 +5,6 @@
     </label>
     <span class="account">
         <img src="<%= request.getContextPath() %>/icons/account.svg" alt="account">
-        Benvenuto Amministratore
+        ${utenteSession.nome.concat(" ").concat(utenteSession.cognome)}
     </span>
 </header>

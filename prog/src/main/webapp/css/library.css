@@ -82,7 +82,7 @@ input, select, textarea {
 }
 
 .grid-y{
-    display: inline-flex;
+    display: flex;
     flex-flow: column wrap;
 }
 
@@ -108,7 +108,7 @@ input, select, textarea {
     align-items: center;
 }
 
-/* FIX: selettori figli corretti, niente discendenti involontari */
+
 .field > input,
 .field > select,
 .field > textarea{
@@ -148,10 +148,11 @@ table {
     visibility:hidden;
     font-weight: bold;
     font-size: inherit;
+    border: 1px solid black !important;
 }
 
 .table tr {
-    border: 1px solid black !important;
+
     margin-bottom:.5rem;
     padding: .5rem;
     display: block;
@@ -159,7 +160,7 @@ table {
 
 .table >tbody td{
     display: block;
-    border: 1px solid var(--primary-dark);
+    border: 1px solid black !important;
     text-align: right;
 }
 
@@ -183,6 +184,8 @@ table {
     text-decoration: none;
 }
 
+
+
 @media screen and (min-width: 769px){
     .w10{ flex-basis: 10%; }
     .w80{ flex-basis: 80%; }
@@ -191,6 +194,26 @@ table {
     .w50{ flex-basis: 50%; }
     .w75{ flex-basis: 75%; }
     .w100{ flex-basis: 100%; }
+
+    .table>thead{
+        visibility: visible;
+
+    }
+
+    .table tr{
+        display: table-row;
+    }
+
+    .table>tbody>td{
+        display: table-cell;
+        text-align: center;
+    }
+
+    .table>tbody>td:before{
+        content:"";
+        float:none;
+    }
+
 }
 
 

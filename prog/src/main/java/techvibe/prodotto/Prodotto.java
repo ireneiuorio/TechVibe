@@ -1,6 +1,12 @@
 package techvibe.prodotto;
 
+import jakarta.servlet.http.Part;
 import techvibe.categoria.Categoria;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 
 public class Prodotto {
     private int IdProdotto;
@@ -15,6 +21,11 @@ public class Prodotto {
     private int Storage;
     private int Ram;
     private Categoria categoria;
+    private String cover;
+    private String Immagine1;
+    private String Immagine2;
+    private String Immagine3;
+
 
     public Prodotto() {
     }
@@ -113,5 +124,37 @@ public class Prodotto {
 
     public void setCategoria(Categoria categoria) {
         this.categoria = categoria;
+    }
+
+    public String getCover() {
+        return cover;
+    }
+
+    public void setCover(String cover) {
+        this.cover = cover;
+    }
+
+    public String getImmagine1() {
+        return Immagine1;
+    }
+
+    public void setImmagine1(String immagine1) {
+        Immagine1 = immagine1;
+    }
+
+    public String getImmagine2() {
+        return Immagine2;
+    }
+
+    public void setImmagine2(String immagine2) {
+        Immagine2 = immagine2;
+    }
+
+    public String getImmagine3() {
+        return Immagine3;
+    }
+
+    public void setImmagine3(String immagine3) {
+        Immagine3 = immagine3;
     }
 }

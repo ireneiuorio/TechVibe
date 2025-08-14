@@ -3,14 +3,12 @@ package techvibe.ordine;
 import techvibe.carrello.Carrello;
 import techvibe.carrello.CarrelloItem;
 import techvibe.categoria.Categoria;
-import techvibe.categoria.CategoriaDao;
 import techvibe.categoria.CategoriaExtractor;
 import techvibe.prodotto.Prodotto;
 import techvibe.prodotto.ProdottoExtractor;
-import techvibe.search.Paginator;
+import techvibe.components.Paginator;
 import techvibe.storage.QueryBuilder;
 import techvibe.storage.SqlDao;
-import techvibe.utente.Utente;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -34,7 +32,7 @@ public class SqlOrdineDao extends SqlDao implements OrdineDao <SQLException> {
             try (PreparedStatement ps = conn.prepareStatement(query)) {
                 System.out.println(ps.toString());
                 ps.setInt(1, IdUtente);
-                ps.setInt(2, paginator.getOffeset());
+                ps.setInt(2, paginator.getOffset());
                 ps.setInt(3, paginator.getLimit());
                 ResultSet set = ps.executeQuery();
 
@@ -74,7 +72,7 @@ public class SqlOrdineDao extends SqlDao implements OrdineDao <SQLException> {
             String query=OrdineQuery.fetchOrdini();
             try(PreparedStatement ps=conn.prepareStatement(query))
             {
-                ps.setInt(1,paginator.getOffeset());
+                ps.setInt(1,paginator.getOffset());
                 ps.setInt(2,paginator.getLimit());
                 ResultSet set=ps.executeQuery();
                 OrdineExtractor ordineExtractor=new OrdineExtractor();
@@ -169,5 +167,25 @@ public class SqlOrdineDao extends SqlDao implements OrdineDao <SQLException> {
 
 
     }
+    public int countAll() throws SQLException {
+        try (Connection conn = source.getConnection()) {
+            QueryBuilder qb = new QueryBuilder("ordine", "ord");
+
+            // Costruiamo manualmente la SELECT evitando il prefisso alias
+            String sql = qb
+                    .select("COUNT(*) AS total") // verrà messo come "ord.COUNT(*) AS total" se non modifichi il builder
+                    .generateQuery()
+                    .replace("ord.COUNT(*)", "COUNT(*)"); // fix rapido per rimuovere il prefisso
+
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ResultSet rs = ps.executeQuery();
+                if (rs.next()) {
+                    return rs.getInt("total");
+                }
+                return 0;
+            }
+        }
+    }
+
 
 }
