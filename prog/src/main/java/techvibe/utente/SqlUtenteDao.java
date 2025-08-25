@@ -76,7 +76,7 @@ public class SqlUtenteDao extends SqlDao implements UtenteDao<SQLException> {
     public Boolean createUtente(Utente utente) throws SQLException {
         try (Connection conn = source.getConnection()) {
             QueryBuilder queryBuilder = new QueryBuilder("utente", "ute");
-            queryBuilder.insert("nome", "cognome", "email", "password", "telefono", "indirizzospedizione", "admin");
+            queryBuilder.insert("nome", "cognome", "email", "passwordhash", "telefono", "indirizzospedizione", "isadmin");
             try (PreparedStatement ps = conn.prepareStatement(queryBuilder.generateQuery())) {
                 ps.setString(1, utente.getNome());
                 ps.setString(2, utente.getCognome());
@@ -160,6 +160,18 @@ public class SqlUtenteDao extends SqlDao implements UtenteDao<SQLException> {
              PreparedStatement ps = c.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             return rs.next() ? rs.getInt("total") : 0;
+        }
+    }
+
+
+    public boolean existsByEmail(String email) throws SQLException {
+        final String sql = "SELECT 1 FROM utente WHERE Email = ? LIMIT 1";
+        try (Connection conn = source.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, email);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next(); // true se esiste almeno una riga
+            }
         }
     }
 

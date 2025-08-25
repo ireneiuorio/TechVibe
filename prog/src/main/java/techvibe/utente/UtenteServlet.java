@@ -4,16 +4,22 @@ import jakarta.annotation.Resource;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
+import org.eclipse.tags.shaded.org.apache.bcel.generic.NEW;
+import techvibe.categoria.Categoria;
 import techvibe.components.Paginator;
 import techvibe.http.Controller;
 import techvibe.http.ErrorHandler;
 import techvibe.http.InvalidRequestException;
 import techvibe.http.CommonValidator;
+import techvibe.prodotto.Prodotto;
+import techvibe.prodotto.ProdottoDao;
+import techvibe.prodotto.SqlProdottoDao;
 
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,17 +27,16 @@ import java.util.Optional;
 public class UtenteServlet extends Controller implements ErrorHandler {
 
 
-
     @Resource(name = "jdbc/TechVibe")
     protected DataSource source;
     private UtenteDao<SQLException> utenteDao;
 
-    public void init()throws ServletException
-    {
+    public void init() throws ServletException {
         super.init();
-        utenteDao =new SqlUtenteDao(source);
+        utenteDao = new SqlUtenteDao(source);
 
     }
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -42,50 +47,47 @@ public class UtenteServlet extends Controller implements ErrorHandler {
 
             case "/":
                 authorize(request.getSession(false));
-                int page=parsePage(request);
-                Paginator paginator=new Paginator(page,50);
-                int size=0;
+                int page = parsePage(request);
+                Paginator paginator = new Paginator(page, 50);
+                int size = 0;
                 try {
-                    size=utenteDao.countAll();
+                    size = utenteDao.countAll();
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }
-                request.setAttribute("pages",paginator.getPages(size));
+                request.setAttribute("pages", paginator.getPages(size));
 
-                List<Utente> listaUtenti= null;
+                List<Utente> listaUtenti = null;
                 try {
                     listaUtenti = utenteDao.fetchUtenti(paginator);
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }
-                request.setAttribute("listaUtenti",listaUtenti);
-                request.getRequestDispatcher("/WEB-INF/views/crm/utenti.jsp").forward(request,response);
+                request.setAttribute("listaUtenti", listaUtenti);
+                request.getRequestDispatcher("/WEB-INF/views/crm/utenti.jsp").forward(request, response);
                 break;
 
             case "/create":
                 authorize(request.getSession(false));
-                request.getRequestDispatcher("/WEB-INF/views/crm/utente.jsp").forward(request,response);
+                request.getRequestDispatcher("/WEB-INF/views/crm/utente.jsp").forward(request, response);
                 break;
 
-            case"/show":
+            case "/show":
                 authorize(request.getSession(false));
                 validate(CommonValidator.validateId(request));
-                int id=Integer.parseInt(request.getParameter("id"));
+                int id = Integer.parseInt(request.getParameter("id"));
                 Optional<Utente> optionalUtente;
                 try {
-                    optionalUtente=utenteDao.fetchUtente(id);
+                    optionalUtente = utenteDao.fetchUtente(id);
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }
-                if(optionalUtente.isPresent())
-                {
-                    request.setAttribute("utente",optionalUtente.get());
-                    request.getRequestDispatcher("/WEB-INF/views/crm/utente.jsp").forward(request,response);
-                }
-                else {
+                if (optionalUtente.isPresent()) {
+                    request.setAttribute("utente", optionalUtente.get());
+                    request.getRequestDispatcher("/WEB-INF/views/crm/utente.jsp").forward(request, response);
+                } else {
                     notFound();
                 }
-
 
 
             case "/secret":
@@ -117,17 +119,14 @@ public class UtenteServlet extends Controller implements ErrorHandler {
         }
 
 
-
     }
-
 
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        String path =(request.getPathInfo()!= null)?request.getPathInfo():"/";
-        switch(path)
-        {
+        String path = (request.getPathInfo() != null) ? request.getPathInfo() : "/";
+        switch (path) {
 
             case "/signin": //login cliente ricerca nel db
                 break;
@@ -179,21 +178,13 @@ public class UtenteServlet extends Controller implements ErrorHandler {
 
             }
 
-
-
-
-            case "/create":
-
-                break;
-            case "/update":
-                break;
-            case "/logout":
-                break;
-            case "/signup":
-                break;
             default:
-                response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED,"Operazione non consentita");
+                notFound();
+
 
         }
     }
+
 }
+
+

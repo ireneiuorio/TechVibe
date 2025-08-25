@@ -13,7 +13,7 @@
     </jsp:include>
 
     <style>
-        .product-form {
+        .utente-form {
             margin-bottom: 5rem;
         }
     </style>
@@ -32,7 +32,7 @@
                 <jsp:include page="../partials/site/alert.jsp" />
 
                 <form method="post" action="${pageContext.request.contextPath}/UploadMultiplo" enctype="multipart/form-data">
-                    <fieldset class="grid-y cell product-form">
+                    <fieldset class="grid-y cell utente-form">
                         <legend>Crea Utente</legend>
 
                         <label class="field cell w50">
@@ -47,21 +47,7 @@
                             <input type="email" name="email" id="email" placeholder="Email" required>
                         </label>
 
-                        <label class="field cell w50">
-                            <input id="Password" name="password" placeholder="" type="text">
-                        </label>
 
-                        <label class="field cell w50">
-                            <input id="Colore" name="colore" placeholder="Colore" type="text">
-                        </label>
-
-                        <label class="field cell w50">
-                            <input id="Storage" name="storage" placeholder="Storage" type="number" min="0">
-                        </label>
-
-                        <label class="field cell w50">
-                            <input id="Ram" name="ram" placeholder="Ram" type="number" min="0">
-                        </label>
 
                         <label class="field cell w50">
                             <input id="QuantitaDisponibile" name="qtDisponibile" placeholder="Quantità disponibile" type="number" min="0">

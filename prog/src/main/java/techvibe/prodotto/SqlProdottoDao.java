@@ -1,7 +1,11 @@
 package techvibe.prodotto;
 
+import techvibe.categoria.Categoria;
+import techvibe.categoria.CategoriaExtractor;
 import techvibe.components.Paginator;
 import techvibe.ordine.OrdineExtractor;
+import techvibe.search.Condition;
+import techvibe.search.Operator;
 import techvibe.storage.QueryBuilder;
 import techvibe.storage.SqlDao;
 
@@ -19,7 +23,6 @@ public class SqlProdottoDao extends SqlDao implements ProdottoDao<SQLException> 
     public SqlProdottoDao(DataSource source) {
         super(source);
     }
-
 
     @Override
     public List<Prodotto> fetchProdotti(Paginator paginator) throws SQLException {
@@ -45,7 +48,6 @@ public class SqlProdottoDao extends SqlDao implements ProdottoDao<SQLException> 
             }
         }
     }
-
 
     @Override
     public boolean createProdotto(Prodotto prodotto) throws SQLException {
@@ -81,10 +83,10 @@ public class SqlProdottoDao extends SqlDao implements ProdottoDao<SQLException> 
                 ps.setString(8, prodotto.getColore());
                 ps.setInt(9, prodotto.getStorage());
                 ps.setInt(10, prodotto.getRam());
-                ps.setString(11,prodotto.getCover());
-                ps.setString(12, prodotto.getImmagine1());
-                ps.setString(13, prodotto.getImmagine2());
-                ps.setString(14, prodotto.getImmagine3());
+                ps.setString(11, prodotto.getImmagine1());
+                ps.setString(12, prodotto.getImmagine2());
+                ps.setString(13, prodotto.getImmagine3());
+                ps.setString(14, prodotto.getImmagine4());
                 ps.setInt(15, prodotto.getCategoria().getIdCategoria());
 
                 int rows = ps.executeUpdate();
@@ -92,7 +94,6 @@ public class SqlProdottoDao extends SqlDao implements ProdottoDao<SQLException> 
             }
         }
     }
-
 
     @Override
     public boolean updateProdotto(Prodotto prodotto) throws SQLException {
@@ -107,9 +108,13 @@ public class SqlProdottoDao extends SqlDao implements ProdottoDao<SQLException> 
                     "SistemaOperativo",
                     "QtDisponibile",
                     "Colore",
-                    "Storage",
+                    "StorageDispositivo",
                     "Ram",
-                    "Categoria_fk"
+                    "Immagine1",
+                    "Immagine2",
+                    "Immagine3",
+                    "Immagine4",
+                    "IdCategoria"
             ).where("pro.idProdotto = ?");
 
             try (PreparedStatement ps = conn.prepareStatement(queryBuilder.generateQuery())) {
@@ -123,16 +128,18 @@ public class SqlProdottoDao extends SqlDao implements ProdottoDao<SQLException> 
                 ps.setString(8, prodotto.getColore());
                 ps.setInt(9, prodotto.getStorage());
                 ps.setInt(10, prodotto.getRam());
-                ps.setString(11, prodotto.getCover());
-                ps.setInt(12, prodotto.getCategoria().getIdCategoria());
-                ps.setInt(13, prodotto.getIdProdotto());
+                ps.setString(11, prodotto.getImmagine1());
+                ps.setString(12, prodotto.getImmagine2());
+                ps.setString(13, prodotto.getImmagine3());
+                ps.setString(14, prodotto.getImmagine4());
+                ps.setInt(15, prodotto.getCategoria().getIdCategoria());
+                ps.setInt(16, prodotto.getIdProdotto()); // WHERE condition
 
                 int rows = ps.executeUpdate();
                 return rows == 1;
             }
         }
     }
-
 
     @Override
     public Optional<Prodotto> fetchProdotto(int id) throws SQLException {
@@ -151,7 +158,6 @@ public class SqlProdottoDao extends SqlDao implements ProdottoDao<SQLException> 
                 }
                 return Optional.empty();
             }
-
         }
     }
 
@@ -176,8 +182,6 @@ public class SqlProdottoDao extends SqlDao implements ProdottoDao<SQLException> 
                 return prodotti;
             }
         }
-
-
     }
 
     public int countAll() throws SQLException {
@@ -189,5 +193,40 @@ public class SqlProdottoDao extends SqlDao implements ProdottoDao<SQLException> 
         }
     }
 
+    @Override
+    public List<Prodotto> search(List<Condition> conditions) throws SQLException {
+        try(Connection conn=source.getConnection())
+        {
+            QueryBuilder builder=new QueryBuilder("prodotto","pro");
+            builder.select().innerJoin("categoria","cat").on("pro.idcategoria=cat.idcategoria");
+            if(!conditions.isEmpty())
+            {
+                builder.where().search(conditions);
+            }
+            String query=builder.generateQuery();
 
+            try(PreparedStatement ps= conn.prepareStatement(query)){
+                for(int i=0;i<conditions.size();i++)
+                {
+                    if(conditions.get(i).getOperator()== Operator.MATCH)
+                    {
+                        ps.setObject(i+1,"%"+conditions.get(i).getValue()+"%");
+                    }else{
+                        ps.setObject(i+1,conditions.get(i).getValue());
+                    }
+                }
+                ResultSet set=ps.executeQuery();
+                List<Prodotto> prodotti=new ArrayList<>();
+
+                while(set.next())
+                {
+                    Prodotto prodotto=new ProdottoExtractor().extract(set);
+                    prodotto.setCategoria(new CategoriaExtractor().extract(set));
+                    prodotti.add(prodotto);
+                }
+
+                return prodotti;
+            }
+        }
+    }
 }

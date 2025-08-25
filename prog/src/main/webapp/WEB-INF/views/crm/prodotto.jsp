@@ -31,7 +31,8 @@
 
                 <jsp:include page="../partials/site/alert.jsp" />
 
-                <form method="post" action="${pageContext.request.contextPath}/UploadMultiplo" enctype="multipart/form-data">
+                <form method="post" action="${pageContext.request.contextPath}/Upload" enctype="multipart/form-data">
+
                     <fieldset class="grid-y cell product-form">
                         <legend>Crea Prodotto</legend>
 
@@ -95,7 +96,7 @@
 
         </div>
 
-            </section>
+    </section>
 
 
 
@@ -106,3 +107,4 @@
 
 </body>
 </html>
+

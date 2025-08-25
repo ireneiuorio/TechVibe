@@ -3,7 +3,7 @@
 <!-- Contenitore principale -->
 <div class="utenti-container">
   <!-- Pulsante per creare un nuovo utente -->
-  <a href="${pageContext.request.contextPath}/utenti/create" class="btn primary">Crea Utente</a>
+  <a href="${pageContext.request.contextPath}/utente/create" class="btn primary">Crea Utente</a>
 
   <!-- Wrapper scrollabile per la tabella -->
   <div class="table-wrapper">

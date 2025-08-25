@@ -21,10 +21,11 @@ public class Prodotto {
     private int Storage;
     private int Ram;
     private Categoria categoria;
-    private String cover;
     private String Immagine1;
     private String Immagine2;
     private String Immagine3;
+    private String Immagine4;
+
 
 
     public Prodotto() {
@@ -126,13 +127,6 @@ public class Prodotto {
         this.categoria = categoria;
     }
 
-    public String getCover() {
-        return cover;
-    }
-
-    public void setCover(String cover) {
-        this.cover = cover;
-    }
 
     public String getImmagine1() {
         return Immagine1;
@@ -146,15 +140,23 @@ public class Prodotto {
         return Immagine2;
     }
 
-    public void setImmagine2(String immagine2) {
-        Immagine2 = immagine2;
-    }
-
     public String getImmagine3() {
         return Immagine3;
     }
 
+    public String getImmagine4() {
+        return Immagine4;
+    }
+
+    public void setImmagine2(String immagine2) {
+        Immagine2 = immagine2;
+    }
+
     public void setImmagine3(String immagine3) {
         Immagine3 = immagine3;
+    }
+
+    public void setImmagine4(String immagine4) {
+        Immagine4 = immagine4;
     }
 }

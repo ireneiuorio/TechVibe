@@ -1,34 +1,3 @@
-/*
-BSD 3-Clause License
-
-Copyright (c) 2019, Mattia De Rosa
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-
-* Redistributions of source code must retain the above copyright notice, this
-  list of conditions and the following disclaimer.
-
-* Redistributions in binary form must reproduce the above copyright notice,
-  this list of conditions and the following disclaimer in the documentation
-  and/or other materials provided with the distribution.
-
-* Neither the name of the copyright holder nor the names of its
-  contributors may be used to endorse or promote products derived from
-  this software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
 package techvibe.http;
 
 import jakarta.servlet.RequestDispatcher;
@@ -45,40 +14,65 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
-/**
- * @author Mattia De Rosa
- *
- */
 @MultipartConfig
 @WebServlet("/Upload")
 public class UploadServlet extends HttpServlet {
-    private static final String CARTELLA_UPLOAD = "upload";
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // String descrizione = request.getParameter("descrizione");
+    // USA UNA CARTELLA FUORI DA TOMCAT CHE NON SI CANCELLA MAI
+    private static final String UPLOAD_FOLDER = "C:" + File.separator + "techvibe_images";
+    // Su Mac/Linux: "/var/techvibe_images" oppure System.getProperty("user.home") + "/techvibe_images"
 
-        Part filePart = request.getPart("file");
-        String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
+    @Override
+    public void init() throws ServletException {
+        super.init();
+        File uploadDir = new File(UPLOAD_FOLDER);
+        if (!uploadDir.exists()) {
+            uploadDir.mkdirs();
+            System.out.println("✅ Cartella persistente creata: " + UPLOAD_FOLDER);
+        }
+    }
 
-        String destinazione = CARTELLA_UPLOAD + File.separator + fileName;
-        Path pathDestinazione = Paths.get(getServletContext().getRealPath(destinazione));
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
-        // se un file con quel nome esiste già, gli cambia nome
-        for (int i = 2; Files.exists(pathDestinazione); i++) {
-            destinazione = CARTELLA_UPLOAD + File.separator + i + "_" + fileName;
-            pathDestinazione = Paths.get(getServletContext().getRealPath(destinazione));
+        // Lista dei file caricati
+        List<Part> fileParts = request.getParts().stream()
+                .filter(part -> "file".equals(part.getName()) && part.getSize() > 0)
+                .collect(Collectors.toList());
+
+        ArrayList<String> uploadedList = new ArrayList<>();
+
+        for(Part filePart : fileParts) {
+            String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
+
+            // Genera nome unico
+            String uniqueFileName = System.currentTimeMillis() + "_" + fileName;
+            File destinationFile = new File(UPLOAD_FOLDER, uniqueFileName);
+
+            // Se il file esiste già, aggiungi un numero
+            int counter = 1;
+            while (destinationFile.exists()) {
+                String nameWithoutExt = uniqueFileName.substring(0, uniqueFileName.lastIndexOf('.'));
+                String extension = uniqueFileName.substring(uniqueFileName.lastIndexOf('.'));
+                uniqueFileName = nameWithoutExt + "_" + counter + extension;
+                destinationFile = new File(UPLOAD_FOLDER, uniqueFileName);
+                counter++;
+            }
+
+            // Salva il file nella cartella persistente
+            try (InputStream fileInputStream = filePart.getInputStream()) {
+                Files.copy(fileInputStream, destinationFile.toPath());
+            }
+
+            uploadedList.add(uniqueFileName);
         }
 
-        InputStream fileInputStream = filePart.getInputStream();
-        // crea CARTELLA_UPLOAD, se non esiste
-        Files.createDirectories(pathDestinazione.getParent());
-        // scrive il file
-        Files.copy(fileInputStream, pathDestinazione);
-
-        request.setAttribute("uploaded", destinazione);
-
-        RequestDispatcher requestDispatcher = request.getRequestDispatcher("WEB-INF/views/crm/uploadMultiploResult.jsp.jsp");
+        request.setAttribute("uploadedList", uploadedList);
+        RequestDispatcher requestDispatcher = request.getRequestDispatcher("WEB-INF/views/crm/upload.jsp");
         requestDispatcher.forward(request, response);
     }
 }

@@ -1,6 +1,7 @@
 package techvibe.prodotto;
 
 import techvibe.components.Paginator;
+import techvibe.search.Condition;
 
 import java.security.KeyStore;
 import java.util.List;
@@ -14,4 +15,5 @@ public interface ProdottoDao<E extends Exception> {
     Optional<Prodotto> fetchProdotto(int id) throws E;
     List<Prodotto> fetchProdottiByCategoria(int categoriaId) throws E;
     int countAll()throws E;
+    List<Prodotto> search(List<Condition> conditions) throws E;
 }

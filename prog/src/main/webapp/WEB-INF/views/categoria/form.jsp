@@ -5,7 +5,7 @@
 <c:set var="isCreate" value="${categoria.idCategoria==0}"/>
 
 <c:if test="${not empty alert}">
-  <%@include file="../partials/alert.jsp"%>
+  <%@include file="../partials/site/alert.jsp"%>
 
 </c:if>
 
@@ -35,4 +35,3 @@
 
 
 
-</form>

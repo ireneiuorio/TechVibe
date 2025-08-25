@@ -22,10 +22,11 @@ public class ProdottoExtractor implements ResultSetExtractor<Prodotto> {
         prodotto.setStorage(rs.getInt("pro.storagedispositivo"));
         prodotto.setRam(rs.getInt("pro.ram"));
 
-        prodotto.setCover(rs.getString("pro.immagine1"));
-        prodotto.setImmagine1(rs.getString("pro.immagine2"));
-        prodotto.setImmagine2(rs.getString("pro.immagine3"));
-        prodotto.setImmagine3(rs.getString("pro.immagine4"));
+        prodotto.setImmagine1(rs.getString("pro.immagine1"));
+        prodotto.setImmagine2(rs.getString("pro.immagine2"));
+        prodotto.setImmagine3(rs.getString("pro.immagine3"));
+        prodotto.setImmagine4(rs.getString("pro.immagine4"));
+
 
         return prodotto;
     }

@@ -6,13 +6,13 @@
 
 .top-bar,.sidebar{
     background-color:var(--primary-light);
-    padding: .5rem;
+    padding: .6rem;
 
 }
 .menu > a {
     text-decoration: none;
     color: var(--white);
-    padding: 1rem;
+    padding: 1.4rem;
     font-size: 0.9rem;
 }
 

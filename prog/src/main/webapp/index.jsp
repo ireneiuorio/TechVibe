@@ -14,7 +14,7 @@
 
 <%
 
-    response.sendRedirect("./utente/secret");
+    response.sendRedirect("./pages/");
 %>
 
 

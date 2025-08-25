@@ -24,15 +24,15 @@
 <link href="${context}/css/library.css" rel="stylesheet">
 
 <c:if test="${not empty param.styles}">
-    <c:forTokens items="${param.styles}" delims="," var="style">
-        <link rel="stylesheet" href="${context}/css/${style}.css">
-    </c:forTokens>
+  <c:forTokens items="${param.styles}" delims="," var="style">
+    <link rel="stylesheet" href="${context}/css/${style}.css">
+  </c:forTokens>
 </c:if>
 
 <script src="${context}/js/library.js" defer></script>
 
 <c:if test="${not empty param.scripts}">
-    <c:forTokens items="${param.scripts}" delims="," var="script">
-        <script src="${context}/js/${script}.js" defer></script>
-    </c:forTokens>
+  <c:forTokens items="${param.scripts}" delims="," var="script">
+    <script src="${context}/js/${script}.js" defer></script>
+  </c:forTokens>
 </c:if>

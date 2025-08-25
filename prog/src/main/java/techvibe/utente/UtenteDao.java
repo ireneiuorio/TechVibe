@@ -16,8 +16,9 @@ public interface UtenteDao <E extends Exception> {
     Boolean createUtente(Utente utente)throws E;
     Boolean deleteAccount(int id) throws E;
     Boolean updateUtente (Utente utente)throws E;
-    Optional<Utente> findUtente(String email, String password, boolean b) throws SQLException;
-    int countAll() throws SQLException;
+    Optional<Utente> findUtente(String email, String password, boolean b) throws E;
+    int countAll() throws E;
+   public boolean existsByEmail(String email) throws E;
 
 
 }

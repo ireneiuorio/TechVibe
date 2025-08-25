@@ -1,32 +1,36 @@
-<header class="navbar align-center">
-  <div class="grid grid-inline align-center icons">
-    <img src="<%= request.getContextPath() %>/icons/account2.svg" alt="user">
-    <span class="shopping-cart">
-      <img src="<%= request.getContextPath() %>/icons/sc.svg" alt="carrello">
-      <span class="badge">0</span>
-    </span>
-    <img id="hamburger" src="<%= request.getContextPath() %>/icons/menu.svg" alt="Menu">
-  </div>
+<!-- Navbar -->
+<header class="navbar">
+    <div class="logo">
+        <a href="${pageContext.request.contextPath}/pages" style="color: white">TechVibe</a>
+    </div>
+    <nav class="nav-links">
+        <a href="${pageContext.request.contextPath}/pages">Home</a>
 
-    <nav class="grid-inline align-center">
-      <a href="#" class="">Home></a>
-      <a href="#">Prodotti</a>
-      <a href="#" class="dropdown">
-        Categorie
-        <ul class="dropdown-menu">
-          <li>Smartphone</li>
-          <li>Tablet</li>
-        </ul>
 
-      </a>
-      <a href="#">Info</a>
+        <!-- Categorie con dropdown -->
+        <div class="dropdown">
+            <a href="#" class="dropbtn" aria-haspopup="true" aria-expanded="false">Categorie</a>
+            <div class="dropdown-content" role="menu" aria-label="Categorie">
+                <a role="menuitem" href="${pageContext.request.contextPath}/pages/smartphone">Smartphone</a>
+                <a role="menuitem" href="${pageContext.request.contextPath}/pages/prodotti?cat=tablet">Tablet</a>
+            </div>
+        </div>
+
+        <a href="#">Offerte</a>
+        <a href="${pageContext.request.contextPath}/pages/contatti">Contatti</a>
     </nav>
-  <h2 class="title">Techvibe</h2>
-</header>
+    <div class="menu">
+
+        <a href="${pageContext.request.contextPath}/pages/accedi" class="shopping-cart">
+            <img id="ute" src="<%= request.getContextPath() %>/icons/account.svg" alt="ute">
+
+        </a>
+
+        <a href="${pageContext.request.contextPath}/pages/carrello" class="shopping-cart">
+            <img id="car" src="<%= request.getContextPath() %>/icons/sc.svg" alt="Carrello">
+            <span class="badge" id="cart-count">0</span>
+        </a>
 
 
-
-
-
-
+    </div>
 </header>

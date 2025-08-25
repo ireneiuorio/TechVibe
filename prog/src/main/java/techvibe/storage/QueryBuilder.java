@@ -1,5 +1,9 @@
 package techvibe.storage;
 
+import techvibe.search.Condition;
+import techvibe.search.Operator;
+
+import java.util.List;
 import java.util.StringJoiner;
 
 public class QueryBuilder {
@@ -39,6 +43,23 @@ public class QueryBuilder {
     public QueryBuilder where(String condition) {
         query.append("WHERE ").append(condition).append(" ");
         return this;
+    }
+
+    public QueryBuilder where(){
+        query.append("WHERE");
+        return this;
+    }
+
+    public QueryBuilder search(List<Condition> conditions)
+    {
+        StringJoiner searchJoiner=new StringJoiner("AND ");
+        for(Condition cn:conditions)
+        {
+           searchJoiner.add(String.format("%s.%s%s",alias,cn.toString(),QM));
+        }
+        query.append(searchJoiner);
+        return this;
+
     }
 
     public QueryBuilder insert(String... fields) {

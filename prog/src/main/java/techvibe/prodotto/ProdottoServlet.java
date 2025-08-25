@@ -11,6 +11,7 @@ import techvibe.components.Paginator;
 import techvibe.http.CommonValidator;
 import techvibe.http.Controller;
 import techvibe.http.ErrorHandler;
+import techvibe.search.Condition;
 
 import javax.sql.DataSource;
 import java.io.IOException;
@@ -90,6 +91,21 @@ public class ProdottoServlet extends Controller implements ErrorHandler {
                 }
                 break;
 
+            case"/search":
+                List<Condition> conditions=new ProdottoSearch().buildSearch(request);
+                List<Prodotto> searchProdotti= null;
+                try {
+                    searchProdotti = conditions.isEmpty() ?
+                            prodottoDao.fetchProdotti(new Paginator(1,50)):
+                            prodottoDao.search(conditions);
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+
+                request.setAttribute("prodotti",searchProdotti);
+                request.getRequestDispatcher("/WEB-INF/views/site/search.jsp").forward(request,response);
+                break;
+
             default:
                 request.getRequestDispatcher("/WEB-INF/views/crm/prodotti.jsp").forward(request, response);
                 break;
@@ -100,8 +116,6 @@ public class ProdottoServlet extends Controller implements ErrorHandler {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        request.setCharacterEncoding("UTF-8");
-
         try {
             String path = request.getPathInfo() != null ? request.getPathInfo() : "/";
             switch (path) {
@@ -109,7 +123,7 @@ public class ProdottoServlet extends Controller implements ErrorHandler {
                     ProdottoDao<SQLException> prodottoDao = new SqlProdottoDao(source);
                     Prodotto prodotto = new Prodotto();
 
-                    // Campi prodotto (i "name" in JSP DEVONO essere questi minuscoli)
+                    // Campi prodotto
                     prodotto.setModello(safe(request.getParameter("modello")));
                     prodotto.setMarca(safe(request.getParameter("marca")));
                     prodotto.setSistemaOperativo(safe(request.getParameter("sistemaOperativo")));
@@ -121,34 +135,16 @@ public class ProdottoServlet extends Controller implements ErrorHandler {
                     prodotto.setPrezzo(safeDouble(request.getParameter("prezzo")));
                     prodotto.setDimensioneSchermo(safeDouble(request.getParameter("dimensioneSchermo")));
 
-                    // Immagini dalla JSP multipla: name="gallery"
-                    String[] gallery = request.getParameterValues("gallery"); // fino a 4
-                    if (gallery == null) gallery = new String[0];
-
-                    // Mappa su img1..img4 (null se mancanti)
-                    String img1 = gallery.length > 0 ? gallery[0] : null;
-                    String img2 = gallery.length > 1 ? gallery[1] : null;
-                    String img3 = gallery.length > 2 ? gallery[2] : null;
-                    String img4 = gallery.length > 3 ? gallery[3] : null;
-
-
-                    // Assicurati che in Prodotto.java esistano questi setter/getter
-                    prodotto.setCover(img1);
-                    prodotto.setImmagine1(img2);
-                    prodotto.setImmagine2(img3);
-                    prodotto.setImmagine3(img4);
+                    // Quattro immagini
+                    prodotto.setImmagine1(safe(request.getParameter("immagine1")));
+                    prodotto.setImmagine2(safe(request.getParameter("immagine2")));
+                    prodotto.setImmagine3(safe(request.getParameter("immagine3")));
+                    prodotto.setImmagine4(safe(request.getParameter("immagine4")));
 
                     // Categoria
                     Categoria categoria = new Categoria();
                     categoria.setIdCategoria(safeInt(request.getParameter("idCategoria")));
                     prodotto.setCategoria(categoria);
-
-                    // Debug utile
-                    System.out.printf("CREATE -> modello=%s, prezzo=%s, cat=%s, imgs=%s%n",
-                            prodotto.getModello(),
-                            request.getParameter("prezzo"),
-                            request.getParameter("idCategoria"),
-                            Arrays.toString(gallery));
 
                     // Salva
                     if (prodottoDao.createProdotto(prodotto)) {
@@ -165,7 +161,6 @@ public class ProdottoServlet extends Controller implements ErrorHandler {
             throw new ServletException(e);
         }
     }
-
 
     private String safe(String s) {
         return s == null ? "" : s.trim();
