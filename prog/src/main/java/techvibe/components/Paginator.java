@@ -3,12 +3,13 @@ package techvibe.components;
 public class Paginator {
 
     private final int limit;
-    private final int offeset;
+    private final int offset;
 
 
     public Paginator(int page,int ItemsPerPage){
         this.limit=ItemsPerPage;
-        this.offeset=(page==1)? 0:(page-1)*ItemsPerPage+1;
+        this.offset = (page - 1) * ItemsPerPage;
+
     }
 
     public int getLimit() {
@@ -16,7 +17,7 @@ public class Paginator {
     }
 
     public int getOffset() {
-        return offeset;
+        return offset;
     }
 
     public int getPages(int size)
@@ -24,4 +25,6 @@ public class Paginator {
         int additionalPage=(size%limit==0)?0:1;
         return (size/limit)+additionalPage;
     }
+
+
 }

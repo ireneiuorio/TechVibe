@@ -45,15 +45,7 @@
   <noscript><button type="submit">Continua</button></noscript>
 </form>
 
-<!-- Debug: mostra le immagini caricate -->
-<% if (uploadedList != null && !uploadedList.isEmpty()) { %>
-<div style="margin: 20px; padding: 10px; background: #f0f0f0;">
-  <h3>Immagini caricate:</h3>
-  <% for (int i = 0; i < Math.min(4, uploadedList.size()); i++) { %>
-  <p>Immagine <%= (i+1) %>: <%= uploadedList.get(i) %></p>
-  <% } %>
-</div>
-<% } %>
+
 
 </body>
 </html>

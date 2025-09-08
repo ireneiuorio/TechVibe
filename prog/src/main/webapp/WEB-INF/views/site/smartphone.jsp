@@ -9,84 +9,206 @@
     <jsp:include page="/WEB-INF/views/partials/head.jsp">
         <jsp:param name="styles" value="site"/>
     </jsp:include>
-
-    <style>
-
-        .card.product-card {
-            background: white;
-            border: 1px solid #eee;
-            transition: transform 0.3s, box-shadow 0.3s;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        }
-
-        .card.product-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-        }
-
-        .product-image {
-            width: 100%;
-            height: 200px;
-            object-fit: contain;
-            margin-bottom: 1rem;
-            border-radius: 8px;
-        }
-    </style>
 </head>
 <body>
 <main class="app">
     <%@ include file="../partials/site/header.jsp" %>
 
-    <section class="categorie">
-        <h2>Smartphone</h2>
+    <div class="catalog-container">
 
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.5rem;margin-top:1rem;">
+        <!-- TOGGLE MOBILE FILTRI -->
+        <button class="mobile-filter-toggle" onclick="toggleMobileFiltri()">
+            Mostra/Nascondi Filtri
+        </button>
 
-            <c:forEach var="p" items="${prodotti}">
-                <c:set var="imgRaw" value="${p.immagine1}" />
+        <!-- SIDEBAR FILTRI -->
+        <aside class="filtri-sidebar" id="filtri-sidebar">
+            <h3 class="filtri-header">Filtra Smartphone</h3>
 
-                <!-- LOGICA SEMPLIFICATA PER SOLO IMMAGINE1 -->
-                <c:choose>
-                    <c:when test="${not empty imgRaw}">
-                        <c:set var="imgSrc" value="${pageContext.request.contextPath}/img/${imgRaw}" />
-                    </c:when>
-                    <c:otherwise>
-                        <c:set var="imgSrc" value="${pageContext.request.contextPath}/img/placeholder.png" />
-                    </c:otherwise>
-                </c:choose>
+            <form method="GET" action="${pageContext.request.contextPath}/prodotti/searchsmartphone">
 
-                <!-- USA LE TUE CLASSI ESISTENTI -->
-                <div class="card product-card" style="text-align:center;padding:1.25rem;">
-                    <a href="${pageContext.request.contextPath}/pages/prodotto?id=${p.idProdotto}">
-                        <img src="${imgSrc}" alt="${p.marca} ${p.modello}" class="product-image">
-                        <h3 style="margin:0;font-size:1.2rem;color:var(--primary-light);">
-                                ${p.marca} ${p.modello}
-                        </h3>
-                    </a>
-
-                    <!-- USA LA TUA CLASSE .details ESISTENTE -->
-                    <div class="details" style="margin:.75rem 0;border-radius:10px;padding:.4rem 0;">
-                        <fmt:formatNumber value="${p.prezzo}" type="currency" currencySymbol="€"
-                                          minFractionDigits="2" maxFractionDigits="2"/>
-                    </div>
-
-                    <!-- USA LA TUA CLASSE .btn.primary ESISTENTE -->
-                    <button class="btn primary add-to-cart"
-                            data-id="${p.idProdotto}" data-qty="1"
-                            style="width:100%;">
-                        Aggiungi al carrello
-                    </button>
+                <input type="hidden" name="IdCategoria" value="1">
+                <!-- MARCA -->
+                <div class="filtro-gruppo">
+                    <label for="marca">Marca</label>
+                    <select name="Marca" id="marca">
+                        <option value="">Tutte le marche</option>
+                        <option value="Apple" ${param.Marca == 'Apple' ? 'selected' : ''}>Apple</option>
+                        <option value="Samsung" ${param.Marca == 'Samsung' ? 'selected' : ''}>Samsung</option>
+                        <option value="Xiaomi" ${param.Marca == 'Xiaomi' ? 'selected' : ''}>Xiaomi</option>
+                        <option value="Huawei" ${param.Marca == 'Oppo' ? 'selected' : ''}>Huawei</option>
+                        <option value="Google" ${param.Marca == 'Google' ? 'selected' : ''}>Google</option>
+                    </select>
                 </div>
-            </c:forEach>
 
-            <c:if test="${empty prodotti}">
-                <div class="card" style="text-align:center;">Nessuno smartphone trovato.</div>
-            </c:if>
+                <!-- MODELLO -->
+                <div class="filtro-gruppo">
+                    <label for="modello">Modello</label>
+                    <input type="text" name="Modello" id="modello"
+                           placeholder="es: iPhone, Galaxy..."
+                           value="${param.Modello}">
+                </div>
 
-        </div>
-    </section>
+                <!-- SISTEMA OPERATIVO -->
+                <div class="filtro-gruppo">
+                    <label for="so">Sistema Operativo</label>
+                    <select name="SistemaOperativo" id="so">
+                        <option value="">Tutti i sistemi</option>
+                        <option value="iOS" ${param.SistemaOperativo == 'iOS' ? 'selected' : ''}>iOS</option>
+                        <option value="Android" ${param.SistemaOperativo == 'Android' ? 'selected' : ''}>Android</option>
+                    </select>
+                </div>
+
+                <!-- PREZZO -->
+                <div class="filtro-gruppo">
+                    <label>Prezzo (€)</label>
+                    <div class="prezzo-range">
+                        <input type="number" name="minPrice" placeholder="Min"
+                               value="${param.minPrice}" min="0">
+                        <span>-</span>
+                        <input type="number" name="maxPrice" placeholder="Max"
+                               value="${param.maxPrice}" min="0">
+                    </div>
+                </div>
+
+                <!-- RAM -->
+                <div class="filtro-gruppo">
+                    <label for="ram">RAM Minima (GB)</label>
+                    <select name="Ram" id="ram">
+                        <option value="">Qualsiasi RAM</option>
+                        <option value="4" ${param.Ram == '4' ? 'selected' : ''}>4 GB+</option>
+                        <option value="6" ${param.Ram == '6' ? 'selected' : ''}>6 GB+</option>
+                        <option value="8" ${param.Ram == '8' ? 'selected' : ''}>8 GB+</option>
+                        <option value="12" ${param.Ram == '12' ? 'selected' : ''}>12 GB+</option>
+                        <option value="16" ${param.Ram == '16' ? 'selected' : ''}>16 GB+</option>
+                    </select>
+                </div>
+
+                <!-- STORAGE -->
+                <div class="filtro-gruppo">
+                    <label for="storage">Storage Minimo (GB)</label>
+                    <select name="StorageDispositivo" id="storage">
+                        <option value="">Qualsiasi Storage</option>
+                        <option value="64" ${param.StorageDispositivo == '64' ? 'selected' : ''}>64 GB+</option>
+                        <option value="128" ${param.StorageDispositivo == '128' ? 'selected' : ''}>128 GB+</option>
+                        <option value="256" ${param.StorageDispositivo == '256' ? 'selected' : ''}>256 GB+</option>
+                        <option value="512" ${param.StorageDispositivo == '512' ? 'selected' : ''}>512 GB+</option>
+                        <option value="1024" ${param.StorageDispositivo == '1024' ? 'selected' : ''}>1 TB+</option>
+                    </select>
+                </div>
+
+                <!-- COLORE -->
+                <div class="filtro-gruppo">
+                    <label for="colore">Colore</label>
+                    <input type="text" name="Colore" id="colore"
+                           placeholder="es: Nero..."
+                           value="${param.colore}">
+                </div>
+
+                <!-- BOTTONI AZIONE -->
+                <div class="filtri-actions">
+                    <button type="submit" class="btn-cerca"> Cerca</button>
+                </div>
+            </form>
+        </aside>
+
+        <!-- AREA PRODOTTI -->
+        <section class="prodotti-area">
+            <div class="prodotti-header">
+                <h2>Risultati ricerca</h2>
+                <div class="prodotti-count">
+                    <c:choose>
+                        <c:when test="${not empty prodotti}">
+                            ${fn:length(prodotti)} prodotti trovati
+                        </c:when>
+                        <c:otherwise>
+                            Nessun prodotto trovato
+                        </c:otherwise>
+                    </c:choose>
+                </div>
+            </div>
+
+            <div class="prodotti-grid">
+                <c:forEach var="p" items="${prodotti}">
+                    <c:set var="imgRaw" value="${p.immagine1}" />
+
+                    <c:choose>
+                        <c:when test="${not empty imgRaw}">
+                            <c:set var="imgSrc" value="${pageContext.request.contextPath}/img/${imgRaw}" />
+                        </c:when>
+                        <c:otherwise>
+                            <c:set var="imgSrc" value="${pageContext.request.contextPath}/img/placeholder.png" />
+                        </c:otherwise>
+                    </c:choose>
+
+                    <div class="card product-card">
+                        <a href="${pageContext.request.contextPath}/pages/prodotto?id=${p.idProdotto}">
+                            <img src="${imgSrc}" alt="${p.marca} ${p.modello}" class="product-image">
+                            <h3 style="margin:0;font-size:1.1rem;color:var(--primary-light);">
+                                    ${p.marca} ${p.modello}
+                            </h3>
+                        </a>
+
+                        <div class="details" style="margin:.75rem 0;border-radius:10px;padding:.4rem 0;">
+                            <!-- Storage info - piccolo e discreto -->
+                            <div style="margin-bottom:.4rem;font-size:0.75rem;color:white;opacity:0.8;">
+                                <c:choose>
+                                    <c:when test="${not empty p.storage}">
+                                        ${p.storage}GB
+                                    </c:when>
+                                    <c:otherwise>
+                                        Storage N/A
+                                    </c:otherwise>
+                                </c:choose>
+                            </div>
+
+                            <!-- Price - più visibile -->
+                            <div style="font-size:1.2rem;font-weight:600;color:white;">
+                                <fmt:formatNumber value="${p.prezzo}" type="currency" currencySymbol="€"
+                                                  minFractionDigits="2" maxFractionDigits="2"/>
+                            </div>
+                        </div>
+
+                        <button class="btn primary add-to-cart"
+                                data-id="${p.idProdotto}" data-qty="1"
+                                style="width:100%;">
+                            Aggiungi al carrello
+                        </button>
+                    </div>
+                </c:forEach>
+
+                <c:if test="${empty prodotti}">
+                    <div class="card" style="grid-column: 1 / -1; text-align:center; padding: 3rem;">
+                        <h3>Nessuno smartphone trovato</h3>
+                        <p>Prova a modificare i filtri di ricerca o <a href="${pageContext.request.contextPath}/prodotti/search">visualizza tutti i prodotti</a>!</p>
+                    </div>
+                </c:if>
+            </div>
+        </section>
+    </div>
 
     <%@ include file="../partials/site/footer.jsp" %>
 </main>
+
+<script>
+
+
+    function toggleMobileFiltri() {
+        const sidebar = document.getElementById('filtri-sidebar');
+        sidebar.classList.toggle('show');
+    }
+
+    // Chiudi filtri mobile quando si clicca fuori (opzionale)
+    document.addEventListener('click', function(event) {
+        const sidebar = document.getElementById('filtri-sidebar');
+        const toggle = document.querySelector('.mobile-filter-toggle');
+
+        if (window.innerWidth <= 768) {
+            if (!sidebar.contains(event.target) && !toggle.contains(event.target)) {
+                sidebar.classList.remove('show');
+            }
+        }
+    });
+</script>
+
 </body>
-</html>

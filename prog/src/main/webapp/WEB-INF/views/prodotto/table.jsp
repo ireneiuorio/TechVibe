@@ -1,9 +1,11 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
+
 <!-- Contenitore principale -->
 <div class="prodotti-container">
   <!-- Pulsante per creare un nuovo prodotto -->
   <a href="${pageContext.request.contextPath}/prodotti/create" class="btn primary">Crea Prodotto</a>
+  <h3 style="color: var(--primary-light)">Clicca sull'id per eliminare o modificare un prodotto</h3>
 
   <!-- Wrapper scrollabile per la tabella -->
   <div class="table-wrapper">
@@ -37,7 +39,7 @@
         <c:otherwise>
           <c:forEach items="${prodotti}" var="prodotto">
             <tr>
-              <td><a href="${pageContext.request.contextPath}/prodotti/show?idp=${prodotto.idProdotto}">${prodotto.idProdotto}</a></td>
+              <td><a href="${pageContext.request.contextPath}/prodotti/manage?id=${prodotto.idProdotto}">${prodotto.idProdotto}</a></td>
               <td>${prodotto.dimensioneSchermo}</td>
               <td>${prodotto.connettivita}</td>
               <td>${prodotto.prezzo}</td>

@@ -40,14 +40,14 @@
 
 
 
-    <a href="${pageContext.request.contextPath}/utente/secret"
+    <a href="${pageContext.request.contextPath}/pages/smartphone"
        class="card-link">
         <div class="card">
             <p style="color: black">Smartphone</p>
         </div>
     </a>
 
-    <a href="${pageContext.request.contextPath}/utente/secret"
+    <a href="${pageContext.request.contextPath}/pages/tablet"
        class="card-link">
         <div class="card">
             <p style="color: black">Tablet</p>

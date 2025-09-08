@@ -24,7 +24,7 @@ public class SqlProdottoDao extends SqlDao implements ProdottoDao<SQLException> 
         super(source);
     }
 
-    @Override
+
     public List<Prodotto> fetchProdotti(Paginator paginator) throws SQLException {
         try (Connection conn = source.getConnection()) {
             QueryBuilder qb = new QueryBuilder("prodotto", "pro");
@@ -48,6 +48,7 @@ public class SqlProdottoDao extends SqlDao implements ProdottoDao<SQLException> 
             }
         }
     }
+
 
     @Override
     public boolean createProdotto(Prodotto prodotto) throws SQLException {
@@ -95,12 +96,13 @@ public class SqlProdottoDao extends SqlDao implements ProdottoDao<SQLException> 
         }
     }
 
+
     @Override
     public boolean updateProdotto(Prodotto prodotto) throws SQLException {
         try (Connection conn = source.getConnection()) {
             QueryBuilder queryBuilder = new QueryBuilder("prodotto", "pro");
             queryBuilder.update(
-                    "DimSchermo",
+                    "Dimschermo",
                     "Connettivita",
                     "Prezzo",
                     "Modello",
@@ -110,14 +112,15 @@ public class SqlProdottoDao extends SqlDao implements ProdottoDao<SQLException> 
                     "Colore",
                     "StorageDispositivo",
                     "Ram",
-                    "Immagine1",
-                    "Immagine2",
-                    "Immagine3",
-                    "Immagine4",
                     "IdCategoria"
-            ).where("pro.idProdotto = ?");
+            ).where("idProdotto = ?");
 
-            try (PreparedStatement ps = conn.prepareStatement(queryBuilder.generateQuery())) {
+            String generatedQuery = queryBuilder.generateQuery();
+            System.out.println("=== QUERY GENERATA ===");
+            System.out.println(generatedQuery);
+            System.out.println("ID Prodotto WHERE: " + prodotto.getIdProdotto());
+
+            try (PreparedStatement ps = conn.prepareStatement(generatedQuery)) {
                 ps.setDouble(1, prodotto.getDimensioneSchermo());
                 ps.setString(2, prodotto.getConnettivita());
                 ps.setDouble(3, prodotto.getPrezzo());
@@ -128,14 +131,11 @@ public class SqlProdottoDao extends SqlDao implements ProdottoDao<SQLException> 
                 ps.setString(8, prodotto.getColore());
                 ps.setInt(9, prodotto.getStorage());
                 ps.setInt(10, prodotto.getRam());
-                ps.setString(11, prodotto.getImmagine1());
-                ps.setString(12, prodotto.getImmagine2());
-                ps.setString(13, prodotto.getImmagine3());
-                ps.setString(14, prodotto.getImmagine4());
-                ps.setInt(15, prodotto.getCategoria().getIdCategoria());
-                ps.setInt(16, prodotto.getIdProdotto()); // WHERE condition
+                ps.setInt(11, prodotto.getCategoria().getIdCategoria());
+                ps.setInt(12, prodotto.getIdProdotto());
 
                 int rows = ps.executeUpdate();
+                System.out.println("Righe modificate: " + rows);
                 return rows == 1;
             }
         }
@@ -195,38 +195,74 @@ public class SqlProdottoDao extends SqlDao implements ProdottoDao<SQLException> 
 
     @Override
     public List<Prodotto> search(List<Condition> conditions) throws SQLException {
-        try(Connection conn=source.getConnection())
-        {
-            QueryBuilder builder=new QueryBuilder("prodotto","pro");
-            builder.select().innerJoin("categoria","cat").on("pro.idcategoria=cat.idcategoria");
-            if(!conditions.isEmpty())
-            {
+        try(Connection conn = source.getConnection()) {
+            QueryBuilder builder = new QueryBuilder("prodotto", "pro");
+            builder.select(); // NIENTE JOIN PER ORA
+
+            if(!conditions.isEmpty()) {
                 builder.where().search(conditions);
             }
-            String query=builder.generateQuery();
 
-            try(PreparedStatement ps= conn.prepareStatement(query)){
-                for(int i=0;i<conditions.size();i++)
-                {
-                    if(conditions.get(i).getOperator()== Operator.MATCH)
-                    {
-                        ps.setObject(i+1,"%"+conditions.get(i).getValue()+"%");
-                    }else{
-                        ps.setObject(i+1,conditions.get(i).getValue());
+            String query = builder.generateQuery();
+            System.out.println("QUERY: " + query); // DEBUG
+
+            try(PreparedStatement ps = conn.prepareStatement(query)) {
+                for(int i = 0; i < conditions.size(); i++) {
+                    Object value;
+                    if(conditions.get(i).getOperator() == Operator.MATCH) {
+                        value = "%" + conditions.get(i).getValue() + "%";
+                    } else {
+                        value = conditions.get(i).getValue();
                     }
+                    ps.setObject(i+1, value);
+                    System.out.println("Param " + (i+1) + ": " + value); // DEBUG
                 }
-                ResultSet set=ps.executeQuery();
-                List<Prodotto> prodotti=new ArrayList<>();
 
-                while(set.next())
-                {
-                    Prodotto prodotto=new ProdottoExtractor().extract(set);
-                    prodotto.setCategoria(new CategoriaExtractor().extract(set));
+                ResultSet set = ps.executeQuery();
+                List<Prodotto> prodotti = new ArrayList<>();
+
+                while(set.next()) {
+                    Prodotto prodotto = new ProdottoExtractor().extract(set);
+                    // NON settare categoria per ora
                     prodotti.add(prodotto);
                 }
 
+                System.out.println("TROVATI: " + prodotti.size()); // DEBUG
                 return prodotti;
             }
         }
+
+
     }
+
+    public boolean deleteProdotto(int id) throws SQLException {
+        try (Connection conn = source.getConnection()) {
+            QueryBuilder queryBuilder = new QueryBuilder("prodotto", "pro");
+            queryBuilder.delete().where("idProdotto = ?");
+
+            try (PreparedStatement ps = conn.prepareStatement(queryBuilder.generateQuery())) {
+                ps.setInt(1, id);
+
+                int rows = ps.executeUpdate();
+                return rows == 1;
+            }
+        }
+    }
+
+    public boolean updateQuantity(int id, int newQuantity) throws SQLException {
+        try (Connection conn = source.getConnection()) {
+            QueryBuilder queryBuilder = new QueryBuilder("prodotto", "pro");
+            queryBuilder.update("QtDisponibile").where("pro.idprodotto = ?");
+
+            try (PreparedStatement ps = conn.prepareStatement(queryBuilder.generateQuery())) {
+                ps.setInt(1, newQuantity);
+                ps.setInt(2, id);
+
+                int rows = ps.executeUpdate();
+                return rows == 1;
+            }
+        }
+    }
+
+
 }

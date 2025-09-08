@@ -50,16 +50,24 @@ public class QueryBuilder {
         return this;
     }
 
-    public QueryBuilder search(List<Condition> conditions)
-    {
-        StringJoiner searchJoiner=new StringJoiner("AND ");
-        for(Condition cn:conditions)
-        {
-           searchJoiner.add(String.format("%s.%s%s",alias,cn.toString(),QM));
+    public QueryBuilder search(List<Condition> conditions) {
+        if (conditions.isEmpty()) {
+            return this;
         }
-        query.append(searchJoiner);
-        return this;
 
+        StringJoiner searchJoiner = new StringJoiner(" AND ");
+        for (Condition cn : conditions) {
+            // Costruisce: alias.nomeColonna OPERATORE ?
+            String conditionStr = String.format("%s.%s %s %s",
+                    alias,
+                    cn.getName(),
+                    cn.getOperator().toString(),
+                    QM
+            );
+            searchJoiner.add(conditionStr);
+        }
+        query.append(" ").append(searchJoiner).append(" ");
+        return this;
     }
 
     public QueryBuilder insert(String... fields) {

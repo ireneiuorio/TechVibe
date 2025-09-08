@@ -25,7 +25,7 @@
         </div>
       </c:if>
 
-      <form class="auth-form" action="${pageContext.request.contextPath}/pages/areapersonale" method="post">
+      <form class="auth-form" action="${pageContext.request.contextPath}/utente/signin" method="post">
         <label for="email">
           <span>Email</span>
           <input type="email" id="email" name="email" placeholder="@" required>

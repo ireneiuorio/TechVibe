@@ -24,7 +24,7 @@
         </div>
 
 
-        <jsp:include page="../partials/site/paginator.jsp">
+        <jsp:include page="../partials/paginator.jsp">
             <jsp:param name="resource" value="utenti"/>
         </jsp:include>
 

@@ -7,6 +7,7 @@
         <jsp:param name="styles" value="crm,prodotti"/>
         <jsp:param name="scripts" value="crm,home"/>
     </jsp:include>
+
 </head>
 
 <body>
@@ -24,7 +25,7 @@
         </div>
 
 
-        <jsp:include page="../partials/site/paginator.jsp">
+        <jsp:include page="../partials/paginator.jsp">
             <jsp:param name="resource" value="prodotti"/>
         </jsp:include>
 

@@ -1,16 +1,37 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: ireneiuorio
-  Date: 05/08/25
-  Time: 18:00
-  To change this template use File | Settings | File Templates.
---%>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8" %>
 <html>
 <head>
-    <title>Title</title>
-</head>
-<body>
+    <title>TechVibe</title>
+    <jsp:include page="../partials/head.jsp">
+        <jsp:param name="title" value="TechVibe"/>
+        <jsp:param name="styles" value="prodotti,crm"/>
+        <jsp:param name="scripts" value="crm,home"/>
+    </jsp:include>
 
+</head>
+
+<body>
+<main class="app">
+
+    <%@ include file="../partials/crm/sidebar.jsp" %>
+
+    <section class="content grid-y">
+        <%@ include file="../partials/crm/header.jsp" %>
+
+        <div class="body grid-x justify-center">
+            <section class="grid-y cell prodotti">
+                <%@ include file="../ordini/table.jsp" %>
+            </section>
+        </div>
+
+
+        <jsp:include page="../partials/paginator.jsp">
+            <jsp:param name="resource" value="ordini"/>
+        </jsp:include>
+
+        <%@ include file="../partials/crm/footer.jsp" %>
+    </section>
+
+</main>
 </body>
 </html>

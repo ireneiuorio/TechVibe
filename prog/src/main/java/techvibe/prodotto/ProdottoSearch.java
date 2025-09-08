@@ -10,54 +10,68 @@ import java.util.Enumeration;
 import java.util.List;
 
 public class ProdottoSearch implements SearchBuilder {
-
-
-
     @Override
     public List<Condition> buildSearch(HttpServletRequest request) {
-        List<Condition> conditions =new ArrayList<>();
-        Enumeration<String> parameterNames=request.getParameterNames();
-        while(parameterNames.hasMoreElements())
-        {
-            String param=parameterNames.nextElement();
-            String value=request.getParameter(param);
-            if(value!=null && !value.isBlank()) //anche se non passi un parametro potrebbe passare per questo si scartano (opzionali non compilati)
-            {
-                switch(param)
-                {
-                    case "Modello":
-                        conditions.add(new Condition("Modello", Operator.MATCH,value));
-                        break;
+        List<Condition> conditions = new ArrayList<>();
+        Enumeration<String> parameterNames = request.getParameterNames();
+
+        while (parameterNames.hasMoreElements()) {
+            String param = parameterNames.nextElement();
+            String value = request.getParameter(param);
+
+            if (value != null && !value.trim().isEmpty()) {
+                switch (param) {
                     case "Marca":
-                        conditions.add(new Condition("Marca", Operator.MATCH,value));
+                        conditions.add(new Condition("marca", Operator.MATCH, value.trim()));
                         break;
-                    case "IdCategoria":
-                        conditions.add(new Condition("IdCategoria", Operator.EQ,value));
-                        break;
-                    case "minPrice":
-                        conditions.add(new Condition("Prezzo", Operator.GT,value));
-                        break;
-                    case "maxPrice":
-                        conditions.add(new Condition("Prezzo", Operator.LT,value));
+                    case "Modello":
+                        conditions.add(new Condition("modello", Operator.MATCH, value.trim()));
                         break;
                     case "SistemaOperativo":
-                        conditions.add(new Condition("SistemaOperativo", Operator.MATCH,value));
+                        conditions.add(new Condition("sistemaoperativo", Operator.MATCH, value.trim()));
+                        break;
+                    case "minPrice":
+                        try {
+                            double price = Double.parseDouble(value.trim());
+                            conditions.add(new Condition("prezzo", Operator.GE, String.valueOf(price)));
+                        } catch (Exception e) {
+                            // Ignora valori non numerici
+                        }
+                        break;
+                    case "maxPrice":
+                        try {
+                            double price = Double.parseDouble(value.trim());
+                            conditions.add(new Condition("prezzo", Operator.LE, String.valueOf(price)));
+                        } catch (Exception e) {
+                            // Ignora valori non numerici
+                        }
                         break;
                     case "Ram":
-                        conditions.add(new Condition("Ram", Operator.GT,value));
+                        try {
+                            int ram = Integer.parseInt(value.trim());
+                            conditions.add(new Condition("ram", Operator.GE, String.valueOf(ram)));
+                        } catch (Exception e) {
+                            // Ignora valori non numerici
+                        }
                         break;
                     case "StorageDispositivo":
-                        conditions.add(new Condition("StorageDispositivo", Operator.GT,value));
+                        try {
+                            int storage = Integer.parseInt(value.trim());
+                            conditions.add(new Condition("storagedispositivo", Operator.GE, String.valueOf(storage)));
+                        } catch (Exception e) {
+                            // Ignora valori non numerici
+                        }
                         break;
                     case "Colore":
-                        conditions.add(new Condition("Colore", Operator.MATCH,value));
+                        conditions.add(new Condition("colore", Operator.MATCH, value.trim()));
                         break;
-
-
+                    case "IdCategoria":
+                        conditions.add(new Condition("idcategoria", Operator.EQ, value.trim()));
+                        break;
                 }
             }
         }
+
         return conditions;
     }
-
 }

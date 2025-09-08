@@ -62,13 +62,11 @@ public class PageServlet extends Controller implements ErrorHandler {
 
                 case "/smartphone":
                     int page = parsePage(request);                 // se hai già questo helper
-                    Paginator paginator = new Paginator(page, 12); // 12 per pagina (scegli tu)
+                    Paginator paginator3 = new Paginator(page, 12); // 12 per pagina (scegli tu)
 
                     try {
                         int idSmartphone = 1; // <-- SOSTITUISCI con l'IdCategoria reale per "Smartphone"
                         List<Prodotto> prodotti = prodottoDao.fetchProdottiByCategoria(idSmartphone);
-
-
 
                         request.setAttribute("prodotti", prodotti);
                         request.getRequestDispatcher("/WEB-INF/views/site/smartphone.jsp")
@@ -77,6 +75,25 @@ public class PageServlet extends Controller implements ErrorHandler {
                         throw new ServletException(e);
                     }
                     break;
+
+                case "/tablet":
+                    int page1 = parsePage(request);                 // se hai già questo helper
+                    Paginator paginator2 = new Paginator(page1, 12); // 12 per pagina (scegli tu)
+
+                    try {
+                        int idTablet = 2; //
+                        List<Prodotto> prodotti = prodottoDao.fetchProdottiByCategoria(idTablet);
+                        request.setAttribute("prodotti", prodotti);
+                        request.getRequestDispatcher("/WEB-INF/views/site/tablet.jsp")
+                                .forward(request, response);
+                    } catch (SQLException e) {
+                        throw new ServletException(e);
+                    }
+                    break;
+
+
+
+
 
                 case "/create":
                     request.getRequestDispatcher("/WEB-INF/views/site/create.jsp").forward(request,response);

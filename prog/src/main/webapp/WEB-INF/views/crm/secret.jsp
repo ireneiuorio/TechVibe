@@ -12,7 +12,9 @@
   </jsp:include>
 
 </head>
+
 <body>
+<%@ include file="../partials/site/header.jsp" %>
 <div class="auth-wrapper">
   <div class="auth-card">
     <h2>Accesso Admin</h2>
@@ -46,5 +48,7 @@
     </div>
   </div>
 </div>
+
+<%@ include file="../partials/site/footer.jsp" %>
 </body>
 </html>

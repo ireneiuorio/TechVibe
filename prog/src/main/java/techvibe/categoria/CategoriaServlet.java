@@ -37,9 +37,7 @@ public class CategoriaServlet extends Controller implements ErrorHandler {
             switch(path){
                 case"/":
                     authorize(request.getSession(false));
-                    validate(CommonValidator.validatePage(request));
                     int intPage=parsePage(request);
-
                     Paginator paginator =new Paginator(intPage,10);
 
                     List<Categoria> categorie=categoriaDao.fetchCategorie(paginator);

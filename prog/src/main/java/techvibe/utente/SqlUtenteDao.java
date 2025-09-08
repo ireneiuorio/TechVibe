@@ -58,7 +58,7 @@ public class SqlUtenteDao extends SqlDao implements UtenteDao<SQLException> {
     public Optional<Utente> fetchUtente(int id) throws SQLException {
         try (Connection conn = source.getConnection()) {
             QueryBuilder queryBuilder = new QueryBuilder("utente", "ute");
-            String query = queryBuilder.select().where("ute.id=?").generateQuery();
+            String query = queryBuilder.select().where("ute.idaccount=?").generateQuery();
             try (PreparedStatement ps = conn.prepareStatement(query)) {
                 ps.setInt(1, id);
                 ResultSet set = ps.executeQuery();
@@ -96,7 +96,7 @@ public class SqlUtenteDao extends SqlDao implements UtenteDao<SQLException> {
     public Boolean deleteAccount(int id) throws SQLException {
         try (Connection conn = source.getConnection()) {
             QueryBuilder queryBuilder = new QueryBuilder("utente", "ute");
-            queryBuilder.delete().where("id=?");
+            queryBuilder.delete().where("idaccount=?");
             try (PreparedStatement ps = conn.prepareStatement(queryBuilder.generateQuery())) {
                 ps.setInt(1, id);
                 int rows = ps.executeUpdate();
@@ -111,15 +111,17 @@ public class SqlUtenteDao extends SqlDao implements UtenteDao<SQLException> {
     public Boolean updateUtente(Utente utente) throws SQLException {
         try (Connection conn = source.getConnection()) {
             QueryBuilder queryBuilder = new QueryBuilder("utente", "ute");
-            queryBuilder.update("nome", "cognome").where("id=?");
+            queryBuilder.update("nome", "cognome", "email", "telefono", "indirizzospedizione").where("idaccount=?");
             try (PreparedStatement ps = conn.prepareStatement(queryBuilder.generateQuery())) {
                 ps.setString(1, utente.getNome());
                 ps.setString(2, utente.getCognome());
-                ps.setInt(3, utente.getIdUtente());
+                ps.setString(3, utente.getEmail());
+                ps.setString(4, utente.getTelefono());
+                ps.setString(5, utente.getIndirizzoSpedizione());
+                ps.setInt(6, utente.getIdUtente());
 
                 int rows = ps.executeUpdate();
                 return rows == 1;
-
             }
         }
     }
@@ -171,6 +173,28 @@ public class SqlUtenteDao extends SqlDao implements UtenteDao<SQLException> {
             ps.setString(1, email);
             try (ResultSet rs = ps.executeQuery()) {
                 return rs.next(); // true se esiste almeno una riga
+            }
+        }
+    }
+
+    public Optional<Utente> findUtenteNormale(String email, String passwordHash) throws SQLException {
+        String sql = new QueryBuilder("utente", "ute")
+                .select()
+                .where("ute.email = ? AND ute.passwordhash = ? AND ute.isadmin = false")
+                .generateQuery();
+
+        try (Connection c = source.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+
+            ps.setString(1, email);
+            ps.setString(2, passwordHash);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    Utente u = new UtenteExtractor().extract(rs);
+                    return Optional.of(u);
+                }
+                return Optional.empty();
             }
         }
     }

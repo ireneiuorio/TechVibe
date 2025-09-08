@@ -40,17 +40,18 @@ public class OrdineServlet extends Controller implements ErrorHandler {
             {
                 case"/":
                     authorize(request.getSession(false));
-                    validate(CommonValidator.validatePage(request));
                     int intPage=parsePage(request);
                     int size=ordineDao.countAll();
                     Paginator paginator =new Paginator(intPage,50);
                     List<Ordine> ordini=ordineDao.fetchOrdini(paginator);
-                    request.setAttribute("ordini",ordini);
+                    request.setAttribute("listaOrdini",ordini);
                     request.setAttribute("pages",paginator.getPages(size));
                     request.getRequestDispatcher("/WEB-INF/views/crm/ordini.jsp").forward(request,response);
                     break;
 
-                case"/show":
+
+                default:
+                    notFound();
 
 
 
