@@ -1,17 +1,13 @@
 <aside class="sidebar">
-  <nav class="menu grid-y align-center">
-    <img id="logo1" src="<%= request.getContextPath() %>/icons/logo1.svg" alt="Logo">
-    <a href="<%= request.getContextPath() %>/utente/">Gestione Utenti</a>
+  <nav class="menu grid-y align-center" >
+    <div class="logo">
+      <a href="${pageContext.request.contextPath}/pages" style="color: white;text-decoration:none " >TechVibe</a>
+    </div>
+    <a href=<%= request.getContextPath() %>/utente/>Gestione Utenti</a>
     <a href="<%= request.getContextPath() %>/prodotti/">Gestione Prodotti</a>
     <a href="<%= request.getContextPath() %>/ordini/">Gestione Ordini</a>
-    <a href="<%= request.getContextPath() %>/categorie/">Gestione Categorie</a>
-    <a href="<%= request.getContextPath() %>/profilocrm/">Gestione Profilo</a>
-    <a href="<%= request.getContextPath() %>/utente/logout" onclick="return confermaLogout()">Logout</a>
+    <a href="<%= request.getContextPath() %>/categorie/"> Gestione Categorie</a>
+    <a href="#"> Gestione Profilo</a>
+    <a href="<%= request.getContextPath() %>/utente/logout">Logout</a>
   </nav>
 </aside>
-
-<script>
-  function confermaLogout() {
-    return confirm("Sei sicuro di voler uscire dal CRM? Verrai reindirizzato alla home del sito.");
-  }
-</script>

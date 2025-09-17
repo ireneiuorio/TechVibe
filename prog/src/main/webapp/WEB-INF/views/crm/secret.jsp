@@ -47,8 +47,10 @@
       </a>
     </div>
   </div>
+
 </div>
 
-<%@ include file="../partials/site/footer.jsp" %>
+
 </body>
+<%@ include file="../partials/site/footer.jsp" %>
 </html>

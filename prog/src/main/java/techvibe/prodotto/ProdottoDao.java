@@ -18,5 +18,5 @@ public interface ProdottoDao<E extends Exception> {
     int countAll()throws E;
     List<Prodotto> search(List<Condition> conditions) throws E;
    boolean deleteProdotto(int id) throws E;
-   boolean updateQuantity(int id, int newQuantity) throws SQLException;
+    public List<Prodotto> fetchProdottiInOfferta() throws E;
 }

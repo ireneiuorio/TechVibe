@@ -16,8 +16,10 @@ import javax.sql.DataSource;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @WebServlet(name = "PageServlet", value = "/pages/*")
 public class PageServlet extends Controller implements ErrorHandler {
@@ -45,7 +47,21 @@ public class PageServlet extends Controller implements ErrorHandler {
                     request.getRequestDispatcher("/WEB-INF/views/site/home.jsp").forward(request, response);
                     break;
 
+                // Nel doGet della homepage
                 case "/":
+                    // Carica i primi 3 prodotti in offerta per la vetrina
+                    List<Prodotto> prodottiVetrina = new ArrayList<>();
+                    try {
+                        // Usa il metodo che hai già creato per le offerte
+                        List<Prodotto> tutteLeOfferte = prodottoDao.fetchProdottiInOfferta();
+                        // Prendi solo i primi 3 per la vetrina
+                        prodottiVetrina = tutteLeOfferte.stream().limit(3).collect(Collectors.toList());
+                    } catch (SQLException e) {
+                        // Se errore, lista vuota
+                        prodottiVetrina = new ArrayList<>();
+                    }
+
+                    request.setAttribute("prodottiVetrina", prodottiVetrina);
                     request.getRequestDispatcher("/WEB-INF/views/site/home.jsp").forward(request, response);
                     break;
                 case "/chisiamo":

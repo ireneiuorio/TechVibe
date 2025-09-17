@@ -20,13 +20,15 @@
         <div class="body grid-x justify-center">
             <section class="grid-y cell utenti">
                 <%@ include file="../utente/table.jsp" %>
+                <jsp:include page="../partials/paginator.jsp">
+                    <jsp:param name="resource" value="utenti"/>
+                </jsp:include>
+
             </section>
         </div>
 
 
-        <jsp:include page="../partials/paginator.jsp">
-            <jsp:param name="resource" value="utenti"/>
-        </jsp:include>
+
 
     </section>
 

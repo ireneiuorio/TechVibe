@@ -1,24 +1,42 @@
 package techvibe.ordine;
 
 import techvibe.storage.ResultSetExtractor;
+import techvibe.utente.Utente;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import techvibe.storage.ResultSetExtractor;
+import techvibe.utente.Utente;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class OrdineExtractor implements ResultSetExtractor<Ordine> {
 
+    @Override
+    public Ordine extract(ResultSet rs) throws SQLException {
+        Ordine ordine = new Ordine();
 
-        public Ordine extract(ResultSet resultSet) throws SQLException {
-            Ordine ordine = new Ordine();
-            ordine.setIdOrdine(resultSet.getInt("ord.idordine"));// Campo mancante aggiunto
-            ordine.setStato(resultSet.getString("ord.stato"));
-            ordine.setTotale(resultSet.getDouble("ord.totale"));
-            ordine.setScontoTotale(resultSet.getDouble("ord.scontototale"));
-            ordine.setMetodoDiSpedizione(resultSet.getString("ord.metodospedizione"));  // Nome corretto
-            ordine.setMetodoDiPagamento(resultSet.getString("ord.metodopagamento"));    // Nome corretto + typo
-            ordine.setIdUtente(resultSet.getInt("ord.idaccount"));
+        // Dati dell'ordine
+        ordine.setIdOrdine(rs.getInt("ord.idordine"));
+        ordine.setStato(rs.getString("ord.stato"));
+        ordine.setTotale(rs.getDouble("ord.totale"));
+        ordine.setScontoTotale(rs.getDouble("ord.scontototale"));
+        ordine.setMetodoDiSpedizione(rs.getString("ord.metodospedizione"));
+        ordine.setMetodoDiPagamento(rs.getString("ord.metodopagamento"));
 
-            return ordine;
+        // AGGIUNGI: Dati dell'utente (se presenti nella query)
+        try {
+            Utente utente = new Utente();
+            utente.setIdUtente(rs.getInt("ute.IdAccount")); // Usa il nome corretto della colonna
+
+            ordine.setUtente(utente);
+        } catch (SQLException e) {
+            // Se i campi utente non sono presenti nella query, ignora
+            ordine.setUtente(null);
         }
-    }
 
+        return ordine;
+    }
+}

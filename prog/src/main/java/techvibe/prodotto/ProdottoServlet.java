@@ -47,7 +47,7 @@ public class ProdottoServlet extends Controller implements ErrorHandler {
             case "/":
                 authorize(request.getSession(false));
                 int intPage=parsePage(request);
-                Paginator paginator=new Paginator(intPage,12);
+                Paginator paginator=new Paginator(intPage,10);
                 int size= 0;
                 try {
                     size = prodottoDao.countAll();
@@ -219,6 +219,20 @@ public class ProdottoServlet extends Controller implements ErrorHandler {
                 }
                 break;
 
+            case "/offerte":
+                List<Prodotto> prodottiInOfferta = new ArrayList<>();
+
+                try {
+                    prodottiInOfferta = prodottoDao.fetchProdottiInOfferta();
+                } catch (SQLException e) {
+                    prodottiInOfferta = new ArrayList<>();
+                    request.setAttribute("errorMessage", "Errore nel caricamento delle offerte.");
+                }
+
+                request.setAttribute("prodotti", prodottiInOfferta);
+                request.getRequestDispatcher("/WEB-INF/views/site/offerte.jsp").forward(request, response);
+                break;
+
 
 
 
@@ -251,7 +265,7 @@ public class ProdottoServlet extends Controller implements ErrorHandler {
                     prodotto.setQtDisponibile(safeInt(request.getParameter("qtDisponibile")));
                     prodotto.setPrezzo(safeDouble(request.getParameter("prezzo")));
                     prodotto.setDimensioneSchermo(safeDouble(request.getParameter("dimensioneSchermo")));
-
+                    prodotto.setPercentualeSconto(safeDouble(request.getParameter("percentualeSconto")));
                     // Quattro immagini
                     prodotto.setImmagine1(safe(request.getParameter("immagine1")));
                     prodotto.setImmagine2(safe(request.getParameter("immagine2")));
@@ -263,12 +277,23 @@ public class ProdottoServlet extends Controller implements ErrorHandler {
                     categoria.setIdCategoria(safeInt(request.getParameter("idCategoria")));
                     prodotto.setCategoria(categoria);
 
+                    String scontoParam = request.getParameter("percentualeSconto");
+                    System.out.println("=== DEBUG SCONTO ===");
+                    System.out.println("Parametro ricevuto: '" + scontoParam + "'");
+                    double sconto = safeDouble(scontoParam);
+                    System.out.println("Sconto convertito: " + sconto);
+
+                    prodotto.setPercentualeSconto(sconto);
+                    System.out.println("Sconto nel prodotto: " + prodotto.getPercentualeSconto());
+                    System.out.println("==================");
+
                     // Salva
                     if (prodottoDao.createProdotto(prodotto)) {
                         response.sendRedirect(request.getContextPath() + "/prodotti/?page=1");
                     } else {
                         response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Errore Server");
                     }
+
                     break;
                 }
 
@@ -326,6 +351,7 @@ public class ProdottoServlet extends Controller implements ErrorHandler {
                     prodotto.setQtDisponibile(safeInt(request.getParameter("qtDisponibile")));
                     prodotto.setPrezzo(safeDouble(request.getParameter("prezzo")));
                     prodotto.setDimensioneSchermo(safeDouble(request.getParameter("dimensioneSchermo")));
+                    prodotto.setPercentualeSconto(safeDouble(request.getParameter("percentualeSconto")));
 
                     // Aggiorna categoria
                     Categoria categoria = new Categoria();

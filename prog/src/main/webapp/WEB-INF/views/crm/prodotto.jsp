@@ -14,7 +14,7 @@
 
     <style>
         .product-form {
-            margin-bottom: 5rem;
+            margin-bottom: 4rem;
         }
     </style>
 </head>
@@ -74,6 +74,10 @@
 
                         <label class="field cell w50">
                             <input id="DimensioneSchermo" name="dimensioneSchermo" placeholder="Dimensione schermo (pollici)" type="number" step="0.1" min="0">
+                        </label>
+
+                        <label class="field cell w50">
+                            <input id="PercentualeSconto" name="percentualeSconto" placeholder="Percentuale Sconto %" type="number" step="0.1" min="0">
                         </label>
 
                         <label class="field cell w50">

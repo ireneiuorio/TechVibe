@@ -18,8 +18,8 @@ public class Utente {
     private String Telefono;
     private String IndirizzoSpedizione;
     private boolean admin;
+    private String stato = "ATTIVO"; // Default: utente attivo
     private List<Ordine> ordini;
-
 
     public Utente(){
         super();
@@ -52,8 +52,6 @@ public class Utente {
     public String getIndirizzoSpedizione() {
         return IndirizzoSpedizione;
     }
-
-
 
     public void setIdUtente(int idAccount) {
         IdUtente = idAccount;
@@ -90,7 +88,6 @@ public class Utente {
         IndirizzoSpedizione = indirizzoSpedizione;
     }
 
-
     public List<Ordine> getOrdini() {
         return ordini;
     }
@@ -106,7 +103,35 @@ public class Utente {
     public void setAdmin(boolean admin) {
         this.admin = admin;
     }
+
     public void setPasswordHash(String alreadyHashed) {
         this.Password = alreadyHashed; // non ricalcola l'hash
+    }
+
+    // Nuovi metodi per la gestione dello stato
+    public String getStato() {
+        return stato;
+    }
+
+    public void setStato(String stato) {
+        this.stato = stato;
+    }
+
+    // Metodi di utilità per controllare lo stato
+    public boolean isAttivo() {
+        return "ATTIVO".equals(stato);
+    }
+
+    public boolean isDisattivato() {
+        return "DISATTIVATO".equals(stato);
+    }
+
+    // Metodi per cambiare stato facilmente
+    public void attiva() {
+        this.stato = "ATTIVO";
+    }
+
+    public void disattiva() {
+        this.stato = "DISATTIVATO";
     }
 }

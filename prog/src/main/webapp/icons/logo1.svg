@@ -1,19 +1,19 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="200" height="50" viewBox="0 0 320 70">
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="100" viewBox="0 0 640 140">
   <defs>
     <style>
-      .outline { fill:none; stroke:#0F4982; stroke-width:3; stroke-linecap:round; stroke-linejoin:round; }
+      .outline { fill:none; stroke:#0F4982; stroke-width:6; stroke-linecap:round; stroke-linejoin:round; }
       .dot { fill:#0F4982; }
-      .text { fill:#0F4982; font-family: 'Orbitron', sans-serif; font-size:40px; font-weight:700; letter-spacing:1px; }
+      .text { fill:#0F4982; font-family: 'Orbitron', sans-serif; font-size:80px; font-weight:700; letter-spacing:2px; }
     </style>
   </defs>
 
-  <path d="M35 10 L55 22 V46 L35 58 L15 46 V22 Z" class="outline"/>
+  <path d="M70 20 L110 44 V92 L70 116 L30 92 V44 Z" class="outline"/>
   <!-- T -->
-  <line x1="23" y1="28" x2="47" y2="28" class="outline"/>
-  <line x1="35" y1="28" x2="35" y2="48" class="outline"/>
+  <line x1="46" y1="56" x2="94" y2="56" class="outline"/>
+  <line x1="70" y1="56" x2="70" y2="96" class="outline"/>
   <!-- Nodi -->
-  <circle cx="23" cy="28" r="2.5" class="dot"/>
-  <circle cx="47" cy="28" r="2.5" class="dot"/>
+  <circle cx="46" cy="56" r="5" class="dot"/>
+  <circle cx="94" cy="56" r="5" class="dot"/>
 
-  <text x="75" y="48" class="text">TechVibe</text>
+  <text x="150" y="96" class="text">TechVibe</text>
 </svg>

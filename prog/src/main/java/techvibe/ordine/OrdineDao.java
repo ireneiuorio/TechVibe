@@ -20,6 +20,10 @@ public interface OrdineDao <E extends Exception > {
     List<Ordine> fetchOrdiniByUtente(int utenteId) throws E;
 
     int countAll() throws E;
+    Optional<Ordine> fetchOrdineCompletoById(int ordineId) throws E;
 
+    Optional<Ordine> fetchOrdineConUtente(int ordineId) throws SQLException;
+     boolean updateOrdine(Ordine ordine) throws SQLException;
 
+    Optional<Ordine> fetchOrdineCompleto(int ordineId) throws SQLException;
 }

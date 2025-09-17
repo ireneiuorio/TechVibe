@@ -3,8 +3,8 @@
 
 <!-- Contenitore principale -->
 <div class="prodotti-container">
-    <!-- Pulsante per creare un nuovo ordine -->
-    <a href="${pageContext.request.contextPath}/ordini/create" class="btn primary">Crea Ordine</a>
+
+    <h3 style="color: var(--primary-light)">Clicca sull'id per gestire un ordine</h3>
 
     <!-- Wrapper scrollabile per la tabella -->
     <div class="table-wrapper">
@@ -18,39 +18,30 @@
                 <th>ScontoTotale</th>
                 <th>MetodoSpedizione</th>
                 <th>MetodoPagamento</th>
-                <th>Azioni</th>
             </tr>
             </thead>
             <tbody>
             <c:choose>
-                <c:when test="${empty listaOrdini}">
+                <c:when test="${empty ordini}">
                     <tr>
                         <td colspan="8">Nessun ordine presente</td>
                     </tr>
                 </c:when>
                 <c:otherwise>
-                    <c:forEach items="${listaOrdini}" var="ordine">
+                    <c:forEach items="${ordini}" var="ordine">
                         <tr>
-                            <td><a href="${pageContext.request.contextPath}/ordini/show?id=${ordine.idOrdine}">${ordine.idOrdine}</a></td>
-                            <td>${ordine.idUtente}</td>
+                            <td><a  style="color: var(--primary-light);text-decoration: none" href="${pageContext.request.contextPath}/ordini/show?id=${ordine.idOrdine}">${ordine.idOrdine}</a></td>
+                            <td>${ordine.utente.idUtente}</td>
                             <td>${ordine.stato}</td>
-                            <td>
-                                <fmt:formatNumber value="${ordine.totale}" type="currency" currencySymbol="€"
-                                                  minFractionDigits="2" maxFractionDigits="2"/>
-                            </td>
-                            <td>
-                                <fmt:formatNumber value="${ordine.scontoTotale}" type="currency" currencySymbol="€"
-                                                  minFractionDigits="2" maxFractionDigits="2"/>
-                            </td>
+                            <td>${ordine.totale}</td>
+                            <td>${ordine.scontoTotale}</td>
                             <td>
                                 <c:out value="${ordine.metodoDiSpedizione}" default="-" />
                             </td>
                             <td>
                                 <c:out value="${ordine.metodoDiPagamento}" default="-" />
                             </td>
-                            <td>
-                                <a href="${pageContext.request.contextPath}/ordini/show?id=${ordine.idOrdine}">Visualizza</a>
-                            </td>
+
                         </tr>
                     </c:forEach>
                 </c:otherwise>

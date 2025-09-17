@@ -8,6 +8,19 @@
         <jsp:param name="scripts" value="crm,home"/>
     </jsp:include>
 
+    <style >
+        /* Per tutti i link */
+        a, a:visited {
+            color: var(--primary-light);
+            text-decoration: none;
+        }
+
+        /* Per i link nella navbar */
+        .nav-links a:visited, .menu a:visited {
+            color: white;
+        }
+
+    </style>
 </head>
 
 <body>
@@ -21,15 +34,15 @@
         <div class="body grid-x justify-center">
             <section class="grid-y cell prodotti">
                 <%@ include file="../prodotto/table.jsp" %>
+
+                <jsp:include page="../partials/paginator.jsp">
+                    <jsp:param name="resource" value="prodotti"/>
+                </jsp:include>
             </section>
         </div>
 
 
-        <jsp:include page="../partials/paginator.jsp">
-            <jsp:param name="resource" value="prodotti"/>
-        </jsp:include>
 
-        <%@ include file="../partials/crm/footer.jsp" %>
     </section>
 
 </main>

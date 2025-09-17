@@ -11,9 +11,15 @@ import techvibe.http.Controller;
 import techvibe.http.ErrorHandler;
 import techvibe.http.InvalidRequestException;
 import techvibe.http.CommonValidator;
+import techvibe.ordine.Ordine;
+import techvibe.ordine.OrdineDao;
+import techvibe.ordine.SqlOrdineDao;
 import techvibe.prodotto.Prodotto;
 import techvibe.prodotto.ProdottoDao;
 import techvibe.prodotto.SqlProdottoDao;
+// Aggiungi imports per il carrello
+import techvibe.carrello.CarrelloService;
+import techvibe.carrello.CarrelloDao;
 
 import javax.sql.DataSource;
 import java.io.IOException;
@@ -26,15 +32,19 @@ import java.util.Optional;
 @WebServlet("/utente/*")
 public class UtenteServlet extends Controller implements ErrorHandler {
 
-
     @Resource(name = "jdbc/TechVibe")
     protected DataSource source;
-    private UtenteDao<SQLException> utenteDao;
+    private SqlUtenteDao utenteDao;
+    private CarrelloService carrelloService; // Nuovo servizio carrello
 
     public void init() throws ServletException {
         super.init();
         utenteDao = new SqlUtenteDao(source);
 
+        // Inizializza il servizio carrello
+        SqlProdottoDao prodottoDao = new SqlProdottoDao(source);
+        CarrelloDao carrelloDao = new CarrelloDao(source, prodottoDao);
+        carrelloService = new CarrelloService(carrelloDao);
     }
 
     @Override
@@ -48,7 +58,7 @@ public class UtenteServlet extends Controller implements ErrorHandler {
             case "/":
                 authorize(request.getSession(false));
                 int page = parsePage(request);
-                Paginator paginator = new Paginator(page, 50);
+                Paginator paginator = new Paginator(page, 10);
                 int size = 0;
                 try {
                     size = utenteDao.countAll();
@@ -67,8 +77,43 @@ public class UtenteServlet extends Controller implements ErrorHandler {
                 request.getRequestDispatcher("/WEB-INF/views/crm/utenti.jsp").forward(request, response);
                 break;
 
+            case "/ordine":
+                HttpSession sessionOrdine = request.getSession(false);
+                if (sessionOrdine == null || sessionOrdine.getAttribute("utenteSession") == null) {
+                    response.sendRedirect(request.getContextPath() + "/utente/signin");
+                    return;
+                }
+
+                UtenteSession utenteSessionOrdine = (UtenteSession) sessionOrdine.getAttribute("utenteSession");
+                String ordineIdParam = request.getParameter("id");
+
+                if (ordineIdParam == null) {
+                    response.sendRedirect(request.getContextPath() + "/utente/profile");
+                    return;
+                }
+
+                try {
+                    int ordineId = Integer.parseInt(ordineIdParam);
+
+                    SqlOrdineDao ordineDao = new SqlOrdineDao(source);
+                    Optional<Ordine> ordineDettaglio = ordineDao.fetchOrdineConProdottiById(ordineId, utenteSessionOrdine.getId());
+
+                    if (ordineDettaglio.isPresent()) {
+                        request.setAttribute("ordine", ordineDettaglio.get());
+                        request.getRequestDispatcher("/WEB-INF/views/site/dettaglio-ordine.jsp").forward(request, response);
+                    } else {
+                        response.sendRedirect(request.getContextPath() + "/utente/profile");
+                    }
+
+                } catch (NumberFormatException e) {
+                    response.sendRedirect(request.getContextPath() + "/utente/profile");
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+                break;
+
             case "/create":
-                authorize(request.getSession(false));
+                authorize(request.getSession(false)); // Solo admin possono accedere
                 request.getRequestDispatcher("/WEB-INF/views/crm/utente.jsp").forward(request, response);
                 break;
 
@@ -84,10 +129,21 @@ public class UtenteServlet extends Controller implements ErrorHandler {
                 }
                 if (optionalUtente.isPresent()) {
                     request.setAttribute("utente", optionalUtente.get());
-                    request.getRequestDispatcher("/WEB-INF/views/crm/utente.jsp").forward(request, response);
+
+                    // AGGIUNGI QUESTO: Carica gli ordini dell'utente
+                    try {
+                        SqlOrdineDao ordineDao = new SqlOrdineDao(source);
+                        List<Ordine> ordiniUtente = ordineDao.fetchOrdiniByUtente(id);
+                        request.setAttribute("ordiniUtente", ordiniUtente);
+                    } catch (SQLException e) {
+                        throw new RuntimeException("Errore nel caricamento ordini", e);
+                    }
+
+                    request.getRequestDispatcher("/WEB-INF/views/crm/utente-dettagli.jsp").forward(request, response);
                 } else {
                     notFound();
                 }
+                break;
 
             case "/profile":
                 // Verifica che l'utente sia loggato
@@ -109,6 +165,12 @@ public class UtenteServlet extends Controller implements ErrorHandler {
                         Optional<Utente> optionalUtente2 = utenteDao.fetchUtente(utenteSession.getId());
                         if (optionalUtente2.isPresent()) {
                             request.setAttribute("utente", optionalUtente2.get());
+
+                            // AGGIUNGI QUESTO: Carica gli ordini dell'utente
+                            OrdineDao<SQLException> ordineDao = new SqlOrdineDao(source);
+                            List<Ordine> ordiniUtente = ordineDao.fetchOrdiniByUtente(utenteSession.getId());
+                            request.setAttribute("ordiniUtente", ordiniUtente);
+
                             request.getRequestDispatcher("/WEB-INF/views/site/profilo.jsp").forward(request, response);
                         } else {
                             response.sendRedirect(request.getContextPath() + "/utente/accediutente");
@@ -119,18 +181,17 @@ public class UtenteServlet extends Controller implements ErrorHandler {
                 }
                 break;
 
-
             case "/secret":
                 request.getRequestDispatcher("/WEB-INF/views/crm/secret.jsp").forward(request, response);
+                break;
+
             case "/signup":
-                request.getRequestDispatcher("/WEB-INF/views/site/singup.jsp");
+                request.getRequestDispatcher("/WEB-INF/views/site/singup.jsp").forward(request, response);
                 break;
 
             case "/signin":
-                request.getRequestDispatcher("/WEB-INF/views/site/singin.jsp");
+                request.getRequestDispatcher("/WEB-INF/views/site/singin.jsp").forward(request, response);
                 break;
-
-
 
             case "/logout":
                 HttpSession session3 = request.getSession(false);
@@ -145,9 +206,12 @@ public class UtenteServlet extends Controller implements ErrorHandler {
                         redirect = request.getContextPath() + "/"; // Home per utenti normali
                     }
 
-                    // Pulisci la sessione
+                    // Pulisci TUTTI gli attributi del carrello
                     session3.removeAttribute("utenteSession");
                     session3.removeAttribute("accountSession");
+                    session3.removeAttribute("user_id"); // Rimuovi l'ID utente per il carrello
+                    session3.removeAttribute("carrello"); // Rimuovi il carrello dalla sessione
+                    session3.removeAttribute("carrello_id"); // Rimuovi l'ID carrello
                     session3.invalidate();
 
                     response.sendRedirect(redirect);
@@ -159,10 +223,7 @@ public class UtenteServlet extends Controller implements ErrorHandler {
             default:
                 notFound();
         }
-
-
     }
-
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -202,6 +263,7 @@ public class UtenteServlet extends Controller implements ErrorHandler {
                     // lascia gestire all'handler la view "back" + messaggi
                     request.setAttribute("loginError", "Credenziali non valide");
                     request.getRequestDispatcher("/WEB-INF/views/crm/secret.jsp").forward(request, response);
+                    return;
                 }
 
                 // 6) crea la sessione e salva GLI STESSI attributi che il progetto si aspetta
@@ -209,14 +271,22 @@ public class UtenteServlet extends Controller implements ErrorHandler {
                 final HttpSession session = request.getSession(true);
                 session.setAttribute("utenteSession", utenteSession);
                 session.setAttribute("accountSession", utenteSession); // molte parti controllano questo
-                session.setMaxInactiveInterval(30 * 60); // 30 minuti (opzionale ma carino)
 
+                // NUOVO: Collega il carrello all'utente admin (se ne ha uno)
+                session.setAttribute("user_id", opt.get().getIdUtente()); // Per il CarrelloService
+                try {
+                    carrelloService.collegaCarrelloAdUtente(session, opt.get().getIdUtente());
+                } catch (Exception e) {
+                    // Log dell'errore ma non interrompere il login
+                    System.err.println("Errore nel collegamento carrello admin: " + e.getMessage());
+                }
+
+                session.setMaxInactiveInterval(30 * 60); // 30 minuti (opzionale ma carino)
 
                 request.getRequestDispatcher("/WEB-INF/views/crm/home.jsp").forward(request, response);
                 break;
-
-
             }
+
             case "/signin": // login utente normale
                 // 1) leggi parametri dalla form
                 final String emailUser = request.getParameter("email");
@@ -244,7 +314,17 @@ public class UtenteServlet extends Controller implements ErrorHandler {
 
                 // 5) esito autenticazione
                 if (optUser.isEmpty()) {
-                    request.setAttribute("loginError", "Credenziali non valide");
+                    // Controlla se l'utente esiste ma è disattivato
+                    try {
+                        if (utenteDao.isUtenteDisattivato(tmpUser.getEmail(), tmpUser.getPassword(), false)) {
+                            request.setAttribute("loginError", "Account disattivato. Contatta l'amministratore.");
+                        } else {
+                            request.setAttribute("loginError", "Credenziali non valide");
+                        }
+                    } catch (SQLException e) {
+                        throw new RuntimeException("Errore DB durante controllo stato", e);
+                    }
+
                     request.getRequestDispatcher("/WEB-INF/views/site/accediutente.jsp").forward(request, response);
                     return;
                 }
@@ -254,11 +334,25 @@ public class UtenteServlet extends Controller implements ErrorHandler {
                 final HttpSession sessionUser = request.getSession(true);
                 sessionUser.setAttribute("utenteSession", utenteSession);
                 sessionUser.setAttribute("accountSession", utenteSession); // per compatibilità
+
+                // IMPORTANTE: Imposta user_id PRIMA del collegamento carrello
+                final int userId = optUser.get().getIdUtente();
+                sessionUser.setAttribute("user_id", userId);
+                System.out.println("DEBUG LOGIN: User ID impostato: " + userId);
+
+                // NUOVO: Collega il carrello all'utente
+                try {
+                    carrelloService.collegaCarrelloAdUtente(sessionUser, userId);
+                } catch (Exception e) {
+                    // Log dell'errore ma non interrompere il login
+                    System.err.println("Errore nel collegamento carrello utente: " + e.getMessage());
+                    e.printStackTrace();
+                }
+
                 sessionUser.setMaxInactiveInterval(30 * 60); // 30 minuti
 
                 response.sendRedirect(request.getContextPath() + "/utente/profile");
                 break;
-
 
             case "/profile":
                 // Controllo autenticazione (come fai per /secret)
@@ -334,13 +428,148 @@ public class UtenteServlet extends Controller implements ErrorHandler {
                 response.sendRedirect(request.getContextPath() + "/utente/profile");
                 break;
 
+            // NUOVO CASE: Gestione cambio stato utente
+            case "/cambiastato":
+                authorize(request.getSession(false)); // Solo admin
+
+                // Leggi parametri
+                String idParam = request.getParameter("id");
+                String azione = request.getParameter("azione");
+
+                // Validazione
+                if (idParam == null || azione == null) {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Parametri mancanti");
+                    return;
+                }
+
+                try {
+                    int utenteId = Integer.parseInt(idParam);
+
+                    boolean success = false;
+                    if ("attiva".equals(azione)) {
+                        success = utenteDao.attivaUtente(utenteId);
+                    } else if ("disattiva".equals(azione)) {
+                        success = utenteDao.disattivaUtente(utenteId);
+                    }
+
+                    if (success) {
+                        // Redirect con messaggio di successo
+                        response.sendRedirect(request.getContextPath() + "/utente/?success=" + azione);
+                    } else {
+                        // Redirect con messaggio di errore
+                        response.sendRedirect(request.getContextPath() + "/utente/?error=cambio_stato");
+                    }
+
+                } catch (NumberFormatException e) {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ID utente non valido");
+                } catch (SQLException e) {
+                    throw new RuntimeException("Errore durante il cambio stato", e);
+                }
+                break;
+
+            case "/create":
+                // Solo admin possono creare altri admin
+                authorize(request.getSession(false));
+
+                // Leggi i parametri dalla form
+                String nome = request.getParameter("nome");
+                String cognome = request.getParameter("cognome");
+                String email = request.getParameter("email");
+                String password = request.getParameter("password");
+                String telefono = request.getParameter("telefono");
+                String indirizzo = request.getParameter("indirizzo");
+
+                try {
+                    // Validazione base
+                    if (nome == null || nome.trim().isEmpty() ||
+                            cognome == null || cognome.trim().isEmpty() ||
+                            email == null || email.trim().isEmpty() ||
+                            password == null || password.trim().isEmpty()) {
+
+                        request.setAttribute("errorMessage", "Tutti i campi obbligatori devono essere compilati");
+                        request.getRequestDispatcher("/WEB-INF/views/crm/utente.jsp").forward(request, response);
+                        return;
+                    }
+
+                    // Controlla se l'email esiste già
+                    if (utenteDao.existsByEmail(email)) {
+                        request.setAttribute("errorMessage", "Email già esistente nel sistema");
+                        request.getRequestDispatcher("/WEB-INF/views/crm/utente.jsp").forward(request, response);
+                        return;
+                    }
+
+                    // Crea il nuovo admin
+                    Utente nuovoAdmin = new Utente();
+                    nuovoAdmin.setNome(nome.trim());
+                    nuovoAdmin.setCognome(cognome.trim());
+                    nuovoAdmin.setEmail(email.trim().toLowerCase());
+                    nuovoAdmin.setPassword(password); // Hash automatico
+                    nuovoAdmin.setTelefono(telefono != null ? telefono.trim() : "");
+                    nuovoAdmin.setIndirizzoSpedizione(indirizzo != null ? indirizzo.trim() : "");
+                    nuovoAdmin.setAdmin(true); // SEMPRE admin
+                    nuovoAdmin.setStato("ATTIVO"); // Sempre attivo
+
+                    // Salva nel database
+                    if (utenteDao.createUtente(nuovoAdmin)) {
+                        response.sendRedirect(request.getContextPath() + "/utente/?success=admin_created");
+                    } else {
+                        request.setAttribute("errorMessage", "Errore durante la creazione dell'amministratore");
+                        request.getRequestDispatcher("/WEB-INF/views/crm/utente.jsp").forward(request, response);
+                    }
+
+                } catch (NoSuchAlgorithmException e) {
+                    request.setAttribute("errorMessage", "Errore nel sistema di crittografia");
+                    request.getRequestDispatcher("/WEB-INF/views/crm/utente.jsp").forward(request, response);
+                } catch (SQLException e) {
+                    throw new RuntimeException("Errore database durante creazione admin", e);
+                }
+                break;
+
+            case "/update-contacts":
+                authorize(request.getSession(false)); // Solo admin
+
+                // Leggi parametri
+                String idParame = request.getParameter("id");
+                String telefono1 = request.getParameter("telefono");
+                String indirizzo1 = request.getParameter("indirizzo");
+
+                // Validazione ID
+                if (idParame == null) {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ID utente mancante");
+                    return;
+                }
+
+                try {
+                    int utenteId = Integer.parseInt(idParame);
+
+                    // Recupera l'utente esistente dal database
+                    Optional<Utente> optUtente = utenteDao.fetchUtente(utenteId);
+                    if (optUtente.isEmpty()) {
+                        response.sendError(HttpServletResponse.SC_NOT_FOUND, "Utente non trovato");
+                        return;
+                    }
+
+                    // Aggiorna solo telefono e indirizzo
+                    Utente utente = optUtente.get();
+                    utente.setTelefono(telefono1 != null ? telefono1.trim() : "");
+                    utente.setIndirizzoSpedizione(indirizzo1 != null ? indirizzo1.trim() : "");
+
+                    // Salva nel database
+                    if (utenteDao.updateUtente(utente)) {
+                        response.sendRedirect(request.getContextPath() + "/utente/show?id=" + utenteId + "&success=contacts_updated");
+                    } else {
+                        response.sendRedirect(request.getContextPath() + "/utente/show?id=" + utenteId + "&error=update_failed");
+                    }
+
+                } catch (NumberFormatException e) {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ID utente non valido");
+                } catch (SQLException e) {
+                    throw new RuntimeException("Errore durante l'aggiornamento contatti", e);
+                }
+                break;
+
             default:
                 notFound();
-
-
         }
     }
-
 }
-
-

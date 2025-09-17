@@ -34,7 +34,10 @@
   <input type="hidden" name="colore" value="${param.colore}">
   <input type="hidden" name="storage" value="${param.storage}">
   <input type="hidden" name="ram" value="${param.ram}">
+  <input type="hidden" name="percentualeSconto" value="${param.percentualeSconto}">
   <input type="hidden" name="idCategoria" value="${param.idCategoria}">
+
+
 
   <!-- Quattro immagini -->
   <input type="hidden" name="immagine1" value="<%= img1 %>">

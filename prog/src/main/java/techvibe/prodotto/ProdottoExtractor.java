@@ -1,5 +1,6 @@
 package techvibe.prodotto;
 
+import techvibe.categoria.Categoria;
 import techvibe.storage.ResultSetExtractor;
 
 import java.sql.ResultSet;
@@ -21,6 +22,12 @@ public class ProdottoExtractor implements ResultSetExtractor<Prodotto> {
         prodotto.setColore(rs.getString("pro.colore"));
         prodotto.setStorage(rs.getInt("pro.storagedispositivo"));
         prodotto.setRam(rs.getInt("pro.ram"));
+        prodotto.setPercentualeSconto(rs.getDouble("pro.percentuale_sconto"));
+
+        // AGGIUNGI LA CATEGORIA
+        Categoria categoria = new Categoria();
+        categoria.setIdCategoria(rs.getInt("pro.idcategoria")); // Leggi l'ID categoria dal database
+        prodotto.setCategoria(categoria);
 
         prodotto.setImmagine1(rs.getString("pro.immagine1"));
         prodotto.setImmagine2(rs.getString("pro.immagine2"));

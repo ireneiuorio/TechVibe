@@ -64,7 +64,7 @@ public class SqlCategoriaDao extends SqlDao implements CategoriaDao <SQLExceptio
     public boolean updateCategoria(Categoria categoria) throws SQLException {
         try (Connection conn = source.getConnection()) {
             QueryBuilder queryBuilder = new QueryBuilder("categoria", "cat");
-            queryBuilder.update("label").where("id=?");
+            queryBuilder.update("label").where("idcategoria=?");
 
             try (PreparedStatement ps = conn.prepareStatement(queryBuilder.generateQuery())) {
                 ps.setString(1, categoria.getNomeCategoria());
@@ -88,8 +88,8 @@ public class SqlCategoriaDao extends SqlDao implements CategoriaDao <SQLExceptio
             String sql = qb
                     .select()
                     .innerJoin("prodotto", "pro")
-                    .on("cat.id = pro.categoria_fk")
-                    .where("cat.id = ?")
+                    .on("cat.idcategoria = pro.idcategoria")
+                    .where("cat.idcategoria = ?")
                     .limit(true) // => LIMIT ?, ?  (offset, limit)
                     .generateQuery();
 

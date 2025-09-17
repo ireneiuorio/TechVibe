@@ -9,14 +9,10 @@
     <jsp:include page="/WEB-INF/views/partials/head.jsp">
         <jsp:param name="styles" value="site,prodotto"/>
     </jsp:include>
-
-
 </head>
 <body>
 <main class="app">
     <%@ include file="../partials/site/header.jsp" %>
-
-
 
     <div class="container">
 
@@ -57,9 +53,39 @@
             <h1 class="titolo">${prodotto.modello}</h1>
             <div class="marca">di <strong>${prodotto.marca}</strong></div>
 
+            <!-- SEZIONE PREZZO CON SCONTO -->
             <div class="prezzo">
-                <fmt:formatNumber value="${prodotto.prezzo}" type="currency" currencySymbol="€"
-                                  minFractionDigits="2" maxFractionDigits="2"/>
+                <c:choose>
+                    <c:when test="${prodotto.inSconto}">
+                        <!-- Prodotto in sconto -->
+                        <div style="display: flex; flex-direction: column; gap: 5px;">
+                            <!-- Prezzo originale barrato -->
+                            <div style="font-size: 1.2rem; text-decoration: line-through; color: #999;">
+                                <fmt:formatNumber value="${prodotto.prezzoOriginale}" type="currency" currencySymbol="€"
+                                                  minFractionDigits="2" maxFractionDigits="2"/>
+                            </div>
+                            <!-- Prezzo scontato -->
+                            <div style="font-size: 2rem; color: var(--primary-light); font-weight: bold;">
+                                <fmt:formatNumber value="${prodotto.prezzoFinale}" type="currency" currencySymbol="€"
+                                                  minFractionDigits="2" maxFractionDigits="2"/>
+                            </div>
+                            <!-- Badge sconto e risparmio -->
+                            <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                                <span style="background: var(--primary-light); color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.9rem; font-weight: bold;">
+                                    -${prodotto.percentualeSconto}% di sconto
+                                </span>
+                                <span style="color: var(--primary-light); font-size: 0.9rem; font-weight: 500;">
+                                    Risparmi <fmt:formatNumber value="${prodotto.importoRisparmiato}" type="currency" currencySymbol="€" minFractionDigits="2"/>
+                                </span>
+                            </div>
+                        </div>
+                    </c:when>
+                    <c:otherwise>
+                        <!-- Prezzo normale -->
+                        <fmt:formatNumber value="${prodotto.prezzo}" type="currency" currencySymbol="€"
+                                          minFractionDigits="2" maxFractionDigits="2"/>
+                    </c:otherwise>
+                </c:choose>
             </div>
 
             <!-- STATUS DISPONIBILITÀ -->
@@ -110,27 +136,27 @@
 
             <!-- SEZIONE ACQUISTO -->
             <div class="box-acquisto">
-                <form method="POST" action="${pageContext.request.contextPath}/carrello/add">
-                    <input type="hidden" name="idProdotto" value="${prodotto.idProdotto}">
+                <div class="quantita">
+                    <label for="quantity">Quantità:</label>
+                    <input type="number" id="quantity" name="quantita" value="1" min="1" max="${prodotto.qtDisponibile}" class="input-quantita">
+                </div>
 
-                    <div class="quantita">
-                        <label for="quantity">Quantità:</label>
-                        <input type="number" id="quantity" name="quantita" value="1" min="1" max="${prodotto.qtDisponibile}" class="input-quantita">
-                    </div>
-
-                    <c:choose>
-                        <c:when test="${prodotto.qtDisponibile > 0}">
-                            <button type="submit" class="btn-carrello">
-                                Aggiungi al Carrello
-                            </button>
-                        </c:when>
-                        <c:otherwise>
-                            <button type="button" class="btn-carrello" disabled style="background: #ccc;">
-                                Non Disponibile
-                            </button>
-                        </c:otherwise>
-                    </c:choose>
-                </form>
+                <c:choose>
+                    <c:when test="${prodotto.qtDisponibile > 0}">
+                        <button type="button"
+                                class="btn-carrello add-to-cart"
+                                data-id="${prodotto.idProdotto}"
+                                data-qty="1"
+                                onclick="aggiungiAlCarrelloConQuantita(${prodotto.idProdotto})">
+                            Aggiungi al Carrello
+                        </button>
+                    </c:when>
+                    <c:otherwise>
+                        <button type="button" class="btn-carrello" disabled style="background: #ccc;">
+                            Non Disponibile
+                        </button>
+                    </c:otherwise>
+                </c:choose>
             </div>
         </div>
     </div>
@@ -155,6 +181,23 @@
             }
         });
     }
+
+    // Funzione specifica per aggiungere al carrello con quantità personalizzata
+    function aggiungiAlCarrelloConQuantita(prodottoId) {
+        const quantitaInput = document.getElementById('quantity');
+        const quantita = parseInt(quantitaInput.value) || 1;
+
+        // Chiama la funzione globale del carrello
+        aggiungiAlCarrello(prodottoId, quantita);
+    }
+
+    // Aggiorna il data-qty quando cambia la quantità
+    document.getElementById('quantity').addEventListener('change', function() {
+        const button = document.querySelector('.add-to-cart');
+        if (button) {
+            button.setAttribute('data-qty', this.value);
+        }
+    });
 </script>
 
 </body>

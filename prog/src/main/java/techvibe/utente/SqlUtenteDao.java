@@ -17,8 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-
-
 public class SqlUtenteDao extends SqlDao implements UtenteDao<SQLException> {
 
     public SqlUtenteDao(DataSource source) {
@@ -53,7 +51,6 @@ public class SqlUtenteDao extends SqlDao implements UtenteDao<SQLException> {
         }
     }
 
-
     @Override
     public Optional<Utente> fetchUtente(int id) throws SQLException {
         try (Connection conn = source.getConnection()) {
@@ -71,12 +68,11 @@ public class SqlUtenteDao extends SqlDao implements UtenteDao<SQLException> {
         }
     }
 
-
     @Override
     public Boolean createUtente(Utente utente) throws SQLException {
         try (Connection conn = source.getConnection()) {
             QueryBuilder queryBuilder = new QueryBuilder("utente", "ute");
-            queryBuilder.insert("nome", "cognome", "email", "passwordhash", "telefono", "indirizzospedizione", "isadmin");
+            queryBuilder.insert("nome", "cognome", "email", "passwordhash", "telefono", "indirizzospedizione", "isadmin", "stato");
             try (PreparedStatement ps = conn.prepareStatement(queryBuilder.generateQuery())) {
                 ps.setString(1, utente.getNome());
                 ps.setString(2, utente.getCognome());
@@ -85,6 +81,7 @@ public class SqlUtenteDao extends SqlDao implements UtenteDao<SQLException> {
                 ps.setString(5, utente.getTelefono());
                 ps.setString(6, utente.getIndirizzoSpedizione());
                 ps.setBoolean(7, utente.isAdmin());
+                ps.setString(8, utente.getStato());
 
                 int rows = ps.executeUpdate();
                 return rows == 1;
@@ -101,9 +98,7 @@ public class SqlUtenteDao extends SqlDao implements UtenteDao<SQLException> {
                 ps.setInt(1, id);
                 int rows = ps.executeUpdate();
                 return rows == 1;
-
             }
-
         }
     }
 
@@ -126,11 +121,36 @@ public class SqlUtenteDao extends SqlDao implements UtenteDao<SQLException> {
         }
     }
 
+    // NUOVO METODO: Cambia stato utente
+    public Boolean cambiaStatoUtente(int idUtente, String nuovoStato) throws SQLException {
+        try (Connection conn = source.getConnection()) {
+            QueryBuilder queryBuilder = new QueryBuilder("utente", "ute");
+            queryBuilder.update("stato").where("idaccount=?");
+            try (PreparedStatement ps = conn.prepareStatement(queryBuilder.generateQuery())) {
+                ps.setString(1, nuovoStato);
+                ps.setInt(2, idUtente);
+
+                int rows = ps.executeUpdate();
+                return rows == 1;
+            }
+        }
+    }
+
+    // NUOVO METODO: Attiva utente
+    public Boolean attivaUtente(int idUtente) throws SQLException {
+        return cambiaStatoUtente(idUtente, "ATTIVO");
+    }
+
+    // NUOVO METODO: Disattiva utente
+    public Boolean disattivaUtente(int idUtente) throws SQLException {
+        return cambiaStatoUtente(idUtente, "DISATTIVATO");
+    }
+
     @Override
     public Optional<Utente> findUtente(String email, String passwordHash, boolean admin) throws SQLException {
         String sql = new QueryBuilder("utente", "ute")
                 .select()
-                .where("ute.email = ? AND ute.passwordhash = ? AND ute.isadmin = ?")
+                .where("ute.email = ? AND ute.passwordhash = ? AND ute.isadmin = ? AND ute.stato = 'ATTIVO'")
                 .generateQuery();
 
         try (Connection c = source.getConnection();
@@ -139,7 +159,7 @@ public class SqlUtenteDao extends SqlDao implements UtenteDao<SQLException> {
             // 2) BIND: usa l'hash già calcolato dalla servlet
             ps.setString(1, email);
             ps.setString(2, passwordHash);
-            ps.setBoolean(3, admin); //
+            ps.setBoolean(3, admin);
 
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -149,13 +169,27 @@ public class SqlUtenteDao extends SqlDao implements UtenteDao<SQLException> {
                 return Optional.empty();
             }
         }
+    }
 
+    public boolean isUtenteDisattivato(String email, String passwordHash, boolean admin) throws SQLException {
+        String sql = new QueryBuilder("utente", "ute")
+                .select()
+                .where("ute.email = ? AND ute.passwordhash = ? AND ute.isadmin = ? AND ute.stato = 'DISATTIVATO'")
+                .generateQuery();
 
+        try (Connection c = source.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
 
+            ps.setString(1, email);
+            ps.setString(2, passwordHash);
+            ps.setBoolean(3, admin);
 
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next(); // true se esiste un utente disattivato
+            }
+        }
+    }
 
-
-}
     public int countAll() throws SQLException {
         final String sql = "SELECT COUNT(*) AS total FROM utente ute";
         try (Connection c = source.getConnection();
@@ -164,7 +198,6 @@ public class SqlUtenteDao extends SqlDao implements UtenteDao<SQLException> {
             return rs.next() ? rs.getInt("total") : 0;
         }
     }
-
 
     public boolean existsByEmail(String email) throws SQLException {
         final String sql = "SELECT 1 FROM utente WHERE Email = ? LIMIT 1";
@@ -180,7 +213,7 @@ public class SqlUtenteDao extends SqlDao implements UtenteDao<SQLException> {
     public Optional<Utente> findUtenteNormale(String email, String passwordHash) throws SQLException {
         String sql = new QueryBuilder("utente", "ute")
                 .select()
-                .where("ute.email = ? AND ute.passwordhash = ? AND ute.isadmin = false")
+                .where("ute.email = ? AND ute.passwordhash = ? AND ute.isadmin = false AND ute.stato = 'ATTIVO'")
                 .generateQuery();
 
         try (Connection c = source.getConnection();
@@ -198,8 +231,4 @@ public class SqlUtenteDao extends SqlDao implements UtenteDao<SQLException> {
             }
         }
     }
-
-
-
-
 }

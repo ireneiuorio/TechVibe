@@ -7,7 +7,7 @@
     align-items: center;
     background: var(--primary-light);
     color: white;
-    padding: 1rem 2rem;
+    padding: 1.2rem 2.7rem;
     position: sticky;top: 0; z-index: 1000;
     box-shadow: 0 2px 10px rgba(0,0,0,.06);
 
@@ -397,14 +397,16 @@ a{
 }
 
 /* SIDEBAR FILTRI */
+/* SIDEBAR FILTRI */
 .filtri-sidebar {
     flex: 0 0 300px; /* Larghezza fissa 300px */
     background: var(--light-gray);
     border-radius: 15px;
     padding: 1.5rem;
-    height: fit-content;
     position: sticky;
     top: 100px; /* Stick durante scroll */
+    max-height: calc(100vh - 120px); /* Altezza massima basata sul viewport */
+    overflow-y: auto; /* Scroll verticale quando necessario */
     box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 

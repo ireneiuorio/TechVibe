@@ -17,8 +17,6 @@ public class Ordine {
     private Utente utente;
     private Categoria categoria;
     private Carrello carrello;
-    private int idUtente;
-
 
 
     public Ordine() {
@@ -96,11 +94,5 @@ public class Ordine {
         this.carrello = carrello;
     }
 
-    public int getIdUtente() {
-        return idUtente;
-    }
 
-    public void setIdUtente(int idUtente) {
-        this.idUtente = idUtente;
-    }
 }

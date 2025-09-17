@@ -1,5 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %> <!-- Aggiunta qui in alto -->
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <!DOCTYPE html>
 <html>
@@ -7,7 +7,7 @@
     <title></title>
 
     <jsp:include page="../partials/head.jsp">
-        <jsp:param name="title" value="Gestione Utente"/>
+        <jsp:param name="title" value="Crea Amministratore"/>
         <jsp:param name="styles" value="crm,dashboard"/>
         <jsp:param name="scripts" value="crm"/>
     </jsp:include>
@@ -22,18 +22,17 @@
 
 <main class="app">
     <%@include file="../partials/crm/sidebar.jsp"%>
-    <section class="content grid-y" >
+    <section class="content grid-y">
         <%@include file="../partials/crm/header.jsp"%>
         <div class="body grid-x justify-center">
 
             <section class="grid-y cell w75">
 
-
                 <jsp:include page="../partials/site/alert.jsp" />
 
-                <form method="post" action="${pageContext.request.contextPath}/UploadMultiplo" enctype="multipart/form-data">
+                <form method="post" action="${pageContext.request.contextPath}/utente/create">
                     <fieldset class="grid-y cell utente-form">
-                        <legend>Crea Utente</legend>
+                        <legend>Crea Amministratore</legend>
 
                         <label class="field cell w50">
                             <input id="nome" name="nome" placeholder="Nome" type="text" required>
@@ -47,47 +46,26 @@
                             <input type="email" name="email" id="email" placeholder="Email" required>
                         </label>
 
-
-
                         <label class="field cell w50">
-                            <input id="QuantitaDisponibile" name="qtDisponibile" placeholder="Quantità disponibile" type="number" min="0">
+                            <input id="password" name="password" placeholder="Password" type="password" required>
                         </label>
 
                         <label class="field cell w50">
-                            <input id="Prezzo" name="prezzo" placeholder="Prezzo" type="number" step="0.01" min="0">
+                            <input id="telefono" name="telefono" placeholder="Telefono" type="tel">
                         </label>
 
-                        <label class="field cell w50">
-                            <input id="DimensioneSchermo" name="dimensioneSchermo" placeholder="Dimensione schermo (pollici)" type="number" step="0.1" min="0">
+                        <label class="field cell w75">
+                            <textarea name="indirizzo" id="indirizzo" placeholder="Indirizzo"></textarea>
                         </label>
 
-                        <label class="field cell w50">
-                            <select name="idCategoria" id="CategoriaId">
-                                <option value="1">Smartphone</option>
-                                <option value="2">Tablet</option>
-                            </select>
-                        </label>
-
-                        <label>Immagini (max 4):</label>
-                        <input type="file" name="file" accept="image/*" multiple
-                               onchange="if(this.files.length>4){alert('Massimo 4 immagini'); this.value='';}">
-
-
-                        <button type="submit" class="cell w75 btn primary">Carica immagini e crea</button>
+                        <button type="submit" class="cell w75 btn primary">Crea Amministratore</button>
 
                     </fieldset>
                 </form>
 
-
+            </section>
         </div>
-
     </section>
-
-
-
-
-
-
 </main>
 
 </body>

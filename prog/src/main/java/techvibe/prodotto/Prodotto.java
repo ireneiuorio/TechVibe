@@ -12,7 +12,7 @@ public class Prodotto {
     private int IdProdotto;
     private double DimensioneSchermo;
     private String Connettivita;
-    private double Prezzo;
+    private double Prezzo; // Questo diventa il prezzo originale
     private String Modello;
     private String Marca;
     private String SistemaOperativo;
@@ -20,13 +20,12 @@ public class Prodotto {
     private String Colore;
     private int Storage;
     private int Ram;
+    private double percentualeSconto = 0.0;
     private Categoria categoria;
     private String Immagine1;
     private String Immagine2;
     private String Immagine3;
     private String Immagine4;
-
-
 
     public Prodotto() {
     }
@@ -41,10 +40,6 @@ public class Prodotto {
 
     public String getConnettivita() {
         return Connettivita;
-    }
-
-    public double getPrezzo() {
-        return Prezzo;
     }
 
     public String getModello() {
@@ -87,10 +82,6 @@ public class Prodotto {
         Connettivita = connettivita;
     }
 
-    public void setPrezzo(double prezzo) {
-        Prezzo = prezzo;
-    }
-
     public void setModello(String modello) {
         Modello = modello;
     }
@@ -127,7 +118,6 @@ public class Prodotto {
         this.categoria = categoria;
     }
 
-
     public String getImmagine1() {
         return Immagine1;
     }
@@ -158,5 +148,76 @@ public class Prodotto {
 
     public void setImmagine4(String immagine4) {
         Immagine4 = immagine4;
+    }
+
+    // === GESTIONE PREZZI E SCONTI ===
+
+    /**
+     * Imposta il prezzo originale (senza sconto)
+     */
+    public void setPrezzo(double prezzo) {
+        this.Prezzo = prezzo;
+    }
+
+    /**
+     * Restituisce il prezzo originale (prima dello sconto)
+     */
+    public double getPrezzoOriginale() {
+        return this.Prezzo;
+    }
+
+    /**
+     * Restituisce il prezzo finale (con sconto applicato se presente)
+     */
+    public Double getPrezzo() {
+        if (percentualeSconto > 0) {
+            return this.Prezzo * (1 - this.percentualeSconto / 100);
+        }
+        return this.Prezzo;
+    }
+
+    /**
+     * Alias per getPrezzo() - restituisce il prezzo finale
+     */
+    public Double getPrezzoFinale() {
+        return getPrezzo();
+    }
+
+    /**
+     * Restituisce la percentuale di sconto
+     */
+    public double getPercentualeSconto() {
+        return percentualeSconto;
+    }
+
+    /**
+     * Imposta la percentuale di sconto
+     */
+    public void setPercentualeSconto(double percentualeSconto) {
+        this.percentualeSconto = percentualeSconto; // Clamp tra 0 e 100
+    }
+
+    /**
+     * Verifica se il prodotto è in sconto
+     */
+    public boolean isInSconto() {
+        return percentualeSconto > 0;
+    }
+
+    /**
+     * Calcola l'importo risparmiato
+     */
+    public double getImportoRisparmiato() {
+        if (isInSconto()) {
+            return getPrezzoOriginale() - getPrezzoFinale();
+        }
+        return 0.0;
+    }
+
+    /**
+     * Rimuove lo sconto (imposta percentuale a 0)
+     */
+    public void rimuoviSconto() {
+        this.percentualeSconto = 0.0;
     }
 }

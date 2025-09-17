@@ -5,7 +5,7 @@ import techvibe.prodotto.Prodotto;
 public class CarrelloItem {
 
     private final Prodotto prodotto;
-    private final int quantita;
+    private int quantita; // Rimosso final per permettere modifiche
 
     public CarrelloItem(Prodotto prodotto, int quantita) {
         this.prodotto = prodotto;
@@ -20,8 +20,15 @@ public class CarrelloItem {
         return quantita;
     }
 
-    public double total ()
-    {
-        return prodotto.getPrezzo()*getQuantita();
+    public void setQuantita(int quantita) {
+        this.quantita = quantita;
+    }
+
+    public void aggiungiQuantita(int quantitaDaAggiungere) {
+        this.quantita += quantitaDaAggiungere;
+    }
+
+    public double total() {
+        return prodotto.getPrezzo() * quantita;
     }
 }

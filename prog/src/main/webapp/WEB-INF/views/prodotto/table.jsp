@@ -23,6 +23,8 @@
         <th>Colore</th>
         <th>Storage</th>
         <th>RAM</th>
+        <th>Percentuale Sconto</th>
+        <th>IdCategoria</th>
         <th>Immagine 1</th>
         <th>Immagine 2</th>
         <th>Immagine 3</th>
@@ -50,10 +52,14 @@
               <td>${prodotto.colore}</td>
               <td>${prodotto.storage}</td>
               <td>${prodotto.ram}</td>
+              <td>${prodotto.percentualeSconto}</td>
+              <td>${prodotto.categoria.idCategoria}</td>
               <td>${prodotto.immagine1}</td>
               <td>${prodotto.immagine2}</td>
               <td>${prodotto.immagine3}</td>
               <td>${prodotto.immagine4}</td>
+
+
             </tr>
           </c:forEach>
         </c:otherwise>

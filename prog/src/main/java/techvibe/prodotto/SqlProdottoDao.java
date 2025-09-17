@@ -70,13 +70,14 @@ public class SqlProdottoDao extends SqlDao implements ProdottoDao<SQLException> 
                     "Immagine2",
                     "Immagine3",
                     "Immagine4",
-                    "IdCategoria"
+                    "IdCategoria",
+                    "percentuale_sconto"
             );
 
             try (PreparedStatement ps = conn.prepareStatement(queryBuilder.generateQuery())) {
                 ps.setDouble(1, prodotto.getDimensioneSchermo());
                 ps.setString(2, prodotto.getConnettivita());
-                ps.setDouble(3, prodotto.getPrezzo());
+                ps.setDouble(3, prodotto.getPrezzoOriginale());
                 ps.setString(4, prodotto.getModello());
                 ps.setString(5, prodotto.getMarca());
                 ps.setString(6, prodotto.getSistemaOperativo());
@@ -89,6 +90,7 @@ public class SqlProdottoDao extends SqlDao implements ProdottoDao<SQLException> 
                 ps.setString(13, prodotto.getImmagine3());
                 ps.setString(14, prodotto.getImmagine4());
                 ps.setInt(15, prodotto.getCategoria().getIdCategoria());
+                ps.setDouble(16, prodotto.getPercentualeSconto());
 
                 int rows = ps.executeUpdate();
                 return rows == 1;
@@ -112,7 +114,8 @@ public class SqlProdottoDao extends SqlDao implements ProdottoDao<SQLException> 
                     "Colore",
                     "StorageDispositivo",
                     "Ram",
-                    "IdCategoria"
+                    "IdCategoria",
+                    "percentuale_sconto"
             ).where("idProdotto = ?");
 
             String generatedQuery = queryBuilder.generateQuery();
@@ -123,7 +126,7 @@ public class SqlProdottoDao extends SqlDao implements ProdottoDao<SQLException> 
             try (PreparedStatement ps = conn.prepareStatement(generatedQuery)) {
                 ps.setDouble(1, prodotto.getDimensioneSchermo());
                 ps.setString(2, prodotto.getConnettivita());
-                ps.setDouble(3, prodotto.getPrezzo());
+                ps.setDouble(3, prodotto.getPrezzoOriginale());
                 ps.setString(4, prodotto.getModello());
                 ps.setString(5, prodotto.getMarca());
                 ps.setString(6, prodotto.getSistemaOperativo());
@@ -132,7 +135,8 @@ public class SqlProdottoDao extends SqlDao implements ProdottoDao<SQLException> 
                 ps.setInt(9, prodotto.getStorage());
                 ps.setInt(10, prodotto.getRam());
                 ps.setInt(11, prodotto.getCategoria().getIdCategoria());
-                ps.setInt(12, prodotto.getIdProdotto());
+                ps.setDouble(12, prodotto.getPercentualeSconto());
+                ps.setInt(13, prodotto.getIdProdotto());
 
                 int rows = ps.executeUpdate();
                 System.out.println("Righe modificate: " + rows);
@@ -231,8 +235,6 @@ public class SqlProdottoDao extends SqlDao implements ProdottoDao<SQLException> 
                 return prodotti;
             }
         }
-
-
     }
 
     public boolean deleteProdotto(int id) throws SQLException {
@@ -263,6 +265,28 @@ public class SqlProdottoDao extends SqlDao implements ProdottoDao<SQLException> 
             }
         }
     }
+    // Metodo per ottenere tutti i prodotti in offerta (sconto > 0)
+    public List<Prodotto> fetchProdottiInOfferta() throws SQLException {
+        try (Connection conn = source.getConnection()) {
+            QueryBuilder qb = new QueryBuilder("prodotto", "pro");
+            String sql = qb
+                    .select()
+                    .where("pro.percentuale_sconto > ?")
+                    .generateQuery();
 
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setDouble(1, 0.0); // Cerca prodotti con sconto > 0
 
+                try (ResultSet rs = ps.executeQuery()) {
+                    List<Prodotto> prodotti = new ArrayList<>();
+                    ProdottoExtractor extractor = new ProdottoExtractor();
+                    while (rs.next()) {
+                        prodotti.add(extractor.extract(rs));
+                    }
+                    System.out.println("PRODOTTI IN OFFERTA TROVATI: " + prodotti.size());
+                    return prodotti;
+                }
+            }
+        }
+    }
 }

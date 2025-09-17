@@ -1,9 +1,6 @@
-<!-- Header CRM -->
-<header class="top-bar grid-x align-center" id="top-bar">
-    <img id="hamburger" src="<%= request.getContextPath() %>/icons/menu.svg" alt="Menu">
-
-    <span class="account">
-        <img src="<%= request.getContextPath() %>/icons/account.svg" alt="account">
-        ${utenteSession.nome.concat(" ").concat(utenteSession.cognome)}
-    </span>
-</header>
+<div class="top-strip">
+  <h1 id="hamburger">Dashboard Admin</h1>
+  <div class="user-info">
+    ${utenteSession.nome} | <a href="<%= request.getContextPath() %>/utente/logout">Logout</a>
+  </div>
+</div>

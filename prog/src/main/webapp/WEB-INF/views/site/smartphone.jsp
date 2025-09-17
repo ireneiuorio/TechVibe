@@ -9,6 +9,8 @@
     <jsp:include page="/WEB-INF/views/partials/head.jsp">
         <jsp:param name="styles" value="site"/>
     </jsp:include>
+
+
 </head>
 <body>
 <main class="app">
@@ -162,11 +164,35 @@
                                 </c:choose>
                             </div>
 
-                            <!-- Price - più visibile -->
-                            <div style="font-size:1.2rem;font-weight:600;color:white;">
-                                <fmt:formatNumber value="${p.prezzo}" type="currency" currencySymbol="€"
-                                                  minFractionDigits="2" maxFractionDigits="2"/>
-                            </div>
+                            <!-- Sezione Prezzo con Sconto -->
+                            <c:choose>
+                                <c:when test="${p.inSconto}">
+                                    <!-- Prodotto in sconto -->
+                                    <div>
+                                        <!-- Prezzo originale barrato -->
+                                        <div style="font-size:0.9rem;text-decoration:line-through;color:var(--white);margin-bottom:2px;">
+                                            €<fmt:formatNumber value="${p.prezzoOriginale}" type="number" minFractionDigits="2"/>
+                                        </div>
+                                        <!-- Prezzo scontato -->
+                                        <div style="font-size:1.2rem;font-weight:600;color:var(--white);">
+                                            €<fmt:formatNumber value="${p.prezzoFinale}" type="number" minFractionDigits="2"/>
+                                        </div>
+                                        <!-- Badge sconto -->
+                                        <div style="margin-top:4px;">
+                                            <span style="background:var(--primary-light);color:white;padding:2px 6px;border-radius:3px;font-size:0.7rem;font-weight:bold;">
+                                                -${p.percentualeSconto}%
+                                            </span>
+                                        </div>
+                                    </div>
+                                </c:when>
+                                <c:otherwise>
+                                    <!-- Prezzo normale -->
+                                    <div style="font-size:1.2rem;font-weight:600;color:white;">
+                                        <fmt:formatNumber value="${p.prezzo}" type="currency" currencySymbol="€"
+                                                          minFractionDigits="2" maxFractionDigits="2"/>
+                                    </div>
+                                </c:otherwise>
+                            </c:choose>
                         </div>
 
                         <button class="btn primary add-to-cart"
@@ -191,8 +217,6 @@
 </main>
 
 <script>
-
-
     function toggleMobileFiltri() {
         const sidebar = document.getElementById('filtri-sidebar');
         sidebar.classList.toggle('show');
@@ -212,3 +236,4 @@
 </script>
 
 </body>
+</html>
