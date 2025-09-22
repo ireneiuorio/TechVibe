@@ -228,6 +228,51 @@ public class CarrelloServlet extends HttpServlet {
                     PrintWriter svuotaWriter = response.getWriter();
                     svuotaWriter.print("{\"success\": true, \"message\": \"Carrello svuotato\", \"count\": 0, \"totale\": 0.0}");
                     break;
+                case "/login":
+                    // Endpoint chiamato quando un utente fa login
+                    try {
+                        HttpSession loginSession = request.getSession(false);
+                        if (loginSession == null) {
+                            PrintWriter loginSessionWriter = response.getWriter();
+                            loginSessionWriter.print("{\"success\": false, \"error\": \"Nessuna sessione trovata\"}");
+                            return;
+                        }
+
+                        int idUtente = Integer.parseInt(request.getParameter("idUtente"));
+
+                        boolean success = carrelloService.onUserLogin(loginSession, idUtente);
+
+                        if (success) {
+                            int count = carrelloService.getNumeroArticoli(loginSession);
+                            double totale = carrelloService.getTotaleCarrello(loginSession);
+
+                            PrintWriter loginWriter = response.getWriter();
+                            loginWriter.printf(Locale.US,
+                                    "{\"success\": true, \"message\": \"Login completato, carrello trasferito\", \"count\": %d, \"totale\": %.2f}",
+                                    count, totale);
+                        } else {
+                            PrintWriter loginFailWriter = response.getWriter();
+                            loginFailWriter.print("{\"success\": false, \"error\": \"Errore durante il trasferimento del carrello\"}");
+                        }
+
+                    } catch (NumberFormatException e) {
+                        PrintWriter loginFormatWriter = response.getWriter();
+                        loginFormatWriter.print("{\"success\": false, \"error\": \"ID utente non valido\"}");
+                    }
+                    break;
+
+                case "/logout":
+                    HttpSession logoutSession = request.getSession(false);
+                    if (logoutSession != null) {
+                        carrelloService.onUserLogout(logoutSession);
+
+                        PrintWriter logoutWriter = response.getWriter();
+                        logoutWriter.print("{\"success\": true, \"message\": \"Logout completato, carrello salvato\"}");
+                    } else {
+                        PrintWriter logoutNoSessionWriter = response.getWriter();
+                        logoutNoSessionWriter.print("{\"success\": true, \"message\": \"Nessuna sessione da chiudere\"}");
+                    }
+                    break;
 
                 case "/collega-utente":
                     // Endpoint per collegare il carrello quando un utente fa login
@@ -268,3 +313,4 @@ public class CarrelloServlet extends HttpServlet {
         }
     }
 }
+

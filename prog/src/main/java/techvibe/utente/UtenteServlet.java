@@ -17,7 +17,7 @@ import techvibe.ordine.SqlOrdineDao;
 import techvibe.prodotto.Prodotto;
 import techvibe.prodotto.ProdottoDao;
 import techvibe.prodotto.SqlProdottoDao;
-// Aggiungi imports per il carrello
+// Imports per il carrello
 import techvibe.carrello.CarrelloService;
 import techvibe.carrello.CarrelloDao;
 
@@ -35,7 +35,7 @@ public class UtenteServlet extends Controller implements ErrorHandler {
     @Resource(name = "jdbc/TechVibe")
     protected DataSource source;
     private SqlUtenteDao utenteDao;
-    private CarrelloService carrelloService; // Nuovo servizio carrello
+    private CarrelloService carrelloService;
 
     public void init() throws ServletException {
         super.init();
@@ -113,7 +113,7 @@ public class UtenteServlet extends Controller implements ErrorHandler {
                 break;
 
             case "/create":
-                authorize(request.getSession(false)); // Solo admin possono accedere
+                authorize(request.getSession(false));
                 request.getRequestDispatcher("/WEB-INF/views/crm/utente.jsp").forward(request, response);
                 break;
 
@@ -130,7 +130,6 @@ public class UtenteServlet extends Controller implements ErrorHandler {
                 if (optionalUtente.isPresent()) {
                     request.setAttribute("utente", optionalUtente.get());
 
-                    // AGGIUNGI QUESTO: Carica gli ordini dell'utente
                     try {
                         SqlOrdineDao ordineDao = new SqlOrdineDao(source);
                         List<Ordine> ordiniUtente = ordineDao.fetchOrdiniByUtente(id);
@@ -146,7 +145,6 @@ public class UtenteServlet extends Controller implements ErrorHandler {
                 break;
 
             case "/profile":
-                // Verifica che l'utente sia loggato
                 HttpSession session = request.getSession(false);
                 if (session == null || session.getAttribute("utenteSession") == null) {
                     response.sendRedirect(request.getContextPath() + "/utente/signin");
@@ -158,15 +156,12 @@ public class UtenteServlet extends Controller implements ErrorHandler {
                 if (utenteSession.isAdmin()) {
                     response.sendRedirect(request.getContextPath() + "/crm/home");
                     return;
-                }
-                else {
-                    // Recupera i dati completi dell'utente dal database
+                } else {
                     try {
                         Optional<Utente> optionalUtente2 = utenteDao.fetchUtente(utenteSession.getId());
                         if (optionalUtente2.isPresent()) {
                             request.setAttribute("utente", optionalUtente2.get());
 
-                            // AGGIUNGI QUESTO: Carica gli ordini dell'utente
                             OrdineDao<SQLException> ordineDao = new SqlOrdineDao(source);
                             List<Ordine> ordiniUtente = ordineDao.fetchOrdiniByUtente(utenteSession.getId());
                             request.setAttribute("ordiniUtente", ordiniUtente);
@@ -198,25 +193,57 @@ public class UtenteServlet extends Controller implements ErrorHandler {
                 if (session3 != null) {
                     UtenteSession utenteSession3 = (UtenteSession) session3.getAttribute("utenteSession");
 
+                    // NUOVO: Gestisci il logout del carrello PRIMA di pulire la sessione
+                    try {
+                        carrelloService.onUserLogout(session3);
+                        System.out.println("Carrello salvato correttamente durante logout");
+                    } catch (Exception e) {
+                        System.err.println("Errore durante salvataggio carrello in logout: " + e.getMessage());
+                        e.printStackTrace();
+                        // Continua comunque con il logout
+                    }
+
                     // Determina dove reindirizzare
                     String redirect;
                     if (utenteSession3 != null && utenteSession3.isAdmin()) {
                         redirect = request.getContextPath() + "/utente/secret";
                     } else {
-                        redirect = request.getContextPath() + "/"; // Home per utenti normali
+                        redirect = request.getContextPath() + "/";
                     }
 
-                    // Pulisci TUTTI gli attributi del carrello
-                    session3.removeAttribute("utenteSession");
-                    session3.removeAttribute("accountSession");
-                    session3.removeAttribute("user_id"); // Rimuovi l'ID utente per il carrello
-                    session3.removeAttribute("carrello"); // Rimuovi il carrello dalla sessione
-                    session3.removeAttribute("carrello_id"); // Rimuovi l'ID carrello
+                    // Invalida completamente la sessione
                     session3.invalidate();
 
                     response.sendRedirect(redirect);
                 } else {
                     response.sendRedirect(request.getContextPath() + "/");
+                }
+                break;
+
+            case "/admin-profile":
+                HttpSession adminSession = request.getSession(false);
+                if (adminSession == null || adminSession.getAttribute("utenteSession") == null) {
+                    response.sendRedirect(request.getContextPath() + "/utente/secret");
+                    return;
+                }
+
+                UtenteSession adminUserSession = (UtenteSession) adminSession.getAttribute("utenteSession");
+
+                if (!adminUserSession.isAdmin()) {
+                    response.sendRedirect(request.getContextPath() + "/utente/signin");
+                    return;
+                }
+
+                try {
+                    Optional<Utente> optionalAdmin = utenteDao.fetchUtente(adminUserSession.getId());
+                    if (optionalAdmin.isPresent()) {
+                        request.setAttribute("admin", optionalAdmin.get());
+                        request.getRequestDispatcher("/WEB-INF/views/crm/profilo.jsp").forward(request, response);
+                    } else {
+                        response.sendRedirect(request.getContextPath() + "/utente/secret");
+                    }
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
                 }
                 break;
 
@@ -234,23 +261,19 @@ public class UtenteServlet extends Controller implements ErrorHandler {
             case "/secret": {
                 request.setAttribute("back", "/WEB-INF/views/crm/secret.jsp");
 
-                // 1) leggi parametri ESATTAMENTE come nella form
                 final String email = request.getParameter("email");
                 final String password = request.getParameter("password");
 
-                // 2) validazione lato server (usa il vostro validator)
                 validate(UtenteValidator.validateSignin(request));
 
-                // 3) hash della password con il TUO setPassword (SHA-512)
                 final Utente tmp = new Utente();
                 tmp.setEmail(email);
                 try {
-                    tmp.setPassword(password); // -> tmp.getPassword() è l'hash esadecimale (128 char)
+                    tmp.setPassword(password);
                 } catch (NoSuchAlgorithmException e) {
                     throw new RuntimeException("SHA-512 non disponibile", e);
                 }
 
-                // 4) lookup in DB: email + hash + admin = true
                 final Optional<Utente> opt;
                 try {
                     opt = utenteDao.findUtente(tmp.getEmail(), tmp.getPassword(), true);
@@ -258,53 +281,51 @@ public class UtenteServlet extends Controller implements ErrorHandler {
                     throw new RuntimeException("Errore DB durante il login", e);
                 }
 
-                // 5) esito autenticazione
                 if (opt.isEmpty()) {
-                    // lascia gestire all'handler la view "back" + messaggi
                     request.setAttribute("loginError", "Credenziali non valide");
                     request.getRequestDispatcher("/WEB-INF/views/crm/secret.jsp").forward(request, response);
                     return;
                 }
 
-                // 6) crea la sessione e salva GLI STESSI attributi che il progetto si aspetta
                 final UtenteSession utenteSession = new UtenteSession(opt.get());
                 final HttpSession session = request.getSession(true);
                 session.setAttribute("utenteSession", utenteSession);
-                session.setAttribute("accountSession", utenteSession); // molte parti controllano questo
+                session.setAttribute("accountSession", utenteSession);
 
-                // NUOVO: Collega il carrello all'utente admin (se ne ha uno)
-                session.setAttribute("user_id", opt.get().getIdUtente()); // Per il CarrelloService
+                // NUOVO: Gestione carrello per admin - usa il nuovo metodo onUserLogin
+                final int userId = opt.get().getIdUtente();
                 try {
-                    carrelloService.collegaCarrelloAdUtente(session, opt.get().getIdUtente());
+                    boolean transferSuccess = carrelloService.onUserLogin(session, userId);
+                    if (transferSuccess) {
+                        System.out.println("Login admin: carrello collegato correttamente per user " + userId);
+                    } else {
+                        System.err.println("Login admin: errore nel collegamento carrello per user " + userId);
+                    }
                 } catch (Exception e) {
-                    // Log dell'errore ma non interrompere il login
                     System.err.println("Errore nel collegamento carrello admin: " + e.getMessage());
+                    e.printStackTrace();
                 }
 
-                session.setMaxInactiveInterval(30 * 60); // 30 minuti (opzionale ma carino)
+                session.setMaxInactiveInterval(30 * 60);
 
                 request.getRequestDispatcher("/WEB-INF/views/crm/home.jsp").forward(request, response);
                 break;
             }
 
-            case "/signin": // login utente normale
-                // 1) leggi parametri dalla form
+            case "/signin": {
                 final String emailUser = request.getParameter("email");
                 final String passwordUser = request.getParameter("password");
 
-                // 2) validazione lato server
                 validate(UtenteValidator.validateSignin(request));
 
-                // 3) hash della password
                 final Utente tmpUser = new Utente();
                 tmpUser.setEmail(emailUser);
                 try {
-                    tmpUser.setPassword(passwordUser); // hash SHA-512
+                    tmpUser.setPassword(passwordUser);
                 } catch (NoSuchAlgorithmException e) {
                     throw new RuntimeException("SHA-512 non disponibile", e);
                 }
 
-                // 4) lookup in DB: email + hash + admin = false (utente normale)
                 final Optional<Utente> optUser;
                 try {
                     optUser = utenteDao.findUtente(tmpUser.getEmail(), tmpUser.getPassword(), false);
@@ -312,9 +333,7 @@ public class UtenteServlet extends Controller implements ErrorHandler {
                     throw new RuntimeException("Errore DB durante il login", e);
                 }
 
-                // 5) esito autenticazione
                 if (optUser.isEmpty()) {
-                    // Controlla se l'utente esiste ma è disattivato
                     try {
                         if (utenteDao.isUtenteDisattivato(tmpUser.getEmail(), tmpUser.getPassword(), false)) {
                             request.setAttribute("loginError", "Account disattivato. Contatta l'amministratore.");
@@ -325,59 +344,56 @@ public class UtenteServlet extends Controller implements ErrorHandler {
                         throw new RuntimeException("Errore DB durante controllo stato", e);
                     }
 
-                    request.getRequestDispatcher("/WEB-INF/views/site/accediutente.jsp").forward(request, response);
+                    request.getRequestDispatcher("/WEB-INF/views/site/singin.jsp").forward(request, response);
                     return;
                 }
 
-                // 6) crea la sessione utente
                 final UtenteSession utenteSession = new UtenteSession(optUser.get());
                 final HttpSession sessionUser = request.getSession(true);
                 sessionUser.setAttribute("utenteSession", utenteSession);
-                sessionUser.setAttribute("accountSession", utenteSession); // per compatibilità
+                sessionUser.setAttribute("accountSession", utenteSession);
 
-                // IMPORTANTE: Imposta user_id PRIMA del collegamento carrello
+                // NUOVO: Gestione carrello per utenti normali - usa onUserLogin
                 final int userId = optUser.get().getIdUtente();
-                sessionUser.setAttribute("user_id", userId);
-                System.out.println("DEBUG LOGIN: User ID impostato: " + userId);
-
-                // NUOVO: Collega il carrello all'utente
                 try {
-                    carrelloService.collegaCarrelloAdUtente(sessionUser, userId);
+                    boolean transferSuccess = carrelloService.onUserLogin(sessionUser, userId);
+                    if (transferSuccess) {
+                        System.out.println("Login utente: carrello collegato correttamente per user " + userId);
+                    } else {
+                        System.err.println("Login utente: errore nel collegamento carrello per user " + userId);
+                    }
                 } catch (Exception e) {
-                    // Log dell'errore ma non interrompere il login
                     System.err.println("Errore nel collegamento carrello utente: " + e.getMessage());
                     e.printStackTrace();
                 }
 
-                sessionUser.setMaxInactiveInterval(30 * 60); // 30 minuti
+                sessionUser.setMaxInactiveInterval(30 * 60);
 
                 response.sendRedirect(request.getContextPath() + "/utente/profile");
                 break;
+            }
 
             case "/profile":
-                // Controllo autenticazione (come fai per /secret)
                 HttpSession session = request.getSession(false);
                 if (session == null || session.getAttribute("utenteSession") == null) {
-                    response.sendRedirect(request.getContextPath() + "/utente/accediutente");
+                    response.sendRedirect(request.getContextPath() + "/utente/signin");
                     return;
                 }
 
                 UtenteSession utenteSession1 = (UtenteSession) session.getAttribute("utenteSession");
 
-                // Verifica che NON sia admin (gli admin non vanno nel profilo utente)
                 if (utenteSession1.isAdmin()) {
                     response.sendRedirect(request.getContextPath() + "/utente/secret");
                     return;
                 }
 
-                // Recupera dati completi dal database
                 try {
                     Optional<Utente> optionalUtente = utenteDao.fetchUtente(utenteSession1.getId());
                     if (optionalUtente.isPresent()) {
                         request.setAttribute("utente", optionalUtente.get());
                         request.getRequestDispatcher("/WEB-INF/views/site/profile.jsp").forward(request, response);
                     } else {
-                        response.sendRedirect(request.getContextPath() + "/site/accediutente");
+                        response.sendRedirect(request.getContextPath() + "/utente/signin");
                     }
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
@@ -385,7 +401,6 @@ public class UtenteServlet extends Controller implements ErrorHandler {
                 break;
 
             case "/update":
-                // Verifica autenticazione
                 HttpSession updateSession = request.getSession(false);
                 if (updateSession == null || updateSession.getAttribute("utenteSession") == null) {
                     response.sendRedirect(request.getContextPath() + "/utente/signin");
@@ -394,14 +409,12 @@ public class UtenteServlet extends Controller implements ErrorHandler {
 
                 UtenteSession currentUser = (UtenteSession) updateSession.getAttribute("utenteSession");
 
-                // Leggi parametri
                 String nomeUpdate = request.getParameter("nome");
                 String cognomeUpdate = request.getParameter("cognome");
                 String emailUpdate = request.getParameter("email");
                 String telefonoUpdate = request.getParameter("telefono");
                 String indirizzoUpdate = request.getParameter("indirizzo");
 
-                // Crea utente aggiornato
                 Utente utenteAggiornato = new Utente();
                 utenteAggiornato.setIdUtente(currentUser.getId());
                 utenteAggiornato.setNome(nomeUpdate);
@@ -412,10 +425,8 @@ public class UtenteServlet extends Controller implements ErrorHandler {
 
                 try {
                     if (utenteDao.updateUtente(utenteAggiornato)) {
-                        // Aggiorna anche la sessione
                         UtenteSession newSession = new UtenteSession(utenteAggiornato);
                         updateSession.setAttribute("utenteSession", newSession);
-
                         request.setAttribute("successMessage", "Profilo aggiornato con successo!");
                     } else {
                         request.setAttribute("errorMessage", "Errore nell'aggiornamento del profilo");
@@ -424,19 +435,15 @@ public class UtenteServlet extends Controller implements ErrorHandler {
                     request.setAttribute("errorMessage", "Errore del sistema");
                 }
 
-                // Ricarica la pagina profilo
                 response.sendRedirect(request.getContextPath() + "/utente/profile");
                 break;
 
-            // NUOVO CASE: Gestione cambio stato utente
             case "/cambiastato":
-                authorize(request.getSession(false)); // Solo admin
+                authorize(request.getSession(false));
 
-                // Leggi parametri
                 String idParam = request.getParameter("id");
                 String azione = request.getParameter("azione");
 
-                // Validazione
                 if (idParam == null || azione == null) {
                     response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Parametri mancanti");
                     return;
@@ -453,10 +460,8 @@ public class UtenteServlet extends Controller implements ErrorHandler {
                     }
 
                     if (success) {
-                        // Redirect con messaggio di successo
                         response.sendRedirect(request.getContextPath() + "/utente/?success=" + azione);
                     } else {
-                        // Redirect con messaggio di errore
                         response.sendRedirect(request.getContextPath() + "/utente/?error=cambio_stato");
                     }
 
@@ -468,10 +473,8 @@ public class UtenteServlet extends Controller implements ErrorHandler {
                 break;
 
             case "/create":
-                // Solo admin possono creare altri admin
                 authorize(request.getSession(false));
 
-                // Leggi i parametri dalla form
                 String nome = request.getParameter("nome");
                 String cognome = request.getParameter("cognome");
                 String email = request.getParameter("email");
@@ -480,7 +483,6 @@ public class UtenteServlet extends Controller implements ErrorHandler {
                 String indirizzo = request.getParameter("indirizzo");
 
                 try {
-                    // Validazione base
                     if (nome == null || nome.trim().isEmpty() ||
                             cognome == null || cognome.trim().isEmpty() ||
                             email == null || email.trim().isEmpty() ||
@@ -491,25 +493,22 @@ public class UtenteServlet extends Controller implements ErrorHandler {
                         return;
                     }
 
-                    // Controlla se l'email esiste già
                     if (utenteDao.existsByEmail(email)) {
                         request.setAttribute("errorMessage", "Email già esistente nel sistema");
                         request.getRequestDispatcher("/WEB-INF/views/crm/utente.jsp").forward(request, response);
                         return;
                     }
 
-                    // Crea il nuovo admin
                     Utente nuovoAdmin = new Utente();
                     nuovoAdmin.setNome(nome.trim());
                     nuovoAdmin.setCognome(cognome.trim());
                     nuovoAdmin.setEmail(email.trim().toLowerCase());
-                    nuovoAdmin.setPassword(password); // Hash automatico
+                    nuovoAdmin.setPassword(password);
                     nuovoAdmin.setTelefono(telefono != null ? telefono.trim() : "");
                     nuovoAdmin.setIndirizzoSpedizione(indirizzo != null ? indirizzo.trim() : "");
-                    nuovoAdmin.setAdmin(true); // SEMPRE admin
-                    nuovoAdmin.setStato("ATTIVO"); // Sempre attivo
+                    nuovoAdmin.setAdmin(true);
+                    nuovoAdmin.setStato("ATTIVO");
 
-                    // Salva nel database
                     if (utenteDao.createUtente(nuovoAdmin)) {
                         response.sendRedirect(request.getContextPath() + "/utente/?success=admin_created");
                     } else {
@@ -526,14 +525,12 @@ public class UtenteServlet extends Controller implements ErrorHandler {
                 break;
 
             case "/update-contacts":
-                authorize(request.getSession(false)); // Solo admin
+                authorize(request.getSession(false));
 
-                // Leggi parametri
                 String idParame = request.getParameter("id");
                 String telefono1 = request.getParameter("telefono");
                 String indirizzo1 = request.getParameter("indirizzo");
 
-                // Validazione ID
                 if (idParame == null) {
                     response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ID utente mancante");
                     return;
@@ -542,19 +539,16 @@ public class UtenteServlet extends Controller implements ErrorHandler {
                 try {
                     int utenteId = Integer.parseInt(idParame);
 
-                    // Recupera l'utente esistente dal database
                     Optional<Utente> optUtente = utenteDao.fetchUtente(utenteId);
                     if (optUtente.isEmpty()) {
                         response.sendError(HttpServletResponse.SC_NOT_FOUND, "Utente non trovato");
                         return;
                     }
 
-                    // Aggiorna solo telefono e indirizzo
                     Utente utente = optUtente.get();
                     utente.setTelefono(telefono1 != null ? telefono1.trim() : "");
                     utente.setIndirizzoSpedizione(indirizzo1 != null ? indirizzo1.trim() : "");
 
-                    // Salva nel database
                     if (utenteDao.updateUtente(utente)) {
                         response.sendRedirect(request.getContextPath() + "/utente/show?id=" + utenteId + "&success=contacts_updated");
                     } else {
@@ -567,6 +561,225 @@ public class UtenteServlet extends Controller implements ErrorHandler {
                     throw new RuntimeException("Errore durante l'aggiornamento contatti", e);
                 }
                 break;
+
+            case "/change-password":
+                HttpSession passwordSession = request.getSession(false);
+                if (passwordSession == null || passwordSession.getAttribute("utenteSession") == null) {
+                    response.sendRedirect(request.getContextPath() + "/utente/signin");
+                    return;
+                }
+
+                UtenteSession currentUserPassword = (UtenteSession) passwordSession.getAttribute("utenteSession");
+
+                String currentPassword = request.getParameter("currentPassword");
+                String newPassword = request.getParameter("newPassword");
+                String confirmPassword = request.getParameter("confirmPassword");
+
+                // Validazione dei parametri
+                if (currentPassword == null || currentPassword.trim().isEmpty() ||
+                        newPassword == null || newPassword.trim().isEmpty() ||
+                        confirmPassword == null || confirmPassword.trim().isEmpty()) {
+
+                    response.sendRedirect(request.getContextPath() + "/utente/profile?tab=password&error=missing_fields");
+                    return;
+                }
+
+                // Controlla che le nuove password coincidano
+                if (!newPassword.equals(confirmPassword)) {
+                    response.sendRedirect(request.getContextPath() + "/utente/profile?tab=password&error=password_mismatch");
+                    return;
+                }
+
+                // Validazione lunghezza password
+                if (newPassword.length() < 6) {
+                    response.sendRedirect(request.getContextPath() + "/utente/profile?tab=password&error=password_too_short");
+                    return;
+                }
+
+                try {
+                    // Prima recupera l'utente completo per ottenere l'email
+                    Optional<Utente> currentUserData = utenteDao.fetchUtente(currentUserPassword.getId());
+                    if (currentUserData.isEmpty()) {
+                        response.sendRedirect(request.getContextPath() + "/utente/profile?tab=password&error=user_not_found");
+                        return;
+                    }
+
+                    // Verifica la password attuale
+                    Utente tempUser = new Utente();
+                    tempUser.setEmail(currentUserData.get().getEmail());
+                    tempUser.setPassword(currentPassword);
+
+                    Optional<Utente> userCheck = utenteDao.findUtente(tempUser.getEmail(), tempUser.getPassword(), false);
+
+                    if (userCheck.isEmpty()) {
+                        response.sendRedirect(request.getContextPath() + "/utente/profile?tab=password&error=wrong_current_password");
+                        return;
+                    }
+
+                    // Aggiorna la password
+                    if (utenteDao.updatePassword(currentUserPassword.getId(), newPassword)) {
+                        response.sendRedirect(request.getContextPath() + "/utente/profile?tab=password&success=password_changed");
+                    } else {
+                        response.sendRedirect(request.getContextPath() + "/utente/profile?tab=password&error=update_failed");
+                    }
+
+                } catch (SQLException e) {
+                    throw new RuntimeException("Errore durante il cambio password", e);
+                } catch (NoSuchAlgorithmException e) {
+                    throw new RuntimeException("Errore nella crittografia", e);
+                }
+                break;
+
+            case "/admin-change-password":
+                HttpSession adminPasswordSession = request.getSession(false);
+                if (adminPasswordSession == null || adminPasswordSession.getAttribute("utenteSession") == null) {
+                    response.sendRedirect(request.getContextPath() + "/utente/secret");
+                    return;
+                }
+
+                UtenteSession currentAdminPassword = (UtenteSession) adminPasswordSession.getAttribute("utenteSession");
+
+                if (!currentAdminPassword.isAdmin()) {
+                    response.sendRedirect(request.getContextPath() + "/utente/signin");
+                    return;
+                }
+
+                String currentPasswordAdmin = request.getParameter("currentPassword");
+                String newPasswordAdmin = request.getParameter("newPassword");
+                String confirmPasswordAdmin = request.getParameter("confirmPassword");
+
+                // Validazione parametri
+                if (currentPasswordAdmin == null || currentPasswordAdmin.trim().isEmpty() ||
+                        newPasswordAdmin == null || newPasswordAdmin.trim().isEmpty() ||
+                        confirmPasswordAdmin == null || confirmPasswordAdmin.trim().isEmpty()) {
+
+                    response.sendRedirect(request.getContextPath() + "/utente/admin-profile?tab=password&error=missing_fields");
+                    return;
+                }
+
+                // Controlla che le nuove password coincidano
+                if (!newPasswordAdmin.equals(confirmPasswordAdmin)) {
+                    response.sendRedirect(request.getContextPath() + "/utente/admin-profile?tab=password&error=password_mismatch");
+                    return;
+                }
+
+                // Validazione lunghezza password
+                if (newPasswordAdmin.length() < 6) {
+                    response.sendRedirect(request.getContextPath() + "/utente/admin-profile?tab=password&error=password_too_short");
+                    return;
+                }
+
+                try {
+                    // Recupera l'utente completo per ottenere l'email
+                    Optional<Utente> currentAdminData = utenteDao.fetchUtente(currentAdminPassword.getId());
+                    if (currentAdminData.isEmpty()) {
+                        response.sendRedirect(request.getContextPath() + "/utente/admin-profile?tab=password&error=user_not_found");
+                        return;
+                    }
+
+                    // Verifica la password attuale
+                    Utente tempAdmin = new Utente();
+                    tempAdmin.setEmail(currentAdminData.get().getEmail());
+                    tempAdmin.setPassword(currentPasswordAdmin);
+
+                    Optional<Utente> adminCheck = utenteDao.findUtente(tempAdmin.getEmail(), tempAdmin.getPassword(), true);
+
+                    if (adminCheck.isEmpty()) {
+                        response.sendRedirect(request.getContextPath() + "/utente/admin-profile?tab=password&error=wrong_current_password");
+                        return;
+                    }
+
+                    // Aggiorna la password
+                    if (utenteDao.updatePassword(currentAdminPassword.getId(), newPasswordAdmin)) {
+                        response.sendRedirect(request.getContextPath() + "/utente/admin-profile?tab=password&success=password_changed");
+                    } else {
+                        response.sendRedirect(request.getContextPath() + "/utente/admin-profile?tab=password&error=update_failed");
+                    }
+
+                } catch (SQLException e) {
+                    throw new RuntimeException("Errore durante il cambio password admin", e);
+                } catch (NoSuchAlgorithmException e) {
+                    throw new RuntimeException("Errore nella crittografia", e);
+                }
+                break;
+
+            case "/admin-change-email":
+                HttpSession adminEmailSession = request.getSession(false);
+                if (adminEmailSession == null || adminEmailSession.getAttribute("utenteSession") == null) {
+                    response.sendRedirect(request.getContextPath() + "/utente/secret");
+                    return;
+                }
+
+                UtenteSession currentAdminEmail = (UtenteSession) adminEmailSession.getAttribute("utenteSession");
+
+                if (!currentAdminEmail.isAdmin()) {
+                    response.sendRedirect(request.getContextPath() + "/utente/signin");
+                    return;
+                }
+
+                String currentPasswordForEmail = request.getParameter("currentPassword");
+                String newEmailAdmin = request.getParameter("newEmail");
+
+                // Validazione parametri
+                if (currentPasswordForEmail == null || currentPasswordForEmail.trim().isEmpty() ||
+                        newEmailAdmin == null || newEmailAdmin.trim().isEmpty()) {
+
+                    response.sendRedirect(request.getContextPath() + "/utente/admin-profile?tab=email&error=missing_fields");
+                    return;
+                }
+
+                // Validazione formato email
+                if (!newEmailAdmin.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+                    response.sendRedirect(request.getContextPath() + "/utente/admin-profile?tab=email&error=invalid_email_format");
+                    return;
+                }
+
+                try {
+                    // Recupera l'utente completo
+                    Optional<Utente> currentAdminDataEmail = utenteDao.fetchUtente(currentAdminEmail.getId());
+                    if (currentAdminDataEmail.isEmpty()) {
+                        response.sendRedirect(request.getContextPath() + "/utente/admin-profile?tab=email&error=user_not_found");
+                        return;
+                    }
+
+                    // Controlla se la nuova email è uguale a quella attuale
+                    if (newEmailAdmin.equals(currentAdminDataEmail.get().getEmail())) {
+                        response.sendRedirect(request.getContextPath() + "/utente/admin-profile?tab=email&error=same_email");
+                        return;
+                    }
+
+                    // Controlla se l'email esiste già
+                    if (utenteDao.existsByEmail(newEmailAdmin)) {
+                        response.sendRedirect(request.getContextPath() + "/utente/admin-profile?tab=email&error=email_exists");
+                        return;
+                    }
+
+                    // Verifica la password attuale
+                    Utente tempAdminEmail = new Utente();
+                    tempAdminEmail.setEmail(currentAdminDataEmail.get().getEmail());
+                    tempAdminEmail.setPassword(currentPasswordForEmail);
+
+                    Optional<Utente> adminEmailCheck = utenteDao.findUtente(tempAdminEmail.getEmail(), tempAdminEmail.getPassword(), true);
+
+                    if (adminEmailCheck.isEmpty()) {
+                        response.sendRedirect(request.getContextPath() + "/utente/admin-profile?tab=email&error=wrong_current_password");
+                        return;
+                    }
+
+                    // Aggiorna l'email
+                    if (utenteDao.updateEmail(currentAdminEmail.getId(), newEmailAdmin)) {
+                        response.sendRedirect(request.getContextPath() + "/utente/admin-profile?tab=email&success=email_changed");
+                    } else {
+                        response.sendRedirect(request.getContextPath() + "/utente/admin-profile?tab=email&error=update_failed");
+                    }
+
+                } catch (SQLException e) {
+                    throw new RuntimeException("Errore durante il cambio email admin", e);
+                } catch (NoSuchAlgorithmException e) {
+                    throw new RuntimeException("Errore nella crittografia", e);
+                }
+                break;
+
 
             default:
                 notFound();

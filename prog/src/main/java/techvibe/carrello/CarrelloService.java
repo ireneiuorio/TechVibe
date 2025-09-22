@@ -9,7 +9,7 @@ public class CarrelloService {
     // Chiavi per salvare informazioni in sessione
     private static final String CARRELLO_SESSION_KEY = "carrello";
     private static final String CARRELLO_ID_SESSION_KEY = "carrello_id";
-    private static final String USER_ID_SESSION_KEY = "user_id"; // Assumendo che l'ID utente sia in sessione
+    private static final String USER_ID_SESSION_KEY = "user_id";
 
     private final CarrelloDao carrelloDao;
 
@@ -72,11 +72,16 @@ public class CarrelloService {
             if (carrelloSessione.isPresent()) {
                 carrello = carrelloSessione.get();
                 System.out.println("DEBUG getCarrello: Carrello sessione caricato, " + carrello.getNumeroTotaleArticoli() + " prodotti");
+
+                // Salva l'ID carrello per le operazioni future
+                Optional<Integer> carrelloId = getCarrelloIdBySessione(sessionId);
+                if (carrelloId.isPresent()) {
+                    session.setAttribute(CARRELLO_ID_SESSION_KEY, carrelloId.get());
+                }
             } else {
-                // Crea nuovo carrello per sessione - MA SOLO SE NON ESISTE GIA' IN SESSIONE
+                // Crea nuovo carrello per sessione
                 carrello = new Carrello();
                 System.out.println("DEBUG getCarrello: Nuovo carrello vuoto per sessione anonima");
-                // Non creare immediatamente nel DB, aspetta il primo prodotto
             }
         }
 
@@ -89,6 +94,79 @@ public class CarrelloService {
         session.setAttribute(CARRELLO_SESSION_KEY, carrello);
         System.out.println("DEBUG getCarrello: Salvato in sessione, totale finale: " + carrello.getNumeroTotaleArticoli() + " prodotti");
         return carrello;
+    }
+
+    /**
+     * Helper method per ottenere l'ID carrello per sessione
+     */
+    private Optional<Integer> getCarrelloIdBySessione(String sessionId) {
+        // Questa dovrebbe essere implementata nel CarrelloDao
+        return Optional.empty(); // Per ora placeholder
+    }
+
+    /**
+     * Metodo chiamato quando un utente fa LOGIN
+     * Trasferisce il carrello anonimo al carrello utente
+     */
+    public boolean onUserLogin(HttpSession session, int idUtente) {
+        if (session == null) return false;
+
+        System.out.println("=== LOGIN UTENTE: TRASFERIMENTO CARRELLO ===");
+        System.out.println("User ID: " + idUtente);
+        System.out.println("Session ID: " + session.getId());
+
+        // 1. Verifica se c'è un carrello anonimo da trasferire
+        String sessionId = session.getId();
+        Optional<Carrello> carrelloAnonimo = carrelloDao.getCarrelloBySessione(sessionId);
+
+        // 2. Usa il metodo del DAO per trasferire (più robusto)
+        boolean transferSuccess = carrelloDao.trasferisciCarrello(sessionId, idUtente);
+
+        if (transferSuccess) {
+            System.out.println("Trasferimento completato con successo");
+
+            // 3. Pulisci la sessione e imposta l'utente
+            session.removeAttribute(CARRELLO_SESSION_KEY);
+            session.removeAttribute(CARRELLO_ID_SESSION_KEY);
+            session.setAttribute(USER_ID_SESSION_KEY, idUtente);
+
+            // 4. Ricarica il carrello dal database dell'utente
+            Carrello nuovoCarrello = getCarrello(session);
+            System.out.println("Carrello post-login: " + nuovoCarrello.getNumeroTotaleArticoli() + " prodotti");
+
+            return true;
+        } else {
+            System.out.println("Errore nel trasferimento, fallback a collegamento semplice");
+            // Fallback al metodo precedente
+            session.setAttribute(USER_ID_SESSION_KEY, idUtente);
+            return true;
+        }
+    }
+
+    /**
+     * Metodo chiamato quando un utente fa LOGOUT
+     * Pulisce la sessione ma mantiene il carrello nel database
+     */
+    public void onUserLogout(HttpSession session) {
+        if (session == null) return;
+
+        System.out.println("=== LOGOUT UTENTE ===");
+        Integer userId = (Integer) session.getAttribute(USER_ID_SESSION_KEY);
+        System.out.println("Logout user ID: " + userId);
+
+        if (userId != null) {
+            // 1. Sincronizza il carrello finale nel database prima del logout
+            sincronizzaCarrello(session);
+            System.out.println("Carrello sincronizzato prima del logout");
+        }
+
+        // 2. Pulisci tutti i dati utente dalla sessione
+        session.removeAttribute(USER_ID_SESSION_KEY);
+        session.removeAttribute(CARRELLO_SESSION_KEY);
+        session.removeAttribute(CARRELLO_ID_SESSION_KEY);
+
+        System.out.println("Sessione pulita dopo logout");
+        System.out.println("=== FINE LOGOUT ===");
     }
 
     /**
@@ -276,63 +354,6 @@ public class CarrelloService {
     }
 
     /**
-     * Trasferisce il carrello da sessione anonima a utente loggato
-     * VERSIONE SEMPLIFICATA
-     */
-    public void collegaCarrelloAdUtente(HttpSession session, int idUtente) {
-        if (session == null) return;
-
-        System.out.println("=== COLLEGAMENTO CARRELLO ===");
-        System.out.println("User ID: " + idUtente);
-
-        // 1. Recupera il carrello attuale dalla sessione
-        Carrello carrelloCorrente = (Carrello) session.getAttribute(CARRELLO_SESSION_KEY);
-
-        if (carrelloCorrente == null || carrelloCorrente.isEmpty()) {
-            System.out.println("Nessun carrello da trasferire");
-            // Imposta comunque l'user_id per future operazioni
-            session.setAttribute(USER_ID_SESSION_KEY, idUtente);
-            return;
-        }
-
-        System.out.println("Carrello da trasferire: " + carrelloCorrente.getNumeroTotaleArticoli() + " prodotti");
-
-        // 2. Salva l'ID utente in sessione
-        session.setAttribute(USER_ID_SESSION_KEY, idUtente);
-
-        // 3. Assicura che l'utente abbia un carrello nel database
-        Optional<Integer> userCartId = carrelloDao.getCarrelloIdByUtente(idUtente);
-        if (userCartId.isEmpty()) {
-            userCartId = carrelloDao.creaCarrelloUtente(idUtente);
-        }
-
-        if (userCartId.isEmpty()) {
-            System.err.println("ERRORE: Impossibile creare carrello utente");
-            return;
-        }
-
-        // 4. Trasferisci tutti i prodotti del carrello sessione al carrello utente nel DB
-        for (var item : carrelloCorrente.getItems()) {
-            boolean success = carrelloDao.aggiungiProdotto(
-                    userCartId.get(),
-                    item.getProdotto().getIdProdotto(),
-                    item.getQuantita()
-            );
-            System.out.println("Trasferito prodotto " + item.getProdotto().getIdProdotto() +
-                    " qty " + item.getQuantita() + ": " + success);
-        }
-
-        // 5. Pulisci la sessione e ricarica dal database utente
-        session.removeAttribute(CARRELLO_SESSION_KEY);
-        session.setAttribute(CARRELLO_ID_SESSION_KEY, userCartId.get());
-
-        // 6. Ricarica il carrello dal database
-        Carrello nuovoCarrello = getCarrello(session);
-        System.out.println("Nuovo carrello caricato: " + nuovoCarrello.getNumeroTotaleArticoli() + " prodotti");
-        System.out.println("=== FINE COLLEGAMENTO ===");
-    }
-
-    /**
      * Sincronizza il carrello dalla sessione al database
      * Utile per chiamate periodiche o su eventi specifici
      */
@@ -345,6 +366,8 @@ public class CarrelloService {
         Integer carrelloId = (Integer) session.getAttribute(CARRELLO_ID_SESSION_KEY);
 
         if (carrello != null && carrelloId != null) {
+            System.out.println("Sincronizzando carrello ID: " + carrelloId);
+
             // Svuota il carrello nel DB e risalva tutto
             carrelloDao.svuotaCarrello(carrelloId);
 
@@ -353,6 +376,16 @@ public class CarrelloService {
                         item.getProdotto().getIdProdotto(),
                         item.getQuantita());
             }
+
+            System.out.println("Sincronizzazione completata");
         }
+    }
+
+    /**
+     * METODO DEPRECATO - usa onUserLogin() invece
+     */
+    @Deprecated
+    public void collegaCarrelloAdUtente(HttpSession session, int idUtente) {
+        onUserLogin(session, idUtente);
     }
 }

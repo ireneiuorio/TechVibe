@@ -93,8 +93,8 @@
     </div>
 
     <!-- Messaggio di ringraziamento -->
-    <div style="background: linear-gradient(135deg, #fff3cd, #ffeaa7); padding: 1.5rem; border-radius: 10px; margin-bottom: 2rem;">
-      <p style="color: #856404; font-weight: 500; margin: 0; line-height: 1.6;">
+    <div style="background:var(--primary-light); padding: 1.5rem; border-radius: 10px; margin-bottom: 2rem;">
+      <p style="color: white; font-weight: 500; margin: 0; line-height: 1.6;">
         <strong>Grazie per aver scelto TechVibe!</strong><br>
         La tua fiducia è importante per noi. Ti garantiamo prodotti di qualità e un servizio eccellente.
       </p>
@@ -103,8 +103,7 @@
     <!-- Supporto -->
     <div style="padding-top: 1.5rem; border-top: 1px solid #dee2e6;">
       <p style="color: #6c757d; font-size: 0.9rem; margin: 0;">
-        Hai domande sul tuo ordine?
-        <a href="#" style="color: var(--primary-light); text-decoration: none; font-weight: 500;">Contatta il supporto</a>
+        Hai domande sul tuo ordine? Contatta il supporto
       </p>
     </div>
   </div>

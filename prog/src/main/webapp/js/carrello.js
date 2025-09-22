@@ -271,39 +271,47 @@
 }
 }
 
-    // ==== Totali & riepilogo ====
     function aggiornaVisualizzazioneTotale() {
-    fetch(window.contextPath + '/carrello/totale')
-        .then(r => r.json())
-        .then(data => {
-            const totale = data && typeof data.totale === 'number' ? data.totale : 0;
+        fetch(window.contextPath + '/carrello/totale')
+            .then(r => r.json())
+            .then(data => {
+                const totale = data && typeof data.totale === 'number' ? data.totale : 0;
 
-            // 1) Subtotale (X prodotti) => conta PEZZI totali SOLO nel riepilogo carrello
-            const subtotaleMoney = document.getElementById('carrello-totale'); // esiste solo in carrello.jsp
-            const containerSub = subtotaleMoney
-                ? subtotaleMoney.closest('div[style*="border-bottom: 1px solid #eee"]')
-                : null;
+                // 1) Subtotale (X prodotti) => conta PEZZI totali SOLO nel riepilogo carrello
+                const subtotaleMoney = document.getElementById('carrello-totale'); // esiste solo in carrello.jsp
+                const containerSub = subtotaleMoney
+                    ? subtotaleMoney.closest('div[style*="border-bottom: 1px solid #eee"]')
+                    : null;
 
-            if (containerSub) {
-                const labelSpan = containerSub.querySelector('span:first-child');
-                if (labelSpan) {
-                    const pezzi = sommaPezziVisibili();
-                    const label = pezzi === 1 ? 'prodotto' : 'prodotti';
-                    labelSpan.textContent = `Subtotale (${pezzi} ${label}):`;
+                if (containerSub) {
+                    const labelSpan = containerSub.querySelector('span:first-child');
+                    if (labelSpan) {
+                        const pezzi = sommaPezziVisibili();
+                        const label = pezzi === 1 ? 'prodotto' : 'prodotti';
+                        labelSpan.textContent = `Subtotale (${pezzi} ${label}):`;
+                    }
+
+                    // 2) Aggiorna il valore monetario del subtotale
+                    if (subtotaleMoney) {
+                        subtotaleMoney.textContent = formatEuro(totale);
+                    }
+
                 }
-            }
 
+                // 2) AGGIUNGI QUESTA RIGA - Aggiorna il valore monetario del subtotale
+                if (subtotaleMoney) {
+                    subtotaleMoney.textContent = formatEuro(totale);
+                }
 
+                // 3) Totale finale (selettore: l'ultima riga nel riepilogo: border-top + span:last-child)
+                const totaleFinale = document.querySelector('div[style*="border-top: 2px solid"] span:last-child');
+                if (totaleFinale) {
+                    totaleFinale.textContent = formatEuro(totale);
+                }
+            })
+            .catch(err => console.error('Errore totale:', err));
+    }
 
-
-            // 3) Totale finale (selettore: l'ultima riga nel riepilogo: border-top + span:last-child)
-            const totaleFinale = document.querySelector('div[style*="border-top: 2px solid"] span:last-child');
-            if (totaleFinale) {
-                totaleFinale.textContent = formatEuro(totale);
-            }
-        })
-        .catch(err => console.error('Errore totale:', err));
-}
 
     // ==== Eventi globali ====
     function handleQuantityChange(target) {

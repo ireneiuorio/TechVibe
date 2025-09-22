@@ -147,6 +147,21 @@
       font-weight: 600;
     }
 
+    .btn-change-password {
+      background: var(--primary-light);
+      color: white;
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      justify-self: start;
+    }
+
+    .btn-change-password:hover {
+      background:var(--primary-light);
+    }
+
     .success-message {
       background: #d4edda;
       color: #155724;
@@ -161,6 +176,21 @@
       padding: 1rem;
       border-radius: 8px;
       margin-bottom: 1rem;
+    }
+
+    .password-requirements {
+      background: #e7f3ff;
+      border: 1px solid #b6d7ff;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+      color: #0066cc;
+    }
+
+    .password-requirements ul {
+      margin: 0.5rem 0 0 1.5rem;
+      padding: 0;
     }
 
     .order-card {
@@ -267,11 +297,40 @@
 
     <!-- TABS -->
     <div class="profile-tabs">
-      <button class="tab-button active" onclick="showTab('edit')">Modifica Profilo</button>
-      <button class="tab-button" onclick="showTab('orders')">I miei Ordini</button>
+      <button class="tab-button" onclick="showTab('edit')" id="tab-edit-btn">Modifica Profilo</button>
+      <button class="tab-button" onclick="showTab('password')" id="tab-password-btn">Cambia Password</button>
+      <button class="tab-button" onclick="showTab('orders')" id="tab-orders-btn">I miei Ordini</button>
     </div>
 
     <!-- MESSAGGI -->
+    <c:if test="${param.success == 'password_changed'}">
+      <div class="success-message">Password cambiata con successo!</div>
+    </c:if>
+
+    <c:if test="${param.error == 'missing_fields'}">
+      <div class="error-message">Tutti i campi sono obbligatori</div>
+    </c:if>
+
+    <c:if test="${param.error == 'password_mismatch'}">
+      <div class="error-message">Le nuove password non coincidono</div>
+    </c:if>
+
+    <c:if test="${param.error == 'password_too_short'}">
+      <div class="error-message">La nuova password deve essere di almeno 6 caratteri</div>
+    </c:if>
+
+    <c:if test="${param.error == 'wrong_current_password'}">
+      <div class="error-message">Password attuale non corretta</div>
+    </c:if>
+
+    <c:if test="${param.error == 'update_failed'}">
+      <div class="error-message">Errore durante l'aggiornamento della password</div>
+    </c:if>
+
+    <c:if test="${param.error == 'user_not_found'}">
+      <div class="error-message">Errore: utente non trovato. Prova a fare nuovamente login.</div>
+    </c:if>
+
     <c:if test="${not empty successMessage}">
       <div class="success-message">${successMessage}</div>
     </c:if>
@@ -281,7 +340,7 @@
     </c:if>
 
     <!-- TAB MODIFICA -->
-    <div id="tab-edit" class="tab-content active">
+    <div id="tab-edit" class="tab-content">
       <div class="info-card">
         <h3 style="color: var(--primary-light); margin-bottom: 1.5rem;">Modifica Profilo</h3>
 
@@ -312,6 +371,40 @@
           </div>
 
           <button type="submit" class="btn-save">Salva Modifiche</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- TAB CAMBIO PASSWORD -->
+    <div id="tab-password" class="tab-content">
+      <div class="info-card">
+        <h3 style="color: var(--primary-light); margin-bottom: 1.5rem;">Cambia Password</h3>
+
+        <div class="password-requirements">
+          <strong>Requisiti per la password:</strong>
+          <ul>
+            <li>Minimo 6 caratteri</li>
+            <li>Si consiglia di usare lettere maiuscole, minuscole, numeri e simboli</li>
+          </ul>
+        </div>
+
+        <form method="POST" action="${pageContext.request.contextPath}/utente/change-password" class="edit-form" onsubmit="return validatePasswordForm()">
+          <div class="form-group">
+            <label for="currentPassword">Password Attuale</label>
+            <input type="password" id="currentPassword" name="currentPassword" required>
+          </div>
+
+          <div class="form-group">
+            <label for="newPassword">Nuova Password</label>
+            <input type="password" id="newPassword" name="newPassword" required minlength="6">
+          </div>
+
+          <div class="form-group">
+            <label for="confirmPassword">Conferma Nuova Password</label>
+            <input type="password" id="confirmPassword" name="confirmPassword" required minlength="6">
+          </div>
+
+          <button type="submit" class="btn-change-password">Cambia Password</button>
         </form>
       </div>
     </div>
@@ -377,7 +470,6 @@
                     </c:if>
                   </div>
 
-                  <!-- Indicatore che è cliccabile -->
                   <div style="text-align: right; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #eee;">
                     <span style="color: var(--primary-light); font-size: 0.9rem;">
                       Clicca per vedere i dettagli →
@@ -423,11 +515,40 @@
     document.getElementById('tab-' + tabName).classList.add('active');
 
     // Attiva il bottone corrispondente
-    event.target.classList.add('active');
+    document.getElementById('tab-' + tabName + '-btn').classList.add('active');
   }
 
-  // Hover effects for order cards
+  function validatePasswordForm() {
+    const newPassword = document.getElementById('newPassword').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+
+    if (newPassword !== confirmPassword) {
+      alert('Le nuove password non coincidono');
+      return false;
+    }
+
+    if (newPassword.length < 6) {
+      alert('La password deve essere di almeno 6 caratteri');
+      return false;
+    }
+
+    return true;
+  }
+
+  // Gestione tab iniziale basata su parametri URL
   document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tab = urlParams.get('tab');
+
+    if (tab === 'password') {
+      showTab('password');
+    } else if (tab === 'orders') {
+      showTab('orders');
+    } else {
+      showTab('edit');
+    }
+
+    // Hover effects for order cards
     const orderCards = document.querySelectorAll('.order-card');
     orderCards.forEach(card => {
       card.addEventListener('mouseenter', function() {

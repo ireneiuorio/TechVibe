@@ -9,6 +9,7 @@ import techvibe.storage.SqlDao;
 import techvibe.storage.TableQuery;
 
 import javax.sql.DataSource;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -228,6 +229,46 @@ public class SqlUtenteDao extends SqlDao implements UtenteDao<SQLException> {
                     return Optional.of(u);
                 }
                 return Optional.empty();
+            }
+        }
+    }
+
+    public Boolean updatePassword(int idUtente, String newPassword) throws SQLException, NoSuchAlgorithmException, NoSuchAlgorithmException {
+        // Usa il metodo della classe Utente per fare l'hash
+        Utente tempUtente = new Utente();
+        tempUtente.setPassword(newPassword); // Questo fa automaticamente l'hash
+        String hashedPassword = tempUtente.getPassword();
+
+        try (Connection conn = source.getConnection()) {
+            QueryBuilder queryBuilder = new QueryBuilder("utente", "ute");
+            queryBuilder.update("passwordhash").where("idaccount=?");
+            try (PreparedStatement ps = conn.prepareStatement(queryBuilder.generateQuery())) {
+                ps.setString(1, hashedPassword);
+                ps.setInt(2, idUtente);
+
+                int rows = ps.executeUpdate();
+                return rows == 1;
+            }
+        }
+    }
+
+    /**
+     * Aggiorna solo l'email di un utente
+     * @param idUtente ID dell'utente
+     * @param newEmail nuova email
+     * @return true se l'aggiornamento è andato a buon fine
+     * @throws SQLException in caso di errore database
+     */
+    public Boolean updateEmail(int idUtente, String newEmail) throws SQLException {
+        try (Connection conn = source.getConnection()) {
+            QueryBuilder queryBuilder = new QueryBuilder("utente", "ute");
+            queryBuilder.update("email").where("idaccount=?");
+            try (PreparedStatement ps = conn.prepareStatement(queryBuilder.generateQuery())) {
+                ps.setString(1, newEmail);
+                ps.setInt(2, idUtente);
+
+                int rows = ps.executeUpdate();
+                return rows == 1;
             }
         }
     }
