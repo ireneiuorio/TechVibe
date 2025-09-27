@@ -4,8 +4,9 @@ import techvibe.prodotto.Prodotto;
 
 public class CarrelloItem {
 
+
     private final Prodotto prodotto;
-    private int quantita; // Rimosso final per permettere modifiche
+    private int quantita;
 
     public CarrelloItem(Prodotto prodotto, int quantita) {
         this.prodotto = prodotto;

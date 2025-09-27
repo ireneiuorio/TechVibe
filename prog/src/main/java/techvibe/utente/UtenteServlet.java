@@ -369,7 +369,7 @@ public class UtenteServlet extends Controller implements ErrorHandler {
 
                 sessionUser.setMaxInactiveInterval(30 * 60);
 
-                response.sendRedirect(request.getContextPath() + "/utente/profile");
+                response.sendRedirect(request.getContextPath() + "/carrello/view");
                 break;
             }
 
