@@ -1,0 +1,22 @@
+.body>div{
+    background-color:var(--white);
+    box-shadow: -9px -4px 12px 3px var(--light-gray);
+    margin:10px;
+    font-style:italic;
+    font-weight: bold;
+    text-align: center;
+}
+
+.body>div>h4{
+    margin: 0;
+    padding: 1rem;
+    color: var(--white);
+    background-color: var(--primary-light);
+
+
+}
+
+.body>div>h2{
+    justify-self: center;
+    font-size: 3rem;
+}

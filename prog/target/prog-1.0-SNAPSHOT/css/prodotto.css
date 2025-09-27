@@ -1,0 +1,201 @@
+
+    /* LAYOUT PAGINA */
+.container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+}
+
+/* IMMAGINI */
+.immagini {
+    position: sticky;
+    top: 2rem;
+}
+
+.img-grande {
+    width: 100%;
+    max-width: 500px;
+    height: 400px;
+    object-fit: contain;
+    border-radius: 12px;
+    border: 1px solid #eee;
+    margin-bottom: 1rem;
+}
+
+.img-piccole {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.mini {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    border-radius: 8px;
+    border: 2px solid transparent;
+    cursor: pointer;
+}
+
+.mini:hover {
+    border-color: var(--primary-light);
+}
+
+.mini.attiva {
+    border-color: var(--primary-light);
+}
+
+/* INFO PRODOTTO */
+.info {
+    padding: 1rem 0;
+}
+
+.titolo {
+    font-size: 2.2rem;
+    color: var(--primary-light);
+    margin: 0 0 0.5rem 0;
+    font-weight: 700;
+}
+
+.marca {
+    font-size: 1.1rem;
+    color: #666;
+    margin-bottom: 1.5rem;
+}
+
+.prezzo {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-light);
+    margin: 1rem 0;
+}
+
+.caratteristiche {
+    background: var(--light-gray);
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin: 2rem 0;
+}
+
+.caratteristiche h3 {
+    color: var(--primary-light);
+    margin: 0 0 1rem 0;
+}
+
+.lista-caratteristiche {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.caratteristica {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #ddd;
+}
+
+.nome-caratteristica {
+    font-weight: 600;
+    color: #555;
+}
+
+.valore-caratteristica {
+    color: #333;
+}
+
+/* SEZIONE COMPRA */
+.box-acquisto {
+    background: white;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 2rem 0;
+}
+
+.quantita {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+.input-quantita {
+    width: 80px;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    text-align: center;
+}
+
+.btn-carrello {
+    width: 100%;
+    background: linear-gradient(135deg, var(--primary-light), #1e88e5);
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 12px;
+    cursor: pointer;
+    margin-top: 1rem;
+}
+
+.btn-carrello:hover {
+    transform: translateY(-2px);
+}
+
+.disponibilita {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: inline-block;
+    margin: 1rem 0;
+}
+
+.disponibile {
+    background: #d4edda;
+    color: #155724;
+}
+
+.pochi {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.esaurito {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .container {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    .titolo {
+        font-size: 1.8rem;
+    }
+
+    .lista-caratteristiche {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* NAVIGAZIONE */
+.percorso {
+    background: var(--light-gray);
+    padding: 1rem 2rem;
+    margin-bottom: 2rem;
+}
+
+.percorso a {
+    color: var(--primary-light);
+    text-decoration: none;
+}

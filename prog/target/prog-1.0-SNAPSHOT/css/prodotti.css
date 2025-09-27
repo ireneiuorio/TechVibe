@@ -1,0 +1,138 @@
+
+
+/* Contenitore principale della sezione prodotti */
+.prodotti-container {
+    padding: 1rem;
+    width: 100%;
+    max-width: 100vw; /* Non può mai superare la larghezza del viewport */
+    box-sizing: border-box;
+    overflow: hidden; /* Nasconde tutto quello che esce */
+}
+
+/* Wrapper per lo scroll orizzontale della tabella */
+.table-wrapper {
+    overflow-x: auto;
+    overflow-y: visible;
+    margin-top: 1rem;
+    border: 1px solid var(--light-gray);
+    border-radius: 4px;
+    width: 100%;
+    max-width: calc(100vw - 2rem); /* Considera il padding */
+    box-sizing: border-box;
+}
+
+/* Stili principali della tabella prodotti */
+.prodotti-table {
+    width: 1400px; /* Larghezza fissa che forza lo scroll interno */
+    border-collapse: collapse;
+    background-color: var(--white);
+    table-layout: auto; /* Layout fisso per controllare meglio le colonne */
+}
+
+/* Header della tabella */
+.prodotti-table thead {
+    background-color: var(--primary-light);
+    color: var(--white);
+}
+
+/* Stili generali per celle */
+.prodotti-table th,
+.prodotti-table td {
+    border: 1px solid var(--light-gray);
+    padding: 6px 8px; /* Padding compatto */
+    text-align: center;
+    vertical-align: middle;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+
+
+.prodotti-table a:hover {
+    text-decoration: underline;
+
+}
+
+
+.btn.primary {
+    background-color: var(--light-blu);
+    color: var(--white);
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    text-decoration: none;
+    display: inline-block;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn.primary:hover {
+    filter: brightness(110%);
+    transform: translateY(-1px);
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media screen and (max-width: 768px) {
+    .prodotti-container {
+        padding: 0.5rem;
+    }
+
+    .table-wrapper {
+        max-width: calc(100vw - 1rem);
+    }
+
+    .prodotti-table th,
+    .prodotti-table td {
+        padding: 4px 6px;
+        font-size: 0.85em;
+    }
+
+    .prodotti-table th {
+        font-size: 0.8em;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .prodotti-container {
+        padding: 0.25rem;
+    }
+
+    .table-wrapper {
+        max-width: calc(100vw - 0.5rem);
+    }
+
+    .btn.primary {
+        padding: 8px 16px;
+        font-size: 0.9em;
+    }
+}
+
+
+.content {
+    overflow-x: hidden;
+    max-width: 100%;
+}
+
+.body {
+    overflow-x: hidden;
+    max-width: 100%;
+}
+
+.prodotti {
+    overflow-x: hidden;
+    max-width: 100%;
+}
+
+
+.prodotti-table .no-products {
+    font-style: italic;
+    color: var(--dark-gray);
+    padding: 2rem;
+}
+
+.prodotti-table.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+

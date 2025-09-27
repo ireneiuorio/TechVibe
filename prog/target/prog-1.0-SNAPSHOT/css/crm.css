@@ -1,0 +1,112 @@
+.app {
+    display: flex;
+    flex-flow: row nowrap;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+.logo {
+    font-size: 1.6rem;
+    font-weight: bold;
+    text-align: center;
+    padding: 1.5rem 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+    margin-bottom: 1rem;
+}
+
+.sidebar {
+    background-color: var(--primary-light);
+    padding: 0;
+    flex-basis: 230px;
+    flex-shrink: 0;
+    transition: all .3s ease-in-out;
+    min-height: 100vh;
+}
+
+.menu {
+    padding: 0 1rem 1rem 1rem;
+}
+
+.menu > a {
+    text-decoration: none;
+    color: var(--white);
+    padding: 1rem;
+    font-size: 0.9rem;
+    display: block;
+    border-radius: 8px;
+    transition: background 0.3s;
+    margin-bottom: 0.25rem;
+}
+
+.menu > a:hover {
+    background: rgba(255,255,255,0.1);
+}
+
+.menu > a.active {
+    background: rgba(255,255,255,0.2);
+}
+
+.menu > img {
+    cursor: pointer;
+    display: block;
+    margin: 0 auto 1rem auto;
+    max-width: 60px;
+}
+
+.content {
+    background-color: var(--white);
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    transition: all .3s ease-in-out;
+}
+
+.sidebar.collapse {
+    transform: translate3d(-230px, 0, 0);
+}
+
+.content.full-width {
+    margin-left: -230px;
+}
+
+.body {
+    flex: 1;
+    padding: 2rem;
+    width: 100%;
+    box-sizing: border-box;
+    overflow-x: auto;
+}
+
+.top-strip {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 1.5rem 2rem 1rem 2rem;
+    background: #f8f9fa;
+    border-bottom: 1px solid #eee;
+    flex-shrink: 0;
+}
+
+.top-strip h1 {
+    color: var(--primary-light);
+    font-size: 1.6rem;
+    margin: 0;
+    font-weight: bold;
+}
+
+.top-strip .user-info {
+    color: #666;
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
+
+.top-strip .user-info a {
+    color: var(--primary-light);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.top-strip .user-info a:hover {
+    text-decoration: underline;
+}

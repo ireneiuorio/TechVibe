@@ -1,0 +1,226 @@
+
+
+@font-face {
+    font-family: 'Poppins';
+    font-weight: 400; /* normal */
+    font-style: normal;
+    src: url('../font/Poppins-Regular.otf');
+}
+
+@font-face {
+    font-family: 'Poppins';
+    font-weight: 400; /* normal */
+    font-style: italic;
+    src: url('../font/Poppins-Italic.otf');
+}
+
+@font-face {
+    font-family: 'Poppins';
+    font-weight: 700; /* bold */
+    font-style: normal;
+    src: url('../font/Poppins-Bold.otf');
+}
+
+@font-face {
+    font-family: 'Poppins';
+    font-weight: 700; /* bold */
+    font-style: italic;
+    src: url('../font/Poppins-BoldItalic.otf');
+}
+
+
+
+
+/* DEFINIZIONE SCRITTURA E COLORI*/
+:root {
+    font-family: 'Poppins', sans-serif;
+    font-style: normal;
+    font-weight: normal;
+    font-size: clamp(14px, 1.5vw, 18px); /* RENDE IL FONT RESPONSIVE,NON SCENDE SOTTO I 14 NON SALE SOTTO I 18,1.5 PREFERITA*/
+
+    --white: #FAFAFA;
+    --light-gray: #EAEAEA;
+    --dark-gray: #1F1F1F;
+
+    --primary: #1D3557;
+    --primary-light: #457B9D;
+    --primary-dark: #0B253D;
+
+    --success: #2E8B57;
+    --error: #C94C4C;
+
+    --accent: #A8DADC;
+    --highlight: #F1FAEE;
+    --light-blu: #A8D0E6;
+}
+
+
+/*CAMPI INPUT E INTERAZIONE*/
+input, select, textarea {
+    padding: 8px;
+    border-width: 1px;
+    border-color: var(--light-gray);
+    background-color: var(--white);
+    border-style: solid;
+    border-radius: 0;
+    box-shadow: 0 0 10px rgba(212, 212, 212,.54);
+}
+
+
+/*L'APP OCCUPA TUTTO LO SCHERMO */
+.app{
+    width: 100vw;
+    height: 100vh;
+    max-width: 100%;
+}
+/*NASCONDERE A PRESCINDERE DA ALTRE REGOLE */
+.hide {
+    display: none !important;
+}
+
+.grid-x{
+    display: flex;
+    flex-flow: row wrap;
+}
+
+.grid-y{
+    display: flex;
+    flex-flow: column wrap;
+}
+
+.grid-inline{
+    display: inline-flex;
+}
+
+
+.justify-center{
+    justify-content: center;
+}
+
+.align-center{
+    align-items: center;
+}
+
+.cell{
+    flex-basis:100%;
+    margin-top:5px;
+}
+
+/*allinea orizzontalmente label/icone + input, e fa espandere gli input a piena larghezza*/
+.field{
+    display: inline-flex;
+    align-items: center;
+}
+
+
+.field > input,
+.field > select,
+.field > textarea{
+    width: 100%;
+}
+
+.field > input[disabled],
+.field > select[disabled],
+.field > textarea[disabled]{
+    background-color: var(--light-gray);
+}
+
+.btn{
+    padding: 8px;
+    border:none;
+    cursor: pointer;
+}
+
+button.primary{
+    background-color: var(--light-blu);
+    color: var(--white);
+}
+
+button.primary:hover{
+    filter: brightness(110%);
+}
+
+
+
+table {
+    border-collapse: collapse;
+    background-color: var(--white);
+    border-color: var(--light-gray);
+}
+
+.table > thead {
+    visibility:hidden;
+    font-weight: bold;
+    font-size: inherit;
+    border: 1px solid black !important;
+}
+
+.table tr {
+
+    margin-bottom:.5rem;
+    padding: .5rem;
+    display: block;
+}
+
+.table >tbody td{
+    display: block;
+    border: 1px solid black !important;
+    text-align: right;
+}
+
+.table>tbody td:before{
+    content: attr(data-head);
+    float:left;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.paginator {
+    list-style: none;
+}
+
+.paginator > li{
+    border:1px solid;
+    padding: .5rem;
+}
+
+.paginator > li > a{
+    text-decoration: none;
+
+
+
+}
+
+
+
+@media screen and (min-width: 769px){
+    .w10{ flex-basis: 10%; }
+    .w80{ flex-basis: 80%; }
+    .w25{ flex-basis: 25%; }
+    .w40{ flex-basis: 40%; }
+    .w50{ flex-basis: 50%; }
+    .w75{ flex-basis: 75%; }
+    .w100{ flex-basis: 100%; }
+
+    .table>thead{
+        visibility: visible;
+
+    }
+
+    .table tr{
+        display: table-row;
+    }
+
+    .table>tbody>td{
+        display: table-cell;
+        text-align: center;
+    }
+
+    .table>tbody>td:before{
+        content:"";
+        float:none;
+    }
+
+}
+
+
