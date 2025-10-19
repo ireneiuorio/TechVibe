@@ -4,6 +4,7 @@
 <html lang="it">
 <head>
     <title>Registrazione completata</title>
+    <link rel="icon" type="image/png" href="<%= request.getContextPath() %>/icons/favicon.png">
     <jsp:include page="/WEB-INF/views/partials/head.jsp">
         <jsp:param name="styles" value="site"/>
     </jsp:include>

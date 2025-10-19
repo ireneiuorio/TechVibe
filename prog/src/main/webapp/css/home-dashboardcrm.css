@@ -1,0 +1,87 @@
+
+
+/* Contenitore principale della dashboard */
+.dashboard-container {
+    margin-bottom: 5rem;
+}
+
+/* Testata di benvenuto */
+.welcome-header {
+    background: var(--primary-light);
+    color: white;
+    padding: 2rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.welcome-header h2 {
+    margin: 0 0 0.5rem 0;
+    font-size: 2.2rem;
+}
+
+.welcome-header p {
+    margin: 0;
+    opacity: 0.9;
+    font-size: 1.1rem;
+}
+
+/* Griglia informazioni */
+.info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+/* Card informazioni */
+.info-card {
+    background:var(--white);
+    border: 1px solid var(--white);
+    border-radius: 12px;
+    padding: 2rem;
+}
+
+.section-title {
+    color: var(--primary-light);
+    margin: 0 0 1.5rem 0;
+    font-weight: 700;
+}
+
+/* Righe info */
+.info-item {
+    margin-bottom: 1.5rem;
+}
+
+.info-label {
+    font-weight: 600;
+    color: var(--primary-light);
+    margin-bottom: 0.5rem;
+}
+
+.info-value {
+    color: #333;
+    font-size: 1rem;
+    padding: 0.75rem 1rem;
+    background: var(--light-gray);
+    border-radius: 8px;
+}
+
+/* Stati */
+.status-online {
+    color: var(--primary-light);
+    font-weight: 600;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+    .welcome-header {
+        padding: 1.5rem;
+    }
+    .welcome-header h2 {
+        font-size: 1.8rem;
+    }
+}

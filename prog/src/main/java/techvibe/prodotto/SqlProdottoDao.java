@@ -1,9 +1,6 @@
 package techvibe.prodotto;
 
-import techvibe.categoria.Categoria;
-import techvibe.categoria.CategoriaExtractor;
-import techvibe.components.Paginator;
-import techvibe.ordine.OrdineExtractor;
+import techvibe.Model.components.Paginator;
 import techvibe.search.Condition;
 import techvibe.search.Operator;
 import techvibe.storage.QueryBuilder;

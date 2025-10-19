@@ -5,209 +5,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title></title>
+  <title>Gestisci utente</title>
+  <link rel="icon" type="image/png" href="<%= request.getContextPath() %>/icons/favicon.png">
+
+  <!-- CSS esterno della pagina utente -->
+  <link rel="stylesheet" href="${pageContext.request.contextPath}/css/crm/manage-utente.css"/>
 
   <jsp:include page="../partials/head.jsp">
-    <jsp:param name="title" value="Dettaglio Utente"/>
-    <jsp:param name="styles" value="crm,dashboard"/>
+    <jsp:param name="title" value="Dettaglio utente"/>
+    <jsp:param name="styles" value="crm,dashboard,manage-utente"/>
     <jsp:param name="scripts" value="crm"/>
   </jsp:include>
-
-  <style>
-
-    .utente-container {
-      margin-bottom: 5rem;
-    }
-
-    .utente-header {
-      background: var(--light-gray);
-      padding: 2rem;
-      border-radius: 12px;
-      margin-bottom: 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .utente-info h2 {
-      margin: 0;
-      color: var(--primary-light);
-    }
-
-    .utente-status {
-      padding: 0.5rem 1rem;
-      border-radius: 20px;
-      font-weight: 600;
-      text-transform: uppercase;
-      font-size: 0.8rem;
-    }
-
-    .status-attivo {
-      background: #d4edda;
-      color: #155724;
-    }
-
-    .status-disattivato {
-      background: #f8d7da;
-      color: #721c24;
-    }
-
-    .utente-tabs {
-      display: flex;
-      background: var(--light-gray);
-      border-radius: 12px;
-      padding: 0.5rem;
-      margin-bottom: 2rem;
-    }
-
-    .tab-button {
-      flex: 1;
-      padding: 1rem;
-      background: none;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: all 0.3s;
-    }
-
-    .tab-button.active {
-      background: var(--primary-light);
-      color: white;
-    }
-
-    .tab-content {
-      display: none;
-    }
-
-    .tab-content.active {
-      display: block;
-    }
-
-    .info-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 2rem;
-      margin-bottom: 2rem;
-    }
-
-    .info-card {
-      background: white;
-      border: 1px solid #eee;
-      border-radius: 12px;
-      padding: 2rem;
-    }
-
-    .info-item {
-      margin-bottom: 1.5rem;
-    }
-
-    .info-label {
-      font-weight: 600;
-      color: var(--primary-light);
-      margin-bottom: 0.5rem;
-    }
-
-    .info-value {
-      color: #333;
-      font-size: 1rem;
-      padding: 0.75rem 1rem;
-      background: var(--light-gray);
-      border-radius: 8px;
-    }
-
-    .order-card {
-      border: 1px solid #eee;
-      border-radius: 12px;
-      padding: 1.5rem;
-      margin-bottom: 1rem;
-      background: #fafafa;
-    }
-
-    .order-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
-      padding-bottom: 1rem;
-      border-bottom: 1px solid #eee;
-    }
-
-    .order-id {
-      font-size: 1.1rem;
-      font-weight: bold;
-      color: var(--primary-light);
-    }
-
-    .order-status {
-      background: #28a745;
-      color: white;
-      padding: 0.5rem 1rem;
-      border-radius: 20px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      text-transform: capitalize;
-    }
-
-    .order-details {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-    }
-
-    .order-detail-item {
-      display: flex;
-      flex-direction: column;
-      gap: 0.25rem;
-    }
-
-    .order-detail-label {
-      color: #666;
-      font-size: 0.9rem;
-    }
-
-    .order-detail-value {
-      font-weight: 600;
-      color: #333;
-    }
-
-    .empty-orders {
-      text-align: center;
-      padding: 3rem 2rem;
-      background: #f8f9fa;
-      border-radius: 12px;
-      color: #666;
-    }
-
-    .edit-form {
-      display: grid;
-      gap: 1.5rem;
-    }
-
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-
-    .form-group label {
-      font-weight: 600;
-      color: var(--primary-light);
-    }
-
-    .form-group input {
-      padding: 0.75rem 1rem;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      font-size: 1rem;
-    }
-
-    .actions {
-      display: flex;
-      gap: 1rem;
-      margin-top: 2rem;
-    }
-  </style>
 </head>
 <body>
 
@@ -225,35 +33,35 @@
         <div class="utente-header">
           <div class="utente-info">
             <h2>${utente.nome} ${utente.cognome}</h2>
-            <p style="margin: 0.5rem 0 0 0; color: #666;">${utente.email}</p>
+            <p class="muted-meta">${utente.email}</p>
           </div>
           <div>
-                        <span class="utente-status ${utente.attivo ? 'status-attivo' : 'status-disattivato'}">
-                          ${utente.attivo ? 'ATTIVO' : 'DISATTIVATO'}
-                        </span>
+            <span class="utente-status ${utente.attivo ? 'status-attivo' : 'status-disattivato'}">
+              ${utente.attivo ? 'ATTIVO' : 'DISATTIVATO'}
+            </span>
             <c:if test="${utente.admin}">
-                            <span class="utente-status" style="background: #fff3cd; color: #856404; margin-left: 0.5rem;">
-                                ADMIN
-                            </span>
+              <span class="utente-status status-admin">
+                ADMIN
+              </span>
             </c:if>
           </div>
         </div>
 
         <!-- Tabs -->
         <div class="utente-tabs">
-          <button class="tab-button active" onclick="showTab('info')">Informazioni</button>
-          <button class="tab-button" onclick="showTab('orders')">Ordini (${not empty ordiniUtente ? ordiniUtente.size() : 0})</button>
-          <button class="tab-button" onclick="showTab('edit')">Modifica Contatti</button>
+          <button class="tab-button active" onclick="showTab(event,'info')">Informazioni</button>
+          <button class="tab-button" onclick="showTab(event,'orders')">Ordini (${not empty ordiniUtente ? ordiniUtente.size() : 0})</button>
+          <button class="tab-button" onclick="showTab(event,'edit')">Modifica contatti</button>
         </div>
 
         <!-- Tab Informazioni -->
         <div id="tab-info" class="tab-content active">
           <div class="info-grid">
             <div class="info-card">
-              <h3 style="color: var(--primary-light); margin-bottom: 1.5rem;">Dati Personali</h3>
+              <h3 class="section-title">Dati personali</h3>
 
               <div class="info-item">
-                <div class="info-label">Nome Completo</div>
+                <div class="info-label">Nome completo</div>
                 <div class="info-value">${utente.nome} ${utente.cognome}</div>
               </div>
 
@@ -263,13 +71,13 @@
               </div>
 
               <div class="info-item">
-                <div class="info-label">Tipo Account</div>
-                <div class="info-value">${utente.admin ? 'Amministratore' : 'Utente Normale'}</div>
+                <div class="info-label">Tipo account</div>
+                <div class="info-value">${utente.admin ? 'Amministratore' : 'Utente normale'}</div>
               </div>
             </div>
 
             <div class="info-card">
-              <h3 style="color: var(--primary-light); margin-bottom: 1.5rem;">Contatti</h3>
+              <h3 class="section-title">Contatti</h3>
 
               <div class="info-item">
                 <div class="info-label">Telefono</div>
@@ -279,21 +87,21 @@
                       ${utente.telefono}
                     </c:when>
                     <c:otherwise>
-                      <em style="color: #999;">Non specificato</em>
+                      <em class="valore-non-specificato">Non specificato</em>
                     </c:otherwise>
                   </c:choose>
                 </div>
               </div>
 
               <div class="info-item">
-                <div class="info-label">Indirizzo di Spedizione</div>
+                <div class="info-label">Indirizzo di spedizione</div>
                 <div class="info-value">
                   <c:choose>
                     <c:when test="${not empty utente.indirizzoSpedizione}">
                       ${utente.indirizzoSpedizione}
                     </c:when>
                     <c:otherwise>
-                      <em style="color: #999;">Non specificato</em>
+                      <em class="valore-non-specificato">Non specificato</em>
                     </c:otherwise>
                   </c:choose>
                 </div>
@@ -305,10 +113,10 @@
         <!-- Tab Ordini -->
         <div id="tab-orders" class="tab-content">
           <div class="info-card">
-            <h3 style="color: var(--primary-light); margin-bottom: 1.5rem;">
+            <h3 class="section-title">
               Ordini dell'utente
               <c:if test="${not empty ordiniUtente}">
-                <span style="color: #666; font-size: 0.9rem; font-weight: normal;">(${ordiniUtente.size()} ordini)</span>
+                <span class="muted-count">(${ordiniUtente.size()} ordini)</span>
               </c:if>
             </h3>
 
@@ -324,29 +132,29 @@
                     <div class="order-details">
                       <div class="order-detail-item">
                         <span class="order-detail-label">Totale</span>
-                        <span class="order-detail-value" style="color: var(--primary-light); font-size: 1.1rem;">
-                                                    <c:choose>
-                                                      <c:when test="${ordine.totale != null and ordine.totale > 0}">
-                                                        <fmt:formatNumber value="${ordine.totale}" type="currency" currencySymbol="€" minFractionDigits="2"/>
-                                                      </c:when>
-                                                      <c:otherwise>
-                                                        €0,00
-                                                      </c:otherwise>
-                                                    </c:choose>
-                                                </span>
+                        <span class="order-detail-value order-total">
+                          <c:choose>
+                            <c:when test="${ordine.totale != null and ordine.totale > 0}">
+                              <fmt:formatNumber value="${ordine.totale}" type="currency" currencySymbol="€" minFractionDigits="2"/>
+                            </c:when>
+                            <c:otherwise>
+                              €0,00
+                            </c:otherwise>
+                          </c:choose>
+                        </span>
                       </div>
 
                       <div class="order-detail-item">
-                        <span class="order-detail-label">Metodo di Pagamento</span>
-                        <span class="order-detail-value" style="text-transform: capitalize;">
-                                                    <c:out value="${ordine.metodoDiPagamento}" default="Non specificato"/>
-                                                </span>
+                        <span class="order-detail-label">Metodo di pagamento</span>
+                        <span class="order-detail-value text-cap">
+                          <c:out value="${ordine.metodoDiPagamento}" default="Non specificato"/>
+                        </span>
                       </div>
 
                       <c:if test="${not empty ordine.metodoDiSpedizione}">
                         <div class="order-detail-item">
                           <span class="order-detail-label">Spedizione</span>
-                          <span class="order-detail-value" style="text-transform: capitalize;">
+                          <span class="order-detail-value text-cap">
                               ${ordine.metodoDiSpedizione}
                           </span>
                         </div>
@@ -354,10 +162,10 @@
 
                       <c:if test="${ordine.scontoTotale != null and ordine.scontoTotale > 0}">
                         <div class="order-detail-item">
-                          <span class="order-detail-label">Sconto Applicato</span>
-                          <span class="order-detail-value" style="color: #28a745;">
-                                                        -<fmt:formatNumber value="${ordine.scontoTotale}" type="currency" currencySymbol="€" minFractionDigits="2"/>
-                                                    </span>
+                          <span class="order-detail-label">Sconto applicato</span>
+                          <span class="order-detail-value order-discount">
+                            -<fmt:formatNumber value="${ordine.scontoTotale}" type="currency" currencySymbol="€" minFractionDigits="2"/>
+                          </span>
                         </div>
                       </c:if>
                     </div>
@@ -366,8 +174,7 @@
               </c:when>
               <c:otherwise>
                 <div class="empty-orders">
-                  <div style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></div>
-                  <h4 style="margin-bottom: 1rem; color: #333;">Nessun ordine trovato</h4>
+                  <h4>Nessun ordine trovato</h4>
                   <p>Questo utente non ha ancora effettuato ordini.</p>
                 </div>
               </c:otherwise>
@@ -378,7 +185,7 @@
         <!-- Tab Modifica Contatti -->
         <div id="tab-edit" class="tab-content">
           <div class="info-card">
-            <h3 style="color: var(--primary-light); margin-bottom: 1.5rem;">Modifica Contatti</h3>
+            <h3 class="section-title">Modifica contatti</h3>
 
             <form method="POST" action="${pageContext.request.contextPath}/utente/update-contacts" class="edit-form">
               <input type="hidden" name="id" value="${utente.idUtente}">
@@ -389,20 +196,28 @@
               </div>
 
               <div class="form-group">
-                <label for="indirizzo">Indirizzo di Spedizione</label>
+                <label for="indirizzo">Indirizzo di spedizione</label>
                 <input type="text" id="indirizzo" name="indirizzo" value="${utente.indirizzoSpedizione}" placeholder="Via, Numero, Città, CAP">
               </div>
 
-              <button type="submit" class="btn primary">Aggiorna Contatti</button>
+              <button type="submit" class="btn primary">Aggiorna contatti</button>
             </form>
           </div>
         </div>
 
         <!-- Azioni -->
         <div class="actions">
-          <a href="${pageContext.request.contextPath}/utente/" style="text-decoration: none;color:var(--primary-light)">
-            ← Torna alla Lista
-          </a>
+          <a href="${pageContext.request.contextPath}/utente/" class="link-back">← Torna alla lista</a>
+
+          <c:if test="${sessionScope.utenteSession != null && sessionScope.utenteSession.admin}">
+            <form method="post"
+                  action="${pageContext.request.contextPath}/utente/delete"
+                  onsubmit="return confirm('Confermi l\'eliminazione definitiva di ${utente.nome} ${utente.cognome}?');"
+                  class="form-delete">
+              <input type="hidden" name="id" value="${utente.idUtente}">
+              <button type="submit" class="btn danger">Elimina utente</button>
+            </form>
+          </c:if>
         </div>
 
       </section>
@@ -411,22 +226,14 @@
 </main>
 
 <script>
-  function showTab(tabName) {
-    // Nascondi tutti i tab content
-    document.querySelectorAll('.tab-content').forEach(tab => {
-      tab.classList.remove('active');
-    });
+  function showTab(evt, tabName) {
+    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+    document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
 
-    // Rimuovi active da tutti i bottoni
-    document.querySelectorAll('.tab-button').forEach(btn => {
-      btn.classList.remove('active');
-    });
+    const el = document.getElementById('tab-' + tabName);
+    if (el) el.classList.add('active');
 
-    // Mostra il tab selezionato
-    document.getElementById('tab-' + tabName).classList.add('active');
-
-    // Attiva il bottone corrispondente
-    event.target.classList.add('active');
+    if (evt && evt.currentTarget) evt.currentTarget.classList.add('active');
   }
 </script>
 

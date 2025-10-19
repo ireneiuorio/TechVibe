@@ -18,7 +18,7 @@ public class Utente {
     private String Telefono;
     private String IndirizzoSpedizione;
     private boolean admin;
-    private String stato = "ATTIVO"; // Default: utente attivo
+    private String stato = "ATTIVO";
     private List<Ordine> ordini;
 
     public Utente(){

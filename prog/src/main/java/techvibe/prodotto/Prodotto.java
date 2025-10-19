@@ -1,12 +1,6 @@
 package techvibe.prodotto;
 
-import jakarta.servlet.http.Part;
-import techvibe.categoria.Categoria;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
+import techvibe.Model.categoria.Categoria;
 
 public class Prodotto {
     private int IdProdotto;

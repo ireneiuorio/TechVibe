@@ -5,192 +5,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title></title>
+    <title>Il mio profilo</title>
+    <link rel="icon" type="image/png" href="<%= request.getContextPath() %>/icons/favicon.png">
 
     <jsp:include page="../partials/head.jsp">
         <jsp:param name="title" value="Profilo Amministratore"/>
-        <jsp:param name="styles" value="crm,dashboard"/>
+        <jsp:param name="styles" value="crm,dashboard,profile-admin"/>
         <jsp:param name="scripts" value="crm"/>
     </jsp:include>
-
-    <style>
-        .admin-container {
-            margin-bottom: 5rem;
-        }
-
-        .admin-header {
-            background: var(--primary-light);
-            color: white;
-            padding: 2rem;
-            border-radius: 12px;
-            margin-bottom: 2rem;
-            text-align: center;
-        }
-
-        .admin-header h2 {
-            margin: 0 0 0.5rem 0;
-            font-size: 2.2rem;
-        }
-
-        .admin-header p {
-            margin: 0;
-            opacity: 0.9;
-            font-size: 1.1rem;
-        }
-
-        .admin-tabs {
-            display: flex;
-            background: var(--light-gray);
-            border-radius: 12px;
-            padding: 0.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .tab-button {
-            flex: 1;
-            padding: 1rem;
-            background: none;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-
-        .tab-button.active {
-            background: var(--primary-light);
-            color: white;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        .info-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        .info-card {
-            background: white;
-            border: 1px solid #eee;
-            border-radius: 12px;
-            padding: 2rem;
-        }
-
-        .info-item {
-            margin-bottom: 1.5rem;
-        }
-
-        .info-label {
-            font-weight: 600;
-            color: var(--primary-light);
-            margin-bottom: 0.5rem;
-        }
-
-        .info-value {
-            color: #333;
-            font-size: 1rem;
-            padding: 0.75rem 1rem;
-            background: var(--light-gray);
-            border-radius: 8px;
-        }
-
-        .edit-form {
-            display: grid;
-            gap: 1.5rem;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        .form-group label {
-            font-weight: 600;
-            color: var(--primary-light);
-        }
-
-        .form-group input {
-            padding: 0.75rem 1rem;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 1rem;
-        }
-
-        .form-group input:focus {
-            border-color: var(--primary-light);
-            outline: none;
-        }
-
-        .success-message {
-            background: #d4edda;
-            color: #155724;
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            border-left: 4px solid #28a745;
-        }
-
-        .error-message {
-            background: #f8d7da;
-            color: #721c24;
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            border-left: 4px solid #dc3545;
-        }
-
-
-
-        .requirements-list {
-            background: #e7f3ff;
-            border: 1px solid #b6d7ff;
-            border-radius: 8px;
-            padding: 1rem;
-            margin-bottom: 1rem;
-            font-size: 0.9rem;
-            color: #0066cc;
-        }
-
-        .requirements-list ul {
-            margin: 0.5rem 0 0 1.5rem;
-            padding: 0;
-        }
-
-        .btn-danger {
-            background: var(--primary-light);
-            color: white;
-            border: none;
-            padding: 1rem 2rem;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 1rem;
-            transition: all 0.3s;
-        }
-
-        .btn-danger:hover {
-           background:var(--primary-light);
-        }
-
-        @media (max-width: 768px) {
-            .admin-tabs {
-                flex-direction: column;
-            }
-
-            .info-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
 </head>
 <body>
 
@@ -252,16 +74,16 @@
 
                 <!-- Tabs -->
                 <div class="admin-tabs">
-                    <button class="tab-button active" onclick="showTab('info')">Informazioni</button>
-                    <button class="tab-button" onclick="showTab('email')">Cambia Email</button>
-                    <button class="tab-button" onclick="showTab('password')">Cambia Password</button>
+                    <button class="tab-button active" onclick="showTab(event,'info')">Informazioni</button>
+                    <button class="tab-button" onclick="showTab(event,'email')">Cambia Email</button>
+                    <button class="tab-button" onclick="showTab(event,'password')">Cambia Password</button>
                 </div>
 
                 <!-- Tab Informazioni -->
                 <div id="tab-info" class="tab-content active">
                     <div class="info-grid">
                         <div class="info-card">
-                            <h3 style="color: var(--primary-light); margin-bottom: 1.5rem;">Dati Personali</h3>
+                            <h3 class="section-title">Dati Personali</h3>
 
                             <div class="info-item">
                                 <div class="info-label">Nome Completo</div>
@@ -280,7 +102,7 @@
                         </div>
 
                         <div class="info-card">
-                            <h3 style="color: var(--primary-light); margin-bottom: 1.5rem;">Sicurezza Account</h3>
+                            <h3 class="section-title">Sicurezza Account</h3>
 
                             <div class="info-item">
                                 <div class="info-label">Stato Account</div>
@@ -291,8 +113,6 @@
                                 <div class="info-label">Tipo Account</div>
                                 <div class="info-value">Amministratore</div>
                             </div>
-
-
                         </div>
                     </div>
                 </div>
@@ -300,8 +120,7 @@
                 <!-- Tab Cambio Email -->
                 <div id="tab-email" class="tab-content">
                     <div class="info-card">
-                        <h3 style="color: var(--primary-light); margin-bottom: 1.5rem;">Cambia Email</h3>
-
+                        <h3 class="section-title">Cambia Email</h3>
 
                         <form method="POST" action="${pageContext.request.contextPath}/utente/admin-change-email" class="edit-form" onsubmit="return validateEmailForm()">
                             <div class="form-group">
@@ -322,7 +141,7 @@
                 <!-- Tab Cambio Password -->
                 <div id="tab-password" class="tab-content">
                     <div class="info-card">
-                        <h3 style="color: var(--primary-light); margin-bottom: 1.5rem;">Cambia Password</h3>
+                        <h3 class="section-title">Cambia Password</h3>
 
                         <div class="requirements-list">
                             <strong>Requisiti per la password:</strong>
@@ -360,22 +179,11 @@
 </main>
 
 <script>
-    function showTab(tabName) {
-        // Nascondi tutti i tab content
-        document.querySelectorAll('.tab-content').forEach(tab => {
-            tab.classList.remove('active');
-        });
-
-        // Rimuovi active da tutti i bottoni
-        document.querySelectorAll('.tab-button').forEach(btn => {
-            btn.classList.remove('active');
-        });
-
-        // Mostra il tab selezionato
+    function showTab(evt, tabName) {
+        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+        document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
         document.getElementById('tab-' + tabName).classList.add('active');
-
-        // Attiva il bottone corrispondente
-        event.target.classList.add('active');
+        if (evt && evt.currentTarget) evt.currentTarget.classList.add('active');
     }
 
     function validatePasswordForm() {
@@ -386,39 +194,29 @@
             alert('Le nuove password non coincidono');
             return false;
         }
-
         if (newPassword.length < 6) {
             alert('La password deve essere di almeno 6 caratteri');
             return false;
         }
-
         return confirm('Sei sicuro di voler cambiare la password?');
     }
 
     function validateEmailForm() {
         const newEmail = document.getElementById('newEmail').value;
         const emailRegex = /^[A-Za-z0-9+_.-]+@(.+)$/;
-
         if (!emailRegex.test(newEmail)) {
             alert('Formato email non valido');
             return false;
         }
-
         return confirm('Sei sicuro di voler cambiare l\'email? Dovrai usare la nuova email per accedere.');
     }
 
-    // Gestione tab iniziale basata su parametri URL
     document.addEventListener('DOMContentLoaded', function() {
         const urlParams = new URLSearchParams(window.location.search);
         const tab = urlParams.get('tab');
-
-        if (tab === 'email') {
-            showTab('email');
-        } else if (tab === 'password') {
-            showTab('password');
-        } else {
-            showTab('info');
-        }
+        if (tab === 'email') showTab(null,'email');
+        else if (tab === 'password') showTab(null,'password');
+        else showTab(null,'info');
     });
 </script>
 

@@ -1,12 +1,12 @@
 package techvibe.ordine;
 
-import techvibe.carrello.Carrello;
-import techvibe.carrello.CarrelloItem;
-import techvibe.categoria.Categoria;
-import techvibe.categoria.CategoriaExtractor;
+import techvibe.Model.carrello.Carrello;
+import techvibe.Model.carrello.CarrelloItem;
+import techvibe.Model.categoria.Categoria;
+import techvibe.Model.categoria.CategoriaExtractor;
 import techvibe.prodotto.Prodotto;
 import techvibe.prodotto.ProdottoExtractor;
-import techvibe.components.Paginator;
+import techvibe.Model.components.Paginator;
 import techvibe.storage.QueryBuilder;
 import techvibe.storage.SqlDao;
 import techvibe.utente.Utente;

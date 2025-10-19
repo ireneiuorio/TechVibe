@@ -4,8 +4,8 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
+  <title>Accedi Admin</title>
   <link rel="icon" type="image/png" href="<%= request.getContextPath() %>/icons/favicon.png">
-  <title>Accesso Admin</title>
 
   <jsp:include page="/WEB-INF/views/partials/head.jsp">
     <jsp:param name="styles" value="site"/>

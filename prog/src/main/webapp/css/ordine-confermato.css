@@ -1,0 +1,197 @@
+/* ===========================
+   Stili pagina Ordine Confermato (TechVibe)
+   =========================== */
+
+/* Contenitore e card principale */
+.contenitore-ordine {
+    max-width: 700px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+.card-conferma {
+    text-align: center;
+    background: #fff;
+    padding: 3rem 2rem;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* Icona di successo (senza animazione) */
+.icona-successo {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: #fff;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 2rem;
+    font-size: 3rem;
+    box-shadow: 0 4px 20px rgba(40, 167, 69, 0.3);
+}
+
+/* Titolo e sottotitolo */
+.titolo-ordine {
+    color: var(--primary-light);
+    margin-bottom: 1rem;
+    font-size: 2.5rem;
+}
+.testo-sottotitolo {
+    color: #666;
+    font-size: 1.2rem;
+    margin-bottom: 2.5rem;
+    line-height: 1.6;
+}
+
+/* Box numero ordine */
+.box-numero-ordine {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    padding: 2rem;
+    border-radius: 12px;
+    margin-bottom: 2.5rem;
+    border-left: 5px solid var(--primary-light);
+}
+.etichetta-numero {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    text-align: center;
+}
+.valore-numero {
+    color: var(--primary-light);
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+.stato-confermato {
+    color: #28a745;
+    font-weight: 600;
+    font-size: 1.1rem;
+    text-align: center;
+}
+
+/* Sezione “Cosa succede ora?” */
+.sezione-info {
+    background: #e3f2fd;
+    padding: 2rem;
+    border-radius: 10px;
+    margin-bottom: 2.5rem;
+    text-align: left;
+}
+.titolo-sezione {
+    color: var(--primary-light);
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+.lista-step {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+.step {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem;
+    background: #fff;
+    border-radius: 8px;
+}
+.badge-step {
+    background: var(--primary-light);
+    color: #fff;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+.testo-step {
+    color: #495057;
+}
+
+/* Pulsanti azione */
+.azioni {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+}
+.btn-primario,
+.btn-secondario {
+    color: #fff;
+    padding: 1rem 2rem;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: inline-block;
+    min-width: 150px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+}
+.btn-primario {
+    background: var(--primary-light);
+    box-shadow: 0 3px 10px rgba(0, 123, 255, 0.3);
+}
+.btn-primario:hover {
+    background: #0056b3;
+    transform: translateY(-2px);
+}
+.btn-secondario {
+    background: #6c757d;
+    box-shadow: 0 3px 10px rgba(108, 117, 125, 0.3);
+}
+.btn-secondario:hover {
+    background: #545b62;
+    transform: translateY(-2px);
+}
+
+/* Messaggio di ringraziamento */
+.box-grazie {
+    background: var(--primary-light);
+    padding: 1.5rem;
+    border-radius: 10px;
+    margin-bottom: 2rem;
+}
+.testo-grazie {
+    color: #fff;
+    font-weight: 500;
+    margin: 0;
+    line-height: 1.6;
+}
+
+/* Supporto */
+.box-supporto {
+    padding-top: 1.5rem;
+    border-top: 1px solid #dee2e6;
+}
+.testo-supporto {
+    color: #6c757d;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .azioni {
+        flex-direction: column;
+        align-items: center;
+    }
+    .titolo-ordine {
+        font-size: 2rem;
+    }
+    .icona-successo {
+        width: 80px;
+        height: 80px;
+        font-size: 2.5rem;
+    }
+    .valore-numero {
+        font-size: 1.5rem;
+    }
+}

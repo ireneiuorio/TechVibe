@@ -4,7 +4,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title></title>
+    <title> Crea admin</title>
+    <link rel="icon" type="image/png" href="<%= request.getContextPath() %>/icons/favicon.png">
 
     <jsp:include page="../partials/head.jsp">
         <jsp:param name="title" value="Crea Amministratore"/>

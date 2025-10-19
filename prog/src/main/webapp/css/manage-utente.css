@@ -1,0 +1,155 @@
+/* Contenitore pagina */
+.utente-container { margin-bottom: 5rem; }
+
+/* Header utente */
+.utente-header {
+    background: var(--light-gray);
+    padding: 2rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.utente-info h2 { margin: 0; color: var(--primary-light); }
+.muted-meta { margin: 0.5rem 0 0 0; color:var(--primary-light); }
+
+/* Badge stato */
+.utente-status {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+}
+.status-attivo { background: var(--white); color: var(--success); }
+.status-disattivato { background: var(--white); color: var(--error); }
+.status-admin { background: var(--white); color: var(--primary); }
+
+/* Tabs */
+.utente-tabs {
+    display: flex;
+    background: var(--light-gray);
+    border-radius: 12px;
+    padding: 0.5rem;
+    margin-bottom: 2rem;
+}
+.tab-button {
+    flex: 1;
+    padding: 1rem;
+    background: none;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+.tab-button.active { background: var(--primary-light); color: #fff; }
+
+/* Contenuto tab */
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* Griglia info e card */
+.info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+.info-card {
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    padding: 2rem;
+}
+.section-title { color: var(--primary-light); margin-bottom: 1.5rem; }
+
+/* Righe info */
+.info-item { margin-bottom: 1.5rem; }
+.info-label {
+    font-weight: 600;
+    color: var(--primary-light);
+    margin-bottom: 0.5rem;
+}
+.info-value {
+    color: #333;
+    font-size: 1rem;
+    padding: 0.75rem 1rem;
+    background: var(--light-gray);
+    border-radius: 8px;
+}
+.valore-non-specificato { color: #999; font-style: italic; }
+
+/* Card ordini */
+.order-card {
+    border: 1px solid #eee;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    background: #fafafa;
+}
+.order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #eee;
+}
+.order-id { font-size: 1.1rem; font-weight: 700; color: var(--primary-light); }
+.order-status {
+    background: var(--success);
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+.order-details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+.order-detail-item { display: flex; flex-direction: column; gap: 0.25rem; }
+.order-detail-label { color: #666; font-size: 0.9rem; }
+.order-detail-value { font-weight: 600; color: #333; }
+.order-total { color: var(--primary-light); font-size: 1.1rem; }
+.order-discount { color: var(--success); }
+.text-cap { text-transform: capitalize; }
+.muted-count { color: #666; font-size: 0.9rem; font-weight: 400; }
+
+/* Stato vuoto ordini */
+.empty-orders {
+    text-align: center;
+    padding: 3rem 2rem;
+    background: #f8f9fa;
+    border-radius: 12px;
+    color: #666;
+}
+
+/* Form */
+.edit-form { display: grid; gap: 1.5rem; }
+.form-group { display: flex; flex-direction: column; gap: 0.5rem; }
+.form-group label { font-weight: 600; color: var(--primary-light); }
+.form-group input {
+    padding: 0.75rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+/* Azioni */
+.actions { display: flex; gap: 1rem; margin-top: 2rem; }
+.link-back { text-decoration: none; color: var(--primary-light); }
+.form-delete { margin-left: auto; }
+.btn { padding: 0.75rem 1.25rem; border-radius: 8px; border: 0; cursor: pointer; font-weight: 600; }
+.btn.danger { background:var(--error); color: white; }
+
+/* Responsive */
+@media (max-width: 768px) {
+    .utente-tabs { flex-direction: column; }
+    .info-grid { grid-template-columns: 1fr; }
+    .order-details { grid-template-columns: 1fr; }
+}

@@ -6,6 +6,7 @@
   <title>
     <c:out value="${prodotto.marca}"/> <c:out value="${prodotto.modello}"/> - TechVibe
   </title>
+  <link rel="icon" type="image/png" href="<%= request.getContextPath() %>/icons/favicon.png">
   <jsp:include page="../partials/head.jsp">
     <jsp:param name="title" value="Prodotto"/>
     <jsp:param name="styles" value="site,privacy"/>

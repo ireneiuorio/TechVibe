@@ -1,6 +1,6 @@
 package techvibe.ordine;
 
-import techvibe.components.Paginator;
+import techvibe.Model.components.Paginator;
 
 import java.sql.SQLException;
 import java.util.List;

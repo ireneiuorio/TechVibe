@@ -3,8 +3,9 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <link rel="icon" type="image/png" href="<%= request.getContextPath() %>/icons/favicon.png">
+
   <title>Accesso Cliente</title>
+  <link rel="icon" type="image/png" href="<%= request.getContextPath() %>/icons/favicon.png">
 
   <jsp:include page="/WEB-INF/views/partials/head.jsp">
     <jsp:param name="styles" value="site"/>

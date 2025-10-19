@@ -3,11 +3,10 @@ package techvibe.http;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import techvibe.components.Alert;
+import techvibe.Model.components.Alert;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 public class InvalidRequestException extends RuntimeException {
 

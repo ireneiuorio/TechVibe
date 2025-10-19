@@ -14,6 +14,7 @@
     margin-bottom: 1rem;
 }
 
+/*Sidebar laterale*/
 .sidebar {
     background-color: var(--primary-light);
     padding: 0;
@@ -23,10 +24,11 @@
     min-height: 100vh;
 }
 
+
+/*Menù testule laterale*/
 .menu {
     padding: 0 1rem 1rem 1rem;
 }
-
 .menu > a {
     text-decoration: none;
     color: var(--white);
@@ -36,14 +38,6 @@
     border-radius: 8px;
     transition: background 0.3s;
     margin-bottom: 0.25rem;
-}
-
-.menu > a:hover {
-    background: rgba(255,255,255,0.1);
-}
-
-.menu > a.active {
-    background: rgba(255,255,255,0.2);
 }
 
 .menu > img {
@@ -78,13 +72,15 @@
     overflow-x: auto;
 }
 
+
+/*Barra superiore crm*/
 .top-strip {
     display: flex;
     justify-content: space-between;
     align-items: baseline;
     padding: 1.5rem 2rem 1rem 2rem;
-    background: #f8f9fa;
-    border-bottom: 1px solid #eee;
+    background: var(--white);
+    border-bottom: 1px solid var(--white);
     flex-shrink: 0;
 }
 
@@ -96,7 +92,7 @@
 }
 
 .top-strip .user-info {
-    color: #666;
+    color: var(--light-gray);
     font-size: 0.9rem;
     white-space: nowrap;
 }

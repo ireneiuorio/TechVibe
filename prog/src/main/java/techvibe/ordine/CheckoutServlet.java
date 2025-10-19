@@ -9,12 +9,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
-import techvibe.carrello.Carrello;
-import techvibe.carrello.CarrelloService;
-import techvibe.carrello.CarrelloDao;
-import techvibe.ordine.Ordine;
-import techvibe.ordine.OrdineDao;
-import techvibe.ordine.SqlOrdineDao;
+import techvibe.Model.carrello.Carrello;
+import techvibe.Model.carrello.CarrelloService;
+import techvibe.Model.carrello.SqlCarrelloDao;
 import techvibe.prodotto.SqlProdottoDao;
 import techvibe.utente.Utente;
 import techvibe.utente.UtenteSession;
@@ -26,7 +23,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.Locale;
-import java.util.Optional;
 
 @WebServlet("/checkout/*")
 @MultipartConfig
@@ -45,8 +41,8 @@ public class CheckoutServlet extends HttpServlet {
 
         // Inizializza il servizio carrello
         SqlProdottoDao prodottoDao = new SqlProdottoDao(source);
-        CarrelloDao carrelloDao = new CarrelloDao(source, prodottoDao);
-        carrelloService = new CarrelloService(carrelloDao);
+        SqlCarrelloDao sqlCarrelloDao = new SqlCarrelloDao(source, prodottoDao);
+        carrelloService = new CarrelloService(sqlCarrelloDao);
     }
 
     @Override

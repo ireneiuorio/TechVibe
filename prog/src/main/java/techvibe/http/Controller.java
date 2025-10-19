@@ -1,21 +1,16 @@
 package techvibe.http;
 
 
-import com.sun.jdi.request.InvalidRequestStateException;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import techvibe.carrello.Carrello;
+import techvibe.Model.carrello.Carrello;
 import techvibe.utente.UtenteSession;
 
 
-import javax.naming.directory.InvalidAttributeIdentifierException;
-import javax.print.DocFlavor;
 import javax.sql.DataSource;
-import java.io.File;
-import java.util.Map;
 
 public abstract class Controller extends HttpServlet {
 

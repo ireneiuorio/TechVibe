@@ -4,7 +4,7 @@ import jakarta.annotation.Resource;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
-import techvibe.components.Paginator;
+import techvibe.Model.components.Paginator;
 import techvibe.prodotto.Prodotto;
 import techvibe.prodotto.ProdottoDao;
 import techvibe.prodotto.SqlProdottoDao;
@@ -165,12 +165,14 @@ public class PageServlet extends Controller implements ErrorHandler {
             String path = request.getPathInfo() != null ? request.getPathInfo() : "/";
             switch (path) {
 
+
                 case "/create":
                     UtenteDao<SQLException> utenteDao = new SqlUtenteDao(source);
                     Utente utente = new Utente();
 
                     String password = safe(request.getParameter("password"));
                     String confirm  = safe(request.getParameter("confirm"));
+                    String email    = safe(request.getParameter("email"));
 
                     // --- Controllo password uguali ---
                     if (password == null || confirm == null || !password.equals(confirm)) {
@@ -179,9 +181,23 @@ public class PageServlet extends Controller implements ErrorHandler {
                         break;
                     }
 
+                    // --- Controllo lunghezza password ---
+                    if (password.length() < 8) {
+                        request.setAttribute("error", "La password deve avere almeno 8 caratteri.");
+                        request.getRequestDispatcher("/WEB-INF/views/site/create.jsp").forward(request, response);
+                        break;
+                    }
+
+                    // --- Controllo formato email ---
+                    if (email == null || !email.matches("^[^@\\s]+@[^@\\s]+\\.[^@\\s]{2,}$")) {
+                        request.setAttribute("error", "Inserisci un indirizzo email valido.");
+                        request.getRequestDispatcher("/WEB-INF/views/site/create.jsp").forward(request, response);
+                        break;
+                    }
+
                     utente.setNome(safe(request.getParameter("nome")));
                     utente.setCognome(safe(request.getParameter("cognome")));
-                    utente.setEmail(safe(request.getParameter("email")));
+                    utente.setEmail(email);
                     try {
                         utente.setPassword(password);  // la tua logica di hash rimane invariata
                     } catch (NoSuchAlgorithmException ex) {
@@ -210,7 +226,6 @@ public class PageServlet extends Controller implements ErrorHandler {
                         throw new RuntimeException(e);
                     }
                     break;
-
 
                 default:
                     notFound();

@@ -1,10 +1,12 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %> <!-- Aggiunta qui in alto -->
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<!-- Aggiunta qui in alto -->
 
 <!DOCTYPE html>
 <html>
 <head>
-    <title></title>
+    <title>Crea Prodotto</title>
+    <link rel="icon" type="image/png" href="<%= request.getContextPath() %>/icons/favicon.png">
 
     <jsp:include page="../partials/head.jsp">
         <jsp:param name="title" value="Gestione Prodotto"/>
@@ -21,15 +23,15 @@
 <body>
 
 <main class="app">
-    <%@include file="../partials/crm/sidebar.jsp"%>
-    <section class="content grid-y" >
-        <%@include file="../partials/crm/header.jsp"%>
+    <%@include file="../partials/crm/sidebar.jsp" %>
+    <section class="content grid-y">
+        <%@include file="../partials/crm/header.jsp" %>
         <div class="body grid-x justify-center">
 
             <section class="grid-y cell w75">
 
 
-                <jsp:include page="../partials/site/alert.jsp" />
+                <jsp:include page="../partials/site/alert.jsp"/>
 
                 <form method="post" action="${pageContext.request.contextPath}/Upload" enctype="multipart/form-data">
 
@@ -45,7 +47,8 @@
                         </label>
 
                         <label class="field cell w50">
-                            <input id="SistemaOperativo" name="sistemaOperativo" placeholder="Sistema Operativo" type="text">
+                            <input id="SistemaOperativo" name="sistemaOperativo" placeholder="Sistema Operativo"
+                                   type="text">
                         </label>
 
                         <label class="field cell w50">
@@ -65,7 +68,8 @@
                         </label>
 
                         <label class="field cell w50">
-                            <input id="QuantitaDisponibile" name="qtDisponibile" placeholder="Quantità disponibile" type="number" min="0">
+                            <input id="QuantitaDisponibile" name="qtDisponibile" placeholder="Quantità disponibile"
+                                   type="number" min="0">
                         </label>
 
                         <label class="field cell w50">
@@ -73,11 +77,13 @@
                         </label>
 
                         <label class="field cell w50">
-                            <input id="DimensioneSchermo" name="dimensioneSchermo" placeholder="Dimensione schermo (pollici)" type="number" step="0.1" min="0">
+                            <input id="DimensioneSchermo" name="dimensioneSchermo"
+                                   placeholder="Dimensione schermo (pollici)" type="number" step="0.1" min="0">
                         </label>
 
                         <label class="field cell w50">
-                            <input id="PercentualeSconto" name="percentualeSconto" placeholder="Percentuale Sconto %" type="number" step="0.1" min="0">
+                            <input id="PercentualeSconto" name="percentualeSconto" placeholder="Percentuale Sconto %"
+                                   type="number" step="0.1" min="0">
                         </label>
 
                         <label class="field cell w50">
@@ -99,14 +105,7 @@
 
 
         </div>
-
     </section>
-
-
-
-
-
-
 </main>
 
 </body>

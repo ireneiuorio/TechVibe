@@ -1,10 +1,8 @@
 package techvibe.prodotto;
 
-import techvibe.components.Paginator;
+import techvibe.Model.components.Paginator;
 import techvibe.search.Condition;
 
-import java.security.KeyStore;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 

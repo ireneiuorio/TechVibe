@@ -4,28 +4,22 @@ import jakarta.annotation.Resource;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
-import org.eclipse.tags.shaded.org.apache.bcel.generic.NEW;
-import techvibe.categoria.Categoria;
-import techvibe.components.Paginator;
+import techvibe.Model.components.Paginator;
 import techvibe.http.Controller;
 import techvibe.http.ErrorHandler;
-import techvibe.http.InvalidRequestException;
 import techvibe.http.CommonValidator;
 import techvibe.ordine.Ordine;
 import techvibe.ordine.OrdineDao;
 import techvibe.ordine.SqlOrdineDao;
-import techvibe.prodotto.Prodotto;
-import techvibe.prodotto.ProdottoDao;
 import techvibe.prodotto.SqlProdottoDao;
 // Imports per il carrello
-import techvibe.carrello.CarrelloService;
-import techvibe.carrello.CarrelloDao;
+import techvibe.Model.carrello.CarrelloService;
+import techvibe.Model.carrello.SqlCarrelloDao;
 
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,8 +37,8 @@ public class UtenteServlet extends Controller implements ErrorHandler {
 
         // Inizializza il servizio carrello
         SqlProdottoDao prodottoDao = new SqlProdottoDao(source);
-        CarrelloDao carrelloDao = new CarrelloDao(source, prodottoDao);
-        carrelloService = new CarrelloService(carrelloDao);
+        SqlCarrelloDao sqlCarrelloDao = new SqlCarrelloDao(source, prodottoDao);
+        carrelloService = new CarrelloService(sqlCarrelloDao);
     }
 
     @Override
@@ -181,11 +175,11 @@ public class UtenteServlet extends Controller implements ErrorHandler {
                 break;
 
             case "/signup":
-                request.getRequestDispatcher("/WEB-INF/views/site/singup.jsp").forward(request, response);
+                request.getRequestDispatcher("/WEB-INF/views/site/create.jsp").forward(request, response);
                 break;
 
             case "/signin":
-                request.getRequestDispatcher("/WEB-INF/views/site/singin.jsp").forward(request, response);
+                request.getRequestDispatcher("/WEB-INF/views/site/accediutente.jsp").forward(request, response);
                 break;
 
             case "/logout":
@@ -344,7 +338,7 @@ public class UtenteServlet extends Controller implements ErrorHandler {
                         throw new RuntimeException("Errore DB durante controllo stato", e);
                     }
 
-                    request.getRequestDispatcher("/WEB-INF/views/site/singin.jsp").forward(request, response);
+                    request.getRequestDispatcher("/WEB-INF/views/site/accediutente.jsp").forward(request, response);
                     return;
                 }
 
@@ -780,6 +774,28 @@ public class UtenteServlet extends Controller implements ErrorHandler {
                 }
                 break;
 
+            case "/delete": {
+                HttpSession s = request.getSession(false);
+                UtenteSession us = (s != null) ? (UtenteSession) s.getAttribute("utenteSession") : null;
+                if (us == null || !us.isAdmin()) { response.sendError(HttpServletResponse.SC_FORBIDDEN); return; }
+
+                int userId = Integer.parseInt(request.getParameter("id"));
+                // opzionale ma consigliato: non permettere l'auto-eliminazione
+                if (userId == us.getId()) {
+                    response.sendRedirect(request.getContextPath() + "/utente/?error=self_delete");
+                    return;
+                }
+
+                boolean ok = false;
+                try {
+                    ok = utenteDao.deleteAccountWithRelations(userId);
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+                response.sendRedirect(request.getContextPath() + "/utente/?"
+                        + (ok ? "success=deleted" : "error=delete_failed"));
+                break;
+            }
 
             default:
                 notFound();

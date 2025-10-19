@@ -1,0 +1,122 @@
+/* Contenitore pagina */
+.prodotto-container {
+    margin-bottom: 5rem;
+}
+
+/* Header prodotto */
+.prodotto-header {
+    background: var(--light-gray);
+    padding: 2rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.prodotto-info h2 {
+    margin: 0;
+    color: var(--primary-light);
+}
+.muted-meta {
+    margin: 0.5rem 0 0 0;
+    color: var(--primary-dark);
+}
+
+/* Badge stato */
+.prodotto-status {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+}
+.status-disponibile { background:var(--white); color:var(--success); }
+.status-esaurito { background:var(--white); color:var(--error); }
+.status-sconto { background:var(--white); color:var(--success);margin-left: 0.5rem; }
+
+/* Tabs */
+.prodotto-tabs {
+    display: flex;
+    background: var(--light-gray);
+    border-radius: 12px;
+    padding: 0.5rem;
+    margin-bottom: 2rem;
+}
+.tab-button {
+    flex: 1;
+    padding: 1rem;
+    background: none;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+.tab-button.active { background: var(--primary-light); color: #fff; }
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* Carte e griglia info */
+.info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+.info-card {
+    background: var(--white);
+    border: 1px solid #eee;
+    border-radius: 12px;
+    padding: 2rem;
+}
+.section-title {
+    color: var(--primary-light);
+    margin-bottom: 1.5rem;
+}
+
+/* Righe info */
+.info-item { margin-bottom: 1.5rem; }
+.info-label {
+    font-weight: 600;
+    color: var(--primary-light);
+    margin-bottom: 0.5rem;
+}
+.info-value {
+    color: #333;
+    font-size: 1rem;
+    padding: 0.75rem 1rem;
+    background: var(--light-gray);
+    border-radius: 8px;
+}
+.valore-non-specificato { color: #999; font-style: italic; }
+
+/* Form modifica */
+.edit-form { display: grid; gap: 1.5rem; }
+.form-group { display: flex; flex-direction: column; gap: 0.5rem; }
+.form-group label { font-weight: 600; color: var(--primary-light); }
+.form-group input,
+.form-group select {
+    padding: 0.75rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+/* Utility griglia 2 colonne */
+.grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+/* Azioni e link */
+.actions { display: flex; gap: 1rem; margin-top: 2rem; }
+.link-back { text-decoration: none; color: var(--primary-light); }
+
+/* Prezzi */
+.prezzo-scontato { color: var(--success); font-weight: bold; }
+.prezzo-originale { text-decoration: line-through; color: var(--dark-gray); margin-left: 0.5rem; }
+
+/* Bottoni */
+.btn-danger { background: var(--primary-light); color: var(--white); }

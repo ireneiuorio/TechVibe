@@ -1,11 +1,8 @@
 package techvibe.ordine;
 
-import techvibe.carrello.Carrello;
-import techvibe.categoria.Categoria;
-import techvibe.prodotto.Prodotto;
+import techvibe.Model.carrello.Carrello;
+import techvibe.Model.categoria.Categoria;
 import techvibe.utente.Utente;
-
-import java.util.List;
 
 public class Ordine {
     private int IdOrdine;

@@ -1,6 +1,6 @@
 package techvibe.prodotto;
 
-import techvibe.categoria.Categoria;
+import techvibe.Model.categoria.Categoria;
 import techvibe.storage.ResultSetExtractor;
 
 import java.sql.ResultSet;

@@ -1,12 +1,8 @@
 package techvibe.utente;
 
-import org.apache.taglibs.standard.tag.el.sql.QueryTag;
-import techvibe.components.Paginator;
-import techvibe.prodotto.ProdottoExtractor;
+import techvibe.Model.components.Paginator;
 import techvibe.storage.QueryBuilder;
-import techvibe.storage.ResultSetExtractor;
 import techvibe.storage.SqlDao;
-import techvibe.storage.TableQuery;
 
 import javax.sql.DataSource;
 import java.security.NoSuchAlgorithmException;
@@ -90,18 +86,6 @@ public class SqlUtenteDao extends SqlDao implements UtenteDao<SQLException> {
         }
     }
 
-    @Override
-    public Boolean deleteAccount(int id) throws SQLException {
-        try (Connection conn = source.getConnection()) {
-            QueryBuilder queryBuilder = new QueryBuilder("utente", "ute");
-            queryBuilder.delete().where("idaccount=?");
-            try (PreparedStatement ps = conn.prepareStatement(queryBuilder.generateQuery())) {
-                ps.setInt(1, id);
-                int rows = ps.executeUpdate();
-                return rows == 1;
-            }
-        }
-    }
 
     @Override
     public Boolean updateUtente(Utente utente) throws SQLException {
@@ -121,6 +105,43 @@ public class SqlUtenteDao extends SqlDao implements UtenteDao<SQLException> {
             }
         }
     }
+
+    public boolean deleteAccountWithRelations(int userId) throws SQLException {
+        try (Connection c = source.getConnection()) {
+            try {
+                c.setAutoCommit(false);
+                // 1) Cancella carrello_items via join carrelli
+                try (PreparedStatement ps = c.prepareStatement(
+                        "DELETE ci FROM carrello_items ci " +
+                                "JOIN carrelli ca ON ca.id_carrello = ci.id_carrello " +
+                                "WHERE ca.id_utente = ?")) {
+                    ps.setInt(1, userId);
+                    ps.executeUpdate();
+                }
+                // 2) Cancella carrelli
+                try (PreparedStatement ps = c.prepareStatement(
+                        "DELETE FROM carrelli WHERE id_utente = ?")) {
+                    ps.setInt(1, userId);
+                    ps.executeUpdate();
+                }
+                // 3) (Scelta) ordini: SET NULL o cancellali se le regole lo consentono
+                // 4) Cancella utente
+                try (PreparedStatement ps = c.prepareStatement(
+                        "DELETE FROM utente WHERE idaccount = ?")) {
+                    ps.setInt(1, userId);
+                    int rows = ps.executeUpdate();
+                    c.commit();
+                    return rows == 1;
+                }
+            } catch (SQLException ex) {
+                c.rollback();
+                throw ex;
+            } finally {
+                c.setAutoCommit(true);
+            }
+        }
+    }
+
 
     // NUOVO METODO: Cambia stato utente
     public Boolean cambiaStatoUtente(int idUtente, String nuovoStato) throws SQLException {

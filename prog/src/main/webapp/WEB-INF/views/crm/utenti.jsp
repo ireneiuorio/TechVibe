@@ -1,7 +1,8 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8" %>
 <html>
 <head>
-    <title>TechVibe</title>
+    <title>Gestisci Utenti</title>
+    <link rel="icon" type="image/png" href="<%= request.getContextPath() %>/icons/favicon.png">
     <jsp:include page="../partials/head.jsp">
         <jsp:param name="title" value="TechVibe"/>
         <jsp:param name="styles" value="crm,utenti"/>

@@ -13,7 +13,6 @@
 
 
 <%
-
     response.sendRedirect("./pages/");
 %>
 

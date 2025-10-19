@@ -4,7 +4,7 @@ import jakarta.annotation.Resource;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
-import techvibe.components.Paginator;
+import techvibe.Model.components.Paginator;
 import techvibe.http.CommonValidator;
 import techvibe.http.Controller;
 import techvibe.http.ErrorHandler;
