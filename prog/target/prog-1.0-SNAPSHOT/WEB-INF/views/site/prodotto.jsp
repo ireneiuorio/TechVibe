@@ -1,3 +1,4 @@
+
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -7,8 +8,10 @@
     <title>${prodotto.marca} ${prodotto.modello} - TechVibe</title>
     <link rel="icon" type="image/png" href="<%= request.getContextPath() %>/icons/favicon.png">
     <jsp:include page="/WEB-INF/views/partials/head.jsp">
-        <jsp:param name="styles" value="site,prodotto"/>
+        <jsp:param name="styles" value="dashboard,site,prodotto-dettaglio-techvibe"/>
     </jsp:include>
+    <!-- nuovo css della pagina -->
+
 </head>
 <body>
 <main class="app">
@@ -57,33 +60,28 @@
             <div class="prezzo">
                 <c:choose>
                     <c:when test="${prodotto.inSconto}">
-                        <!-- Prodotto in sconto -->
-                        <div style="display: flex; flex-direction: column; gap: 5px;">
-                            <!-- Prezzo originale barrato -->
-                            <div style="font-size: 1.2rem; text-decoration: line-through; color: #999;">
+                        <div class="box-prezzo">
+                            <div class="prezzo-originale">
                                 <fmt:formatNumber value="${prodotto.prezzoOriginale}" type="currency" currencySymbol="€"
                                                   minFractionDigits="2" maxFractionDigits="2"/>
                             </div>
-                            <!-- Prezzo scontato -->
-                            <div style="font-size: 2rem; color: var(--primary-light); font-weight: bold;">
+                            <div class="prezzo-scontato">
                                 <fmt:formatNumber value="${prodotto.prezzoFinale}" type="currency" currencySymbol="€"
                                                   minFractionDigits="2" maxFractionDigits="2"/>
                             </div>
-                            <!-- Badge sconto e risparmio -->
-                            <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-                                <span style="background: var(--primary-light); color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.9rem; font-weight: bold;">
-                                    -${prodotto.percentualeSconto}% di sconto
-                                </span>
-                                <span style="color: var(--primary-light); font-size: 0.9rem; font-weight: 500;">
+                            <div class="riga-sconto">
+                                <span class="badge-sconto">-${prodotto.percentualeSconto}% di sconto</span>
+                                <span class="importo-risparmio">
                                     Risparmi <fmt:formatNumber value="${prodotto.importoRisparmiato}" type="currency" currencySymbol="€" minFractionDigits="2"/>
                                 </span>
                             </div>
                         </div>
                     </c:when>
                     <c:otherwise>
-                        <!-- Prezzo normale -->
-                        <fmt:formatNumber value="${prodotto.prezzo}" type="currency" currencySymbol="€"
-                                          minFractionDigits="2" maxFractionDigits="2"/>
+                        <div class="prezzo-scontato">
+                            <fmt:formatNumber value="${prodotto.prezzo}" type="currency" currencySymbol="€"
+                                              minFractionDigits="2" maxFractionDigits="2"/>
+                        </div>
                     </c:otherwise>
                 </c:choose>
             </div>
@@ -152,7 +150,7 @@
                         </button>
                     </c:when>
                     <c:otherwise>
-                        <button type="button" class="btn-carrello" disabled style="background: #ccc;">
+                        <button type="button" class="btn-carrello btn-disabilitato" disabled>
                             Non Disponibile
                         </button>
                     </c:otherwise>
@@ -165,39 +163,37 @@
 </main>
 
 <script>
-    // Funzione per cambiare immagine
+    // Cambia immagine grande
     function cambiaImmagine(src) {
-        document.getElementById('img-grande').src = src;
+        const grande = document.getElementById('img-grande');
+        if (!grande) return;
+        grande.src = src;
 
-        // Aggiorna miniature attive
-        document.querySelectorAll('.mini').forEach(mini => {
-            mini.classList.remove('attiva');
-        });
-
-        // Attiva miniature corrente
-        document.querySelectorAll('.mini').forEach(mini => {
-            if (mini.src === src) {
-                mini.classList.add('attiva');
-            }
-        });
+        // Aggiorna stato "attiva"
+        document.querySelectorAll('.mini').forEach(m => m.classList.remove('attiva'));
+        document.querySelectorAll('.mini').forEach(m => { if (m.src === src) m.classList.add('attiva'); });
     }
 
-    // Funzione specifica per aggiungere al carrello con quantità personalizzata
+    // Aggiungi al carrello con quantità
     function aggiungiAlCarrelloConQuantita(prodottoId) {
-        const quantitaInput = document.getElementById('quantity');
-        const quantita = parseInt(quantitaInput.value) || 1;
-
-        // Chiama la funzione globale del carrello
-        aggiungiAlCarrello(prodottoId, quantita);
+        const quantita = parseInt(document.getElementById('quantity').value) || 1;
+        const btn = document.querySelector('.add-to-cart');
+        if (btn) btn.setAttribute('data-qty', quantita);
+        // funzione globale del tuo progetto
+        if (typeof aggiungiAlCarrello === 'function') {
+            aggiungiAlCarrello(prodottoId, quantita);
+        }
     }
 
-    // Aggiorna il data-qty quando cambia la quantità
-    document.getElementById('quantity').addEventListener('change', function() {
-        const button = document.querySelector('.add-to-cart');
-        if (button) {
-            button.setAttribute('data-qty', this.value);
-        }
-    });
+    // Sync data-qty quando cambia la quantità
+    (function () {
+        const q = document.getElementById('quantity');
+        if (!q) return;
+        q.addEventListener('change', function () {
+            const btn = document.querySelector('.add-to-cart');
+            if (btn) btn.setAttribute('data-qty', this.value);
+        });
+    })();
 </script>
 
 </body>
