@@ -1,6 +1,6 @@
 package techvibe.Model.categoria;
 
-import techvibe.prodotto.Prodotto;
+import techvibe.Model.prodotto.Prodotto;
 
 import java.util.List;
 

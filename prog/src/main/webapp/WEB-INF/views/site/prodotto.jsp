@@ -103,7 +103,7 @@
 
             <!-- SPECIFICHE TECNICHE -->
             <div class="caratteristiche">
-                <h3>Caratteristiche</h3>
+                <h3>Caratteristiche:</h3>
                 <div class="lista-caratteristiche">
                     <div class="caratteristica">
                         <span class="nome-caratteristica">Sistema:</span>
@@ -138,6 +138,7 @@
                     <label for="quantity">Quantità:</label>
                     <input type="number" id="quantity" name="quantita" value="1" min="1" max="${prodotto.qtDisponibile}" class="input-quantita">
                 </div>
+
 
                 <c:choose>
                     <c:when test="${prodotto.qtDisponibile > 0}">

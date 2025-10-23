@@ -1,63 +1,37 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<!-- Definisci variabile globale per il context path -->
+<!-- Script per contextPath e carrello -->
 <script>
     window.contextPath = '${pageContext.request.contextPath}';
 </script>
-
-<!-- Includi JavaScript carrello -->
 <script src="${pageContext.request.contextPath}/js/carrello.js"></script>
 
-<style>
-    /* mantiene la navbar bloccata durante lo scroll*/
-    .navbar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        z-index: 1000;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-    }
-
-    body {
-        padding-top: 70px;
-    }
-
-    /* Badge carrello */
-    .badge {
-        position: absolute;
-        top: -6px;
-        right: -8px;
-        min-width: 16px;
-        height: 16px;
-        padding: 0 4px;
-        border-radius: 999px;
-        background: red;
-        color: #fff;
-        font-size: 10px;
-        font-weight: 700;
-        line-height: 16px;
-        text-align: center;
-    }
-</style>
+<!-- Link al CSS della navbar -->
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/header.css">
 
 <!-- Navbar -->
-<header class="navbar">
+<header class="navbar" id="mainNavbar">
     <div class="logo">
         <a href="${pageContext.request.contextPath}/pages" style="color: white">TechVibe</a>
     </div>
 
-    <nav class="nav-links">
+    <nav class="nav-links" id="navLinks">
         <a href="${pageContext.request.contextPath}/pages">Home</a>
 
-        <!-- Categorie con dropdown -->
+        <!-- Dropdown categorie (solo desktop) -->
         <div class="dropdown">
             <a href="#" class="dropbtn" aria-haspopup="true" aria-expanded="false">Categorie</a>
             <div class="dropdown-content" role="menu" aria-label="Categorie">
                 <a role="menuitem" href="${pageContext.request.contextPath}/pages/smartphone">Smartphone</a>
                 <a role="menuitem" href="${pageContext.request.contextPath}/pages/tablet">Tablet</a>
             </div>
+        </div>
+
+        <!-- Link categorie diretti (solo mobile, uno sotto l'altro) -->
+        <div class="mobile-category-links">
+            <a href="${pageContext.request.contextPath}/pages/smartphone">Smartphone</a>
+            <a href="${pageContext.request.contextPath}/pages/tablet">Tablet</a>
         </div>
 
         <a href="${pageContext.request.contextPath}/prodotti/offerte">Offerte</a>
@@ -67,25 +41,77 @@
     <div class="menu">
         <c:choose>
             <c:when test="${not empty sessionScope.utenteSession}">
-                <a href="${pageContext.request.contextPath}/utente/logout" class="shopping-cart">
-
-                        <img id="logout" src="<%= request.getContextPath() %>/icons/logout.svg" alt="log">
+                <!-- Utente loggato -->
+                <a href="${pageContext.request.contextPath}/utente/logout"
+                   class="shopping-cart"
+                   aria-label="Logout">
+                    <img id="logout"
+                         src="${pageContext.request.contextPath}/icons/logout.svg"
+                         alt="Logout">
                 </a>
-                <a href="${pageContext.request.contextPath}/utente/profile" class="shopping-cart">
-                    <img id="ute1" src="<%= request.getContextPath() %>/icons/account.svg" alt="ute">
+                <a href="${pageContext.request.contextPath}/utente/profile"
+                   class="shopping-cart"
+                   aria-label="Profilo utente">
+                    <img id="ute1"
+                         src="${pageContext.request.contextPath}/icons/account.svg"
+                         alt="Profilo">
                 </a>
             </c:when>
             <c:otherwise>
-                <a href="${pageContext.request.contextPath}/pages/accedi" class="shopping-cart">
-                    <img id="uten" src="<%= request.getContextPath() %>/icons/account.svg" alt="ute">
+                <!-- Utente non loggato -->
+                <a href="${pageContext.request.contextPath}/pages/accedi"
+                   class="shopping-cart"
+                   aria-label="Accedi">
+                    <img id="uten"
+                         src="${pageContext.request.contextPath}/icons/account.svg"
+                         alt="Accedi">
                 </a>
             </c:otherwise>
         </c:choose>
 
-        <a href="${pageContext.request.contextPath}/carrello/view" class="shopping-cart">
-            <img id="car" src="<%= request.getContextPath() %>/icons/sc.svg" alt="Carrello">
+        <!-- Carrello -->
+        <a href="${pageContext.request.contextPath}/carrello/view"
+           class="shopping-cart"
+           aria-label="Carrello">
+            <img id="car"
+                 src="${pageContext.request.contextPath}/icons/sc.svg"
+                 alt="Carrello">
             <span class="badge" id="cart-count">0</span>
         </a>
     </div>
+
+    <!-- Pulsante hamburger con icona esterna -->
+    <button class="navbar-toggle" id="navbarToggle" aria-label="Toggle menu" aria-expanded="false">
+        <img class="icon-menu" src="${pageContext.request.contextPath}/icons/menu.svg" alt="">
+    </button>
 </header>
 
+<script>
+    // Toggle menu mobile
+    (function() {
+        const toggle = document.getElementById('navbarToggle');
+        const navLinks = document.getElementById('navLinks');
+
+        if (toggle && navLinks) {
+            toggle.addEventListener('click', function() {
+                // Toggle classi
+                this.classList.toggle('active');
+                navLinks.classList.toggle('open');
+
+                // Aggiorna aria-expanded
+                const isOpen = navLinks.classList.contains('open');
+                this.setAttribute('aria-expanded', isOpen);
+            });
+
+            // Chiudi menu quando si clicca su un link
+            const links = navLinks.querySelectorAll('a');
+            links.forEach(link => {
+                link.addEventListener('click', function() {
+                    toggle.classList.remove('active');
+                    navLinks.classList.remove('open');
+                    toggle.setAttribute('aria-expanded', 'false');
+                });
+            });
+        }
+    })();
+</script>

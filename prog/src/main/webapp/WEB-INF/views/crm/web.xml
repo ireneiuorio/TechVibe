@@ -11,7 +11,7 @@
 
     <servlet>
         <servlet-name>UtenteServlet</servlet-name>
-        <servlet-class>techvibe.utente.UtenteServlet</servlet-class>
+        <servlet-class>techvibe.Controller.UtenteServlet</servlet-class>
     </servlet>
 
     <resource-ref>

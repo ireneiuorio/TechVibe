@@ -1,6 +1,6 @@
 package techvibe.Model.carrello;
 
-import techvibe.prodotto.Prodotto;
+import techvibe.Model.prodotto.Prodotto;
 
 import java.util.ArrayList;
 import java.util.List;

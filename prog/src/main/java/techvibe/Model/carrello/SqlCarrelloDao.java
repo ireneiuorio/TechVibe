@@ -1,8 +1,8 @@
 package techvibe.Model.carrello;
 
-import techvibe.prodotto.Prodotto;
-import techvibe.prodotto.SqlProdottoDao;
-import techvibe.storage.QueryBuilder;
+import techvibe.Model.prodotto.Prodotto;
+import techvibe.Model.prodotto.SqlProdottoDao;
+import techvibe.Model.storage.QueryBuilder;
 
 import javax.sql.DataSource;
 import java.sql.*;

@@ -85,17 +85,18 @@
     border-left: 4px solid #dc3545;
 }
 
-/* Requisiti password */
 .requirements-list {
-    background: #e7f3ff;
-    border: 1px solid #b6d7ff;
-    border-radius: 8px;
-    padding: 1rem;
-    margin-bottom: 1rem;
+    background:white;
+    margin-bottom: 1.2rem;
     font-size: 0.9rem;
-    color: #0066cc;
+    color:var(--primary-light);
 }
-.requirements-list ul { margin: 0.5rem 0 0 1.5rem; padding: 0; }
+
+.requirements-list ul {
+    margin-top:0.5rem;
+    margin-left:1rem;
+    padding: 0;
+}
 
 /* Form */
 .edit-form { display: grid; gap: 1.5rem; }

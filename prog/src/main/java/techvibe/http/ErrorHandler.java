@@ -1,9 +1,8 @@
 package techvibe.http;
 
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import techvibe.utente.UtenteSession;
+import techvibe.Model.utente.UtenteSession;
 
 import java.util.List;
 

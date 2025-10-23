@@ -1,8 +1,8 @@
 package techvibe.Model.categoria;
 
 import techvibe.Model.components.Paginator;
-import techvibe.storage.QueryBuilder;
-import techvibe.storage.SqlDao;
+import techvibe.Model.storage.QueryBuilder;
+import techvibe.Model.storage.SqlDao;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

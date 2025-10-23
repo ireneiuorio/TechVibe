@@ -7,7 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import techvibe.Model.carrello.Carrello;
-import techvibe.utente.UtenteSession;
+import techvibe.Model.utente.UtenteSession;
 
 
 import javax.sql.DataSource;

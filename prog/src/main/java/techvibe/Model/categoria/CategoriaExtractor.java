@@ -1,6 +1,6 @@
 package techvibe.Model.categoria;
 
-import techvibe.storage.ResultSetExtractor;
+import techvibe.Model.storage.ResultSetExtractor;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

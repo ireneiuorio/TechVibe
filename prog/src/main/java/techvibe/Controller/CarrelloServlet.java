@@ -11,8 +11,8 @@ import jakarta.servlet.http.HttpSession;
 import techvibe.Model.carrello.Carrello;
 import techvibe.Model.carrello.SqlCarrelloDao;
 import techvibe.Model.carrello.CarrelloService;
-import techvibe.prodotto.Prodotto;
-import techvibe.prodotto.SqlProdottoDao;
+import techvibe.Model.prodotto.Prodotto;
+import techvibe.Model.prodotto.SqlProdottoDao;
 
 import javax.sql.DataSource;
 import java.io.IOException;

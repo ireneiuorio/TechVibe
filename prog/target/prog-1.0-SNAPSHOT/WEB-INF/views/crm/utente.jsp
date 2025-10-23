@@ -47,6 +47,9 @@
                             <input type="email" name="email" id="email" placeholder="Email" required>
                         </label>
 
+
+
+
                         <label class="field cell w50">
                             <input id="password" name="password" placeholder="Password" type="password" required>
                         </label>
@@ -71,3 +74,21 @@
 
 </body>
 </html>
+
+<script>
+    (function () {
+        const email = document.getElementById('email');
+
+        // Se il server ha rilevato l'email occupata, imposta l'errore nativo
+        <% if ("Email già esistente nel sistema".equals(request.getAttribute("errorMessage"))) { %>
+        email.setCustomValidity('Email già registrata');
+        // Mostra subito il messaggio nativo del browser
+        email.reportValidity();
+        <% } %>
+
+        // Appena l'utente digita, rimuovi l'errore
+        email.addEventListener('input', () => {
+            email.setCustomValidity('');
+        });
+    })();
+</script>
