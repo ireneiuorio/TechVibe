@@ -11,7 +11,7 @@
     <jsp:include page="../partials/head.jsp">
         <jsp:param name="title" value="TechVibe"/>
         <jsp:param name="styles" value="site,dashboard,home-techvibe"/>
-        <jsp:param name="scripts" value="crm,home"/>
+        <jsp:param name="scripts" value="crm,home-techvibe"/>
     </jsp:include>
 
 </head>
@@ -115,3 +115,4 @@
 
 </body>
 </html>
+
