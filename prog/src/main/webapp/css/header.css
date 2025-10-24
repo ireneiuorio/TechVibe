@@ -11,8 +11,6 @@ body {
     padding-top: 70px;
 }
 
-
-
 /* ========== NAVBAR STYLES ========== */
 
 .navbar {
@@ -234,11 +232,11 @@ body {
         transition: height 0.3s ease;
     }
 
-    /* Logo centrato a tutta larghezza */
+    /* Logo a sinistra a tutta larghezza */
     .navbar .logo {
         flex: 1 0 100%;
         display: flex;
-        justify-content: center;
+        justify-content: flex-start; /* FIX: logo a sinistra su mobile */
         order: 1;
     }
 
@@ -316,7 +314,6 @@ body {
     .navbar-toggle span::after {
         bottom: -7px;
     }
-
 
     /* Link navigazione: collassabili */
     .navbar .nav-links {

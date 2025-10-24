@@ -50,18 +50,18 @@ public class CarrelloServlet extends HttpServlet {
             switch (pathInfo) {
 
                 case "/view":
-                    HttpSession session = request.getSession(false);
+                    HttpSession session = request.getSession(false); //prende la sessione corrente, se non c'è la crea
                     Carrello carrello = carrelloService.getCarrello(session);
                     request.setAttribute("carrello", carrello);
                     request.getRequestDispatcher("/WEB-INF/views/site/carrello.jsp").forward(request, response);
                     break;
 
                 case "/count":
-                    response.setContentType("application/json");
+                    response.setContentType("application/json"); //Si tratta di JSON
                     HttpSession countSession = request.getSession(false);
                     int count = carrelloService.getNumeroArticoli(countSession);
-                    PrintWriter countWriter = response.getWriter();
-                    countWriter.print("{\"count\": " + count + "}"); //json numero totale pezzi nel carrello
+                    PrintWriter countWriter = response.getWriter(); //scrive direttamente nel corpo della risposta che il client riceverà
+                    countWriter.print("{\"count\": " + count + "}");
                     break;
 
                 case "/totale":
@@ -72,8 +72,8 @@ public class CarrelloServlet extends HttpServlet {
                     totaleWriter.printf(Locale.US, "{\"totale\": %.2f}", totale);
                     break;
 
-                case "/sync":
-                    // Endpoint per sincronizzare il carrello (utile per AJAX periodici)
+                case "/sync": //Per chiamate AJAX
+                    //Sincronizza il carrello sessione-database
                     response.setContentType("application/json");
                     HttpSession syncSession = request.getSession(false);
                     if (syncSession != null) {
