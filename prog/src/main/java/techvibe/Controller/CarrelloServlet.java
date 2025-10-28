@@ -14,6 +14,7 @@ import techvibe.Model.carrello.CarrelloService;
 import techvibe.Model.prodotto.Prodotto;
 import techvibe.Model.prodotto.SqlProdottoDao;
 
+
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -100,7 +101,7 @@ public class CarrelloServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)//la mia response sarà testo JSON
             throws ServletException, IOException {
 
         String pathInfo = request.getPathInfo();
@@ -122,6 +123,7 @@ public class CarrelloServlet extends HttpServlet {
                             return;
                         }
 
+                        //Cerca il prodotto nel DB
                         Optional<Prodotto> optionalProdotto = prodottoDao.fetchProdotto(prodottoId);
                         if (optionalProdotto.isEmpty()) {
                             PrintWriter notFoundWriter = response.getWriter();
@@ -129,13 +131,16 @@ public class CarrelloServlet extends HttpServlet {
                             return;
                         }
 
+                        //Prende il prodotto
                         Prodotto prodotto = optionalProdotto.get();
 
+                        //Controlla se è disponibile
                         if (prodotto.getQtDisponibile() < quantita) {
                             PrintWriter stockWriter = response.getWriter();
                             stockWriter.print("{\"success\": false, \"error\": \"Quantità non disponibile in magazzino\"}");
                             return;
                         }
+
 
                         HttpSession session = request.getSession(true);
                         boolean success = carrelloService.aggiungiProdotto(session, prodotto, quantita);
@@ -158,10 +163,12 @@ public class CarrelloServlet extends HttpServlet {
                     }
                     break;
 
-                case "/rimuovi":
+                case "/rimuovi": //rimuovere prodotto
                     try {
+                        //Leggo prodotto id da rimuovere
                         int prodottoId = Integer.parseInt(request.getParameter("prodottoId"));
 
+                        //se non c'è sessione non c'è carrello
                         HttpSession session = request.getSession(false);
                         if (session == null) {
                             PrintWriter sessionWriter = response.getWriter();
@@ -232,7 +239,7 @@ public class CarrelloServlet extends HttpServlet {
                     svuotaWriter.print("{\"success\": true, \"message\": \"Carrello svuotato\", \"count\": 0, \"totale\": 0.0}");
                     break;
                 case "/login":
-                    // Endpoint chiamato quando un utente fa login
+                    // Al login esiste la sessione anonima
                     try {
                         HttpSession loginSession = request.getSession(false);
                         if (loginSession == null) {
@@ -241,8 +248,10 @@ public class CarrelloServlet extends HttpServlet {
                             return;
                         }
 
+                        //Legge id dell'utente che ha appena fatto il login
                         int idUtente = Integer.parseInt(request.getParameter("idUtente"));
 
+                        //trasferisce carrello anonimo in carrello utente
                         boolean success = carrelloService.onUserLogin(loginSession, idUtente);
 
                         if (success) {
@@ -278,7 +287,6 @@ public class CarrelloServlet extends HttpServlet {
                     break;
 
                 case "/collega-utente":
-                    // Endpoint per collegare il carrello quando un utente fa login
                     try {
                         HttpSession loginSession = request.getSession(false);
                         if (loginSession == null) {
@@ -290,7 +298,8 @@ public class CarrelloServlet extends HttpServlet {
                         // Assumendo che l'ID utente venga passato come parametro dopo il login
                         int idUtente = Integer.parseInt(request.getParameter("idUtente"));
 
-                        carrelloService.collegaCarrelloAdUtente(loginSession, idUtente);
+                        //esegue il collegamento come LOGIN
+                        carrelloService.onUserLogin(loginSession, idUtente);
 
                         int count = carrelloService.getNumeroArticoli(loginSession);
                         double totale = carrelloService.getTotaleCarrello(loginSession);

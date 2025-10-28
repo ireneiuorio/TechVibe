@@ -36,9 +36,10 @@ public class OrdineServlet extends Controller implements ErrorHandler {
             String path = request.getPathInfo() != null ? request.getPathInfo() : "/";
             switch (path) {
                 case "/":
+                    //Verifica ADMIN
                     authorize(request.getSession(false));
 
-                    // Rendi la validazione del page opzionale
+                    //Se esiste un parametro page lo valida
                     String pageParam = request.getParameter("page");
                     if (pageParam != null && !pageParam.isEmpty()) {
                         validate(CommonValidator.validatePage(request));
@@ -47,6 +48,7 @@ public class OrdineServlet extends Controller implements ErrorHandler {
                     int intPage = parsePage(request);
                     int size = ordineDao.countAll();
                     Paginator paginator = new Paginator(intPage, 10);
+                    //Prende dal DAO la lista di ordini per quella pagina (usando offset/limit interni al Paginator).
                     List<Ordine> ordini = ordineDao.fetchOrdini(paginator);
                     request.setAttribute("ordini", ordini);
                     request.setAttribute("pages", paginator.getPages(size));
@@ -89,6 +91,7 @@ public class OrdineServlet extends Controller implements ErrorHandler {
     private void showOrdine(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, ServletException, IOException {
 
+        //Prende l'id dell'ordine
         String idParam = request.getParameter("id");
         if (idParam == null || idParam.isEmpty()) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ID ordine mancante");
@@ -98,7 +101,7 @@ public class OrdineServlet extends Controller implements ErrorHandler {
         try {
             int ordineId = Integer.parseInt(idParam);
 
-            // Usa il nuovo metodo che recupera tutto in una volta
+            // Prende l'ordine completo
             Optional<Ordine> optionalOrdine = ordineDao.fetchOrdineCompleto(ordineId);
 
             if (optionalOrdine.isPresent()) {
@@ -128,13 +131,15 @@ public class OrdineServlet extends Controller implements ErrorHandler {
 
             // Recupera l'ordine esistente
             Optional<Ordine> optionalOrdine = ordineDao.fetchOrdine(ordineId);
-            if (!optionalOrdine.isPresent()) {
+            if (optionalOrdine.isEmpty()) {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, "Ordine non trovato");
                 return;
             }
 
             Ordine ordine = optionalOrdine.get();
 
+
+            //Fa modificare solo sconto e stato
             // Aggiorna solo i campi che possono essere modificati: stato e sconto
             String stato = request.getParameter("stato");
             if (stato != null && !stato.isEmpty()) {
@@ -152,7 +157,7 @@ public class OrdineServlet extends Controller implements ErrorHandler {
             }
 
             // I metodi di pagamento e spedizione NON vengono più aggiornati
-            // sono campi read-only una volta creato l'ordine
+
 
             // Salva le modifiche
             boolean success = ordineDao.updateOrdine(ordine);

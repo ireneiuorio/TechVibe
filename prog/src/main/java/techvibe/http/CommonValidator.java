@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 
 public class CommonValidator {
 
+    //Controlla che il parametro page sia un intero
     public static RequestValidator validatePage(HttpServletRequest request)
     {
         RequestValidator validator=new RequestValidator(request);
@@ -11,6 +12,8 @@ public class CommonValidator {
         return validator;
 
     }
+
+    //Controlla che il parametro id sia un intero
 
     public static RequestValidator validateId(HttpServletRequest request)
     {

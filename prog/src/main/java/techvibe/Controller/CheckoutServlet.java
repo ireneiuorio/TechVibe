@@ -57,7 +57,7 @@ public class CheckoutServlet extends HttpServlet {
 
         HttpSession session = request.getSession(false);
 
-        // Verifica login
+        //Se non sei loggato ti rimando al checkout
         if (session == null || session.getAttribute("utenteSession") == null) {
             response.sendRedirect(request.getContextPath() + "/pages/accedi?redirect=checkout");
             return;
@@ -66,13 +66,14 @@ public class CheckoutServlet extends HttpServlet {
         try {
             switch (pathInfo) {
                 case "/": {
-                    // Usa l'istanza invece del metodo statico
+                    //Prende il carrello dalla sessione e se è vuoto rimanda al carrello
                     Carrello carrello = carrelloService.getCarrello(session);
                     if (carrello == null || carrello.isEmpty()) {
                         response.sendRedirect(request.getContextPath() + "/carrello/view");
                         return;
                     }
 
+                    //Prende i dati dell'utente e li passa al checkout
                     Utente utente = resolveUtenteFromSession(session);
 
                     request.setAttribute("carrello", carrello);
@@ -85,6 +86,7 @@ public class CheckoutServlet extends HttpServlet {
                     String ordineId = request.getParameter("ordineId");
 
                     // Non fare fetch dal DB, usa solo l'ID
+                    //Legge ordine Id dai parametri, lo passa alla JSP di conferma ordine
                     request.setAttribute("ordineId", ordineId);
                     request.getRequestDispatcher("/WEB-INF/views/site/conferma-ordine.jsp").forward(request, response);
                     break;
@@ -124,7 +126,7 @@ public class CheckoutServlet extends HttpServlet {
                     processaOrdine(request, response, session);
                     break;
 
-                default:
+                default: //altrimenti da errore
                     try (PrintWriter writer = response.getWriter()) {
                         writer.print("{\"success\": false, \"error\": \"Azione non supportata\"}");
                     }
@@ -137,18 +139,21 @@ public class CheckoutServlet extends HttpServlet {
         }
     }
 
+    //CREA DAVVERO L'ORDINE
     private void processaOrdine(HttpServletRequest request, HttpServletResponse response, HttpSession session)
             throws IOException, SQLException {
 
         try (PrintWriter writer = response.getWriter()) {
 
-            // Usa l'istanza invece del metodo statico
+            //Serve un carrell  non vuoto
             Carrello carrello = carrelloService.getCarrello(session);
             if (carrello == null || carrello.isEmpty()) {
                 writer.print("{\"success\": false, \"error\": \"Carrello vuoto\"}");
                 return;
             }
 
+
+            //Serve un utente valido
             Utente utente = resolveUtenteFromSession(session);
             if (utente == null) {
                 writer.print("{\"success\": false, \"error\": \"Utente non trovato\"}");
@@ -162,17 +167,19 @@ public class CheckoutServlet extends HttpServlet {
             String telefono = request.getParameter("telefono");
             String metodoPagamento = request.getParameter("metodoPagamento");
 
-            // Validazione base
+            //Legge i dati dal form, validazione di base tutti i campi sono obbligatori
             if (isBlank(nome) || isBlank(cognome) || isBlank(indirizzo)
                     || isBlank(telefono) || isBlank(metodoPagamento)) {
                 writer.print("{\"success\": false, \"error\": \"Tutti i campi obbligatori devono essere compilati\"}");
                 return;
             }
 
+            //Accetta solo carta o paypal
             if (!"carta".equals(metodoPagamento) && !"paypal".equals(metodoPagamento)) {
                 writer.print("{\"success\": false, \"error\": \"Metodo di pagamento non valido\"}");
                 return;
             }
+
 
             // Se carta, check minimi
             if ("carta".equals(metodoPagamento)) {
@@ -181,8 +188,8 @@ public class CheckoutServlet extends HttpServlet {
                 String cvv = request.getParameter("cvv");
                 String intestatario = request.getParameter("intestatario");
 
-                if (numeroCarta == null || numeroCarta.replaceAll("\\s", "").length() < 13
-                        || scadenza == null || !scadenza.matches("\\d{2}/\\d{2}")
+                if (numeroCarta == null || numeroCarta.replaceAll("\\s", "").length() < 13 //replace all rimuove gli spazi
+                        || scadenza == null || !scadenza.matches("\\d{2}/\\d{2}") //scadenza xx/xx
                         || cvv == null || cvv.length() < 3
                         || isBlank(intestatario)) {
                     writer.print("{\"success\": false, \"error\": \"Dati della carta non validi\"}");
@@ -203,8 +210,8 @@ public class CheckoutServlet extends HttpServlet {
             try {
                 boolean success = ordineDao.createOrdine(ordine);
 
-                if (success) {
-                    // Usa l'istanza invece del metodo statico
+                if (success) { //Prova a salvarlo nel DB
+
                     carrelloService.svuotaCarrello(session);
                     writer.printf(Locale.US, "{\"success\": true, \"ordineId\": %d, \"totale\": %.2f}",
                             ordine.getIdOrdine(), ordine.getTotale());
@@ -217,19 +224,23 @@ public class CheckoutServlet extends HttpServlet {
             }
         }
     }
-    // ===== Helpers =====
 
+//Capisce chi è l'utente loggato leggendo la sessione e recupera i suoi dati dal database
     private Utente resolveUtenteFromSession(HttpSession session) {
         if (session == null) return null;
 
+
+        //prova utente session da cercare in sessione
         Object sessObj = session.getAttribute("utenteSession");
         try {
+            //Se è un oggetto di tipo utente sessione
             if (sessObj instanceof UtenteSession us) {
                 UtenteDao<SQLException> utenteDao = new SqlUtenteDao(source);
+                //Recupera i dati riguardandi quell'id altrimenti null
                 return utenteDao.fetchUtente(us.getId()).orElse(null);
             } else if (sessObj instanceof Utente u) {
                 return u;
-            } else {
+            } else { //se non trova utente session prova con accountsession
                 Object alt = session.getAttribute("accountSession");
                 if (alt instanceof UtenteSession us2) {
                     UtenteDao<SQLException> utenteDao = new SqlUtenteDao(source);
@@ -242,16 +253,9 @@ public class CheckoutServlet extends HttpServlet {
         return null;
     }
 
+    //Verifica se una stringa è vuota oppure è fatta di spazi
     private static boolean isBlank(String s) {
         return s == null || s.trim().isEmpty();
     }
 
-    private static String safe(SupplierWithException<String> sup) {
-        try { return sup.get(); } catch (Exception e) { return "(errore getter)"; }
-    }
-
-    @FunctionalInterface
-    private interface SupplierWithException<T> {
-        T get() throws Exception;
-    }
 }

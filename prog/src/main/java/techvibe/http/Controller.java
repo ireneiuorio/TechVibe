@@ -40,13 +40,4 @@ public abstract class Controller extends HttpServlet {
     }
 
 
-   protected UtenteSession getUtenteSession(HttpSession session)
-   {
-       return (UtenteSession) session.getAttribute("utenteSession");
-   }
-
-   protected Carrello  getSessionCarrello(HttpSession session)
-   {
-       return(Carrello) session.getAttribute("utenteCarrello");
-   }
 }

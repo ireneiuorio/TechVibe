@@ -1,6 +1,7 @@
 /* Contenitore pagina */
 .prodotto-container {
     margin-bottom: 5rem;
+    padding: 0 1rem;
 }
 
 /* Header prodotto */
@@ -12,14 +13,25 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
 }
+
+.prodotto-info {
+    flex: 1;
+    min-width: 250px;
+}
+
 .prodotto-info h2 {
     margin: 0;
     color: var(--primary-light);
+    font-size: clamp(1.5rem, 4vw, 2rem);
 }
+
 .muted-meta {
     margin: 0.5rem 0 0 0;
     color: var(--primary-dark);
+    font-size: clamp(0.875rem, 2vw, 1rem);
 }
 
 /* Badge stato */
@@ -29,10 +41,24 @@
     font-weight: 600;
     text-transform: uppercase;
     font-size: 0.8rem;
+    white-space: nowrap;
 }
-.status-disponibile { background:var(--white); color:var(--success); }
-.status-esaurito { background:var(--white); color:var(--error); }
-.status-sconto { background:var(--white); color:var(--success);margin-left: 0.5rem; }
+
+.status-disponibile {
+    background: var(--white);
+    color: var(--success);
+}
+
+.status-esaurito {
+    background: var(--white);
+    color: var(--error);
+}
+
+.status-sconto {
+    background: var(--white);
+    color: var(--success);
+    margin-left: 0.5rem;
+}
 
 /* Tabs */
 .prodotto-tabs {
@@ -41,9 +67,13 @@
     border-radius: 12px;
     padding: 0.5rem;
     margin-bottom: 2rem;
+    overflow-x: auto;
+    gap: 0.5rem;
 }
+
 .tab-button {
     flex: 1;
+    min-width: 120px;
     padding: 1rem;
     background: none;
     border: none;
@@ -51,72 +81,209 @@
     cursor: pointer;
     font-weight: 600;
     transition: all 0.3s;
+    white-space: nowrap;
 }
-.tab-button.active { background: var(--primary-light); color: #fff; }
 
-.tab-content { display: none; }
-.tab-content.active { display: block; }
+.tab-button.active {
+    background: var(--primary-light);
+    color: #fff;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
 
 /* Carte e griglia info */
 .info-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 2rem;
     margin-bottom: 2rem;
 }
+
 .info-card {
     background: var(--white);
     border: 1px solid #eee;
     border-radius: 12px;
     padding: 2rem;
 }
+
 .section-title {
     color: var(--primary-light);
     margin-bottom: 1.5rem;
+    font-size: clamp(1.25rem, 3vw, 1.5rem);
 }
 
 /* Righe info */
-.info-item { margin-bottom: 1.5rem; }
+.info-item {
+    margin-bottom: 1.5rem;
+}
+
 .info-label {
     font-weight: 600;
     color: var(--primary-light);
     margin-bottom: 0.5rem;
+    font-size: clamp(0.875rem, 2vw, 1rem);
 }
+
 .info-value {
     color: #333;
     font-size: 1rem;
     padding: 0.75rem 1rem;
     background: var(--light-gray);
     border-radius: 8px;
+    word-break: break-word;
 }
-.valore-non-specificato { color: #999; font-style: italic; }
+
+.valore-non-specificato {
+    color: #999;
+    font-style: italic;
+}
 
 /* Form modifica */
-.edit-form { display: grid; gap: 1.5rem; }
-.form-group { display: flex; flex-direction: column; gap: 0.5rem; }
-.form-group label { font-weight: 600; color: var(--primary-light); }
+.edit-form {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group label {
+    font-weight: 600;
+    color: var(--primary-light);
+    font-size: clamp(0.875rem, 2vw, 1rem);
+}
+
 .form-group input,
 .form-group select {
     padding: 0.75rem 1rem;
     border: 1px solid #ddd;
     border-radius: 8px;
     font-size: 1rem;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 /* Utility griglia 2 colonne */
 .grid-2 {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 1rem;
 }
 
 /* Azioni e link */
-.actions { display: flex; gap: 1rem; margin-top: 2rem; }
-.link-back { text-decoration: none; color: var(--primary-light); }
+.actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+}
+
+.link-back {
+    text-decoration: none;
+    color: var(--primary-light);
+}
 
 /* Prezzi */
-.prezzo-scontato { color: var(--success); font-weight: bold; }
-.prezzo-originale { text-decoration: line-through; color: var(--dark-gray); margin-left: 0.5rem; }
+.prezzo-scontato {
+    color: var(--success);
+    font-weight: bold;
+}
+
+.prezzo-originale {
+    text-decoration: line-through;
+    color: var(--dark-gray);
+    margin-left: 0.5rem;
+}
 
 /* Bottoni */
-.btn-danger { background: var(--primary-light); color: var(--white); }
+.btn-danger {
+    background: var(--primary-light);
+    color: var(--white);
+}
+
+/* Media queries per tablet */
+@media (max-width: 768px) {
+    .prodotto-container {
+        padding: 0 0.5rem;
+        margin-bottom: 3rem;
+    }
+
+    .prodotto-header {
+        padding: 1.5rem;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .prodotto-info {
+        width: 100%;
+    }
+
+    .info-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .info-card {
+        padding: 1.5rem;
+    }
+
+    .prodotto-tabs {
+        padding: 0.25rem;
+    }
+
+    .tab-button {
+        padding: 0.75rem;
+        min-width: 100px;
+        font-size: 0.875rem;
+    }
+
+    .actions {
+        flex-direction: column;
+    }
+
+    .actions button,
+    .actions a {
+        width: 100%;
+    }
+}
+
+/* Media queries per mobile */
+@media (max-width: 480px) {
+    .prodotto-header {
+        padding: 1rem;
+    }
+
+    .info-card {
+        padding: 1rem;
+    }
+
+    .info-value {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.875rem;
+    }
+
+    .grid-2 {
+        grid-template-columns: 1fr;
+    }
+
+    .status-sconto {
+        margin-left: 0;
+        margin-top: 0.5rem;
+        display: inline-block;
+    }
+
+    .tab-button {
+        min-width: 80px;
+        padding: 0.5rem;
+        font-size: 0.75rem;
+    }
+}

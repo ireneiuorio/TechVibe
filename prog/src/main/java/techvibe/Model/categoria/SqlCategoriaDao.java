@@ -19,6 +19,7 @@ public class SqlCategoriaDao extends SqlDao implements CategoriaDao<SQLException
     }
 
 
+    //Restituisce solo la pagina richiesta di categorie
     public List<Categoria> fetchCategorie(Paginator paginator) throws SQLException {
         try (Connection conn = source.getConnection()) {
             QueryBuilder qb = new QueryBuilder("categoria", "cat");

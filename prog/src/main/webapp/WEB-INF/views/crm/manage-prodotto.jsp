@@ -49,8 +49,8 @@
                 <!-- Tabs -->
                 <div class="prodotto-tabs">
                     <button class="tab-button active" onclick="showTab(event,'info')">Informazioni</button>
-                    <button class="tab-button" onclick="showTab(event,'tech')">Specifiche Tecniche</button>
-                    <button class="tab-button" onclick="showTab(event,'edit')">Modifica Prodotto</button>
+                    <button class="tab-button" onclick="showTab(event,'tech')">Specifiche</button>
+                    <button class="tab-button" onclick="showTab(event,'edit')">Modifica</button>
                 </div>
 
                 <!-- Tab Informazioni -->

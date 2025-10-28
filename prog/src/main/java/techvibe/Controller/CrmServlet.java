@@ -7,6 +7,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+
+//Home del crm
 @WebServlet("/crm/home")
 public class CrmServlet extends HttpServlet {
     @Override

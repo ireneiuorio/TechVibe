@@ -11,9 +11,7 @@ import techvibe.Model.prodotto.SqlProdottoDao;
 import techvibe.Model.utente.SqlUtenteDao;
 import techvibe.Model.utente.Utente;
 import techvibe.Model.utente.UtenteDao;
-import techvibe.http.Controller;
-import techvibe.http.ErrorHandler;
-import techvibe.http.InvalidRequestException;
+import techvibe.http.*;
 
 import javax.sql.DataSource;
 import java.io.IOException;
@@ -22,6 +20,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @WebServlet(name = "PageServlet", value = "/pages/*")
@@ -45,10 +44,6 @@ public class PageServlet extends Controller implements ErrorHandler {
         try {
             String path = request.getPathInfo() != null ? request.getPathInfo() : "/";
             switch (path) {
-                case "dashboard":
-                    authorize(request.getSession(false));
-                    request.getRequestDispatcher("/WEB-INF/views/site/home.jsp").forward(request, response);
-                    break;
 
                 // Nel doGet della homepage
                 case "/":
@@ -58,12 +53,11 @@ public class PageServlet extends Controller implements ErrorHandler {
                         // Usa il metodo che hai già creato per le offerte
                         List<Prodotto> tutteLeOfferte = prodottoDao.fetchProdottiInOfferta();
                         // Prendi solo i primi 3 per la vetrina
-                        prodottiVetrina = tutteLeOfferte.stream().limit(3).collect(Collectors.toList());
+                        prodottiVetrina = tutteLeOfferte.stream().limit(4).collect(Collectors.toList());
                     } catch (SQLException e) {
                         // Se errore, lista vuota
                         prodottiVetrina = new ArrayList<>();
                     }
-
                     request.setAttribute("prodottiVetrina", prodottiVetrina);
                     request.getRequestDispatcher("/WEB-INF/views/site/home.jsp").forward(request, response);
                     break;
@@ -78,13 +72,11 @@ public class PageServlet extends Controller implements ErrorHandler {
                     break;
                 case "/termini":
                     request.getRequestDispatcher("/WEB-INF/views/site/termini.jsp").forward(request, response);
-
+                    break;
                 case "/smartphone":
-                    int page = parsePage(request);                 // se hai già questo helper
-                    Paginator paginator3 = new Paginator(page, 12); // 12 per pagina (scegli tu)
-
+                    //Id categoria
                     try {
-                        int idSmartphone = 1; // <-- SOSTITUISCI con l'IdCategoria reale per "Smartphone"
+                        int idSmartphone = 1;
                         List<Prodotto> prodotti = prodottoDao.fetchProdottiByCategoria(idSmartphone);
 
                         request.setAttribute("prodotti", prodotti);
@@ -96,9 +88,6 @@ public class PageServlet extends Controller implements ErrorHandler {
                     break;
 
                 case "/tablet":
-                    int page1 = parsePage(request);                 // se hai già questo helper
-                    Paginator paginator2 = new Paginator(page1, 12); // 12 per pagina (scegli tu)
-
                     try {
                         int idTablet = 2; //
                         List<Prodotto> prodotti = prodottoDao.fetchProdottiByCategoria(idTablet);
@@ -110,14 +99,12 @@ public class PageServlet extends Controller implements ErrorHandler {
                     }
                     break;
 
-
-
-
-
+                //Registrazione utente
                 case "/create":
                     request.getRequestDispatcher("/WEB-INF/views/site/create.jsp").forward(request,response);
                     break;
 
+                //Dettagli di un prodotto
                 case "/prodotto": {
                     String idStr = request.getParameter("id");
                     if (idStr == null) {
@@ -162,63 +149,78 @@ public class PageServlet extends Controller implements ErrorHandler {
     }
 
 
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
         try {
             String path = request.getPathInfo() != null ? request.getPathInfo() : "/";
+
             switch (path) {
-
-
-                case "/create":
+                case "/create": {
                     UtenteDao<SQLException> utenteDao = new SqlUtenteDao(source);
+
+                    // 1) Validazione con RequestValidator
+                    RequestValidator v = new RequestValidator(request);
+                    v.assertEmail("email", "Inserisci un indirizzo email valido");
+                    v.assertMatch("password", Pattern.compile("^.{8,}$"), "La password deve avere almeno 8 caratteri");
+                    v.assertMatch("confirm",  Pattern.compile("^.{8,}$"), "La conferma password deve avere almeno 8 caratteri");
+                    // Campi obbligatori base (nome/cognome)
+                    v.assertMatch("nome",    Pattern.compile("^\\S.{0,}$"), "Il nome è obbligatorio");
+                    v.assertMatch("cognome", Pattern.compile("^\\S.{0,}$"), "Il cognome è obbligatorio");
+                    // Telefono (opzionale): se presente, deve rispettare il pattern
+                    String telefono = request.getParameter("telefono");
+                    if (telefono != null && !telefono.isBlank()) {
+                        v.assertMatch("telefono", Pattern.compile("^[+]?\\d[\\d\\s()-]{5,}$"), "Telefono non valido");
+                    }
+
+                    // Password = Confirm
+                    String password = request.getParameter("password");
+                    String confirm  = request.getParameter("confirm");
+                    if (password == null || !password.equals(confirm)) {
+                        v.getErrors().add("Le password non coincidono");
+                    }
+
+                    if (v.hasErrors()) {
+                        request.setAttribute("errors", v.getErrors());
+                        // ripopolo i campi "sicuri" per non farli riscrivere all'utente
+                        request.setAttribute("nome",     safe(request.getParameter("nome")));
+                        request.setAttribute("cognome",  safe(request.getParameter("cognome")));
+                        request.setAttribute("email",    safe(request.getParameter("email")));
+                        request.setAttribute("telefono", safe(telefono));
+                        request.setAttribute("indirizzospedizione", safe(request.getParameter("indirizzospedizione")));
+                        request.getRequestDispatcher("/WEB-INF/views/site/create.jsp").forward(request, response);
+                        return;
+                    }
+
+                    // 2) Costruzione utente
                     Utente utente = new Utente();
-
-                    String password = safe(request.getParameter("password"));
-                    String confirm  = safe(request.getParameter("confirm"));
-                    String email    = safe(request.getParameter("email"));
-
-                    // --- Controllo password uguali ---
-                    if (password == null || confirm == null || !password.equals(confirm)) {
-                        request.setAttribute("error", "Le password non coincidono.");
-                        request.getRequestDispatcher("/WEB-INF/views/site/create.jsp").forward(request, response);
-                        break;
-                    }
-
-                    // --- Controllo lunghezza password ---
-                    if (password.length() < 8) {
-                        request.setAttribute("error", "La password deve avere almeno 8 caratteri.");
-                        request.getRequestDispatcher("/WEB-INF/views/site/create.jsp").forward(request, response);
-                        break;
-                    }
-
-                    // --- Controllo formato email ---
-                    if (email == null || !email.matches("^[^@\\s]+@[^@\\s]+\\.[^@\\s]{2,}$")) {
-                        request.setAttribute("error", "Inserisci un indirizzo email valido.");
-                        request.getRequestDispatcher("/WEB-INF/views/site/create.jsp").forward(request, response);
-                        break;
-                    }
-
                     utente.setNome(safe(request.getParameter("nome")));
                     utente.setCognome(safe(request.getParameter("cognome")));
-                    utente.setEmail(email);
+                    utente.setEmail(safe(request.getParameter("email")));
                     try {
-                        utente.setPassword(password);  // la tua logica di hash rimane invariata
+                        utente.setPassword(password); // tua logica di hash interna
                     } catch (NoSuchAlgorithmException ex) {
                         throw new RuntimeException(ex);
                     }
-                    utente.setTelefono(safe(request.getParameter("telefono")));
+                    utente.setTelefono(safe(telefono));
                     utente.setIndirizzoSpedizione(safe(request.getParameter("indirizzospedizione")));
 
+                    // 3) Unicità email
                     try {
                         if (utenteDao.existsByEmail(utente.getEmail())) {
-                            request.setAttribute("error", "Email già registrata, usa un altro indirizzo.");
+                            request.setAttribute("errors", List.of("Email già registrata, usa un altro indirizzo"));
+                            request.setAttribute("nome",     utente.getNome());
+                            request.setAttribute("cognome",  utente.getCognome());
+                            request.setAttribute("email",    utente.getEmail());
+                            request.setAttribute("telefono", utente.getTelefono());
+                            request.setAttribute("indirizzospedizione", utente.getIndirizzoSpedizione());
                             request.getRequestDispatcher("/WEB-INF/views/site/create.jsp").forward(request, response);
-                            break;
+                            return;
                         }
                     } catch (SQLException e) {
                         throw new RuntimeException(e);
                     }
 
+                    // 4) Persistenza: prova a creare l'utente nel DB
                     try {
                         if (utenteDao.createUtente(utente)) {
                             response.sendRedirect(request.getContextPath() + "/pages/successo");
@@ -229,31 +231,23 @@ public class PageServlet extends Controller implements ErrorHandler {
                         throw new RuntimeException(e);
                     }
                     break;
+                }
 
                 default:
                     notFound();
             }
-
         } catch (RuntimeException | IOException | ServletException e) {
             throw new RuntimeException(e);
         }
-
-
     }
 
+
+    //Trasforma null in"" e toglie spazi all'estremità;
     private String safe(String s) {
         return s == null ? "" : s.trim();
     }
 
-    private double safeDouble(String v) {
-        if (v == null) return 0d;
-        v = v.trim().replace(',', '.');
-        try { return Double.parseDouble(v); } catch (NumberFormatException e) { return 0d; }
-    }
 
-    private int safeInt(String v) {
-        try { return Integer.parseInt(v); } catch (Exception e) { return 0; }
-    }
 
 }
 

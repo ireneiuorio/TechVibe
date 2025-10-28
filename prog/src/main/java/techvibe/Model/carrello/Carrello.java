@@ -5,6 +5,9 @@ import techvibe.Model.prodotto.Prodotto;
 import java.util.ArrayList;
 import java.util.List;
 
+
+//Carrello è una relazione uno a molti quindi utilizzo due tabelle nel DB: carrelli: contiene le info generali del carrello
+//Carrello items contiene i prodotti dentro ogni carrello
 public class Carrello {
     private List<CarrelloItem> items;
 
@@ -36,12 +39,11 @@ public class Carrello {
         return items.add(new CarrelloItem(prodotto, quantita));
     }
 
-    //Rimuove un prodotto dal carrello
     public boolean rimuoviProdotto(int idProdotto) {
         return items.removeIf(item -> item.getProdotto().getIdProdotto() == idProdotto);
     }
 
-    //Aggiorna la quantità di uno specifico prodotto
+
     public boolean aggiornaQuantita(int idProdotto, int nuovaQuantita) {
         if (nuovaQuantita <= 0) {
             return rimuoviProdotto(idProdotto);
@@ -56,31 +58,38 @@ public class Carrello {
         return false;
     }
 
-    //Calcola il totale del carrello
     public double total() {
-        return items.stream()
-                .mapToDouble(CarrelloItem::total)
-                .sum();
+        double totale = 0.0;
+
+        for (CarrelloItem item : items) {
+            totale += item.total(); // somma il totale di ogni prodotto (prezzo * quantità)
+        }
+
+        return totale;
     }
 
-    //Conta il numero totale di articoli nel carrello
+
     public int getNumeroTotaleArticoli() {
-        return items.stream()
-                .mapToInt(CarrelloItem::getQuantita)
-                .sum();
+        int totaleArticoli = 0;
+
+        for (CarrelloItem item : items) {
+            totaleArticoli += item.getQuantita(); // aggiunge la quantità di ogni prodotto
+        }
+
+        return totaleArticoli;
     }
 
-    //Verifica se il carrello è vuoto
+
     public boolean isEmpty() {
         return items.isEmpty();
     }
 
-    //Svuota il carrello
+
     public void svuota() {
         items.clear();
     }
 
-    //Restituisce gli items
+
     public List<CarrelloItem> getItems() {
         return items;
     }

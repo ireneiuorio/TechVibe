@@ -34,6 +34,8 @@ public class SqlCarrelloDao implements CarrelloDao {
 
             ps.setInt(1, idUtente);
             try (ResultSet rs = ps.executeQuery()) {
+
+                //se lo trova chiama caricaCarrello per ottenere l'oggetto Carrello completo
                 if (rs.next()) {
                     int idCarrello = rs.getInt("id_carrello");
                     return Optional.of(caricaCarrello(idCarrello));
@@ -80,6 +82,7 @@ public class SqlCarrelloDao implements CarrelloDao {
 
             ps.setInt(1, idUtente);
             try (ResultSet rs = ps.executeQuery()) {
+
                 if (rs.next()) {
                     return Optional.of(rs.getInt("id_carrello"));
                 }
@@ -102,6 +105,7 @@ public class SqlCarrelloDao implements CarrelloDao {
 
             ps.setString(1, sessionId);
             try (ResultSet rs = ps.executeQuery()) {
+                //se c'è una riga
                 if (rs.next()) {
                     return Optional.of(rs.getInt("id_carrello"));
                 }
@@ -112,7 +116,7 @@ public class SqlCarrelloDao implements CarrelloDao {
         return Optional.empty();
     }
 
-    // Carica gli item del carrello (versione semplice, senza JOIN su prodotti)
+    //Prende e inserisce tutti gli item all'interno di un carrello restiruiendo il carrello compelto
     private Carrello caricaCarrello(int idCarrello) {
         QueryBuilder qb = new QueryBuilder("carrello_items", "ci");
         String sql = qb.select("id_prodotto", "quantita")
@@ -145,7 +149,7 @@ public class SqlCarrelloDao implements CarrelloDao {
 
     @Override
     public Optional<Integer> creaCarrelloUtente(int idUtente) {
-        // INSERT ... ON DUPLICATE KEY UPDATE ...
+        // Se c'è già un carrello èer quell'utente non fallire aggiorna solo la data
         String insert = new QueryBuilder("carrelli", null)
                 .insert("id_utente")
                 .generateQuery()
@@ -157,11 +161,14 @@ public class SqlCarrelloDao implements CarrelloDao {
             ps.setInt(1, idUtente);
             int res = ps.executeUpdate();
 
+
+            //numero di righe aggiornate e modificate nel Db
             if (res > 0) {
+                //prova a leggere la chiave generata
                 try (ResultSet rs = ps.getGeneratedKeys()) {
                     if (rs.next()) return Optional.of(rs.getInt(1));
                 }
-                // se no generated key, ritorna l'esistente
+                // se no non ha generato chiavi, ritorna l'esistente
                 return getCarrelloIdByUtente(idUtente);
             }
         } catch (SQLException e) {
@@ -180,6 +187,7 @@ public class SqlCarrelloDao implements CarrelloDao {
              PreparedStatement ps = conn.prepareStatement(insert, Statement.RETURN_GENERATED_KEYS)) {
 
             ps.setString(1, sessionId);
+            //numero di righe aggiornate e modificate nel Db
             int res = ps.executeUpdate();
             if (res > 0) {
                 try (ResultSet rs = ps.getGeneratedKeys()) {
@@ -207,7 +215,7 @@ public class SqlCarrelloDao implements CarrelloDao {
             ps.setInt(1, idCarrello);
             ps.setInt(2, idProdotto);
             ps.setInt(3, quantita);
-            return ps.executeUpdate() > 0;
+            return ps.executeUpdate() > 0; //se il numero di righe modificate è maggiore di zero
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -227,7 +235,7 @@ public class SqlCarrelloDao implements CarrelloDao {
 
             ps.setInt(1, idCarrello);
             ps.setInt(2, idProdotto);
-            return ps.executeUpdate() > 0;
+            return ps.executeUpdate() > 0; //se il numero di righe modificate è maggiore di 0
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -282,14 +290,16 @@ public class SqlCarrelloDao implements CarrelloDao {
 
 
     @Override
+    //serve a unire il carrello anonimo legato alla sessionId dentro il carrello dell’utente: idUtente quando fa login
     public boolean trasferisciCarrello(String sessionId, int idUtente) {
         try (Connection conn = dataSource.getConnection()) {
-            conn.setAutoCommit(false);
+
+            conn.setAutoCommit(false); //Non salvare automaticamente ogni operazione nel DB aspetta che te lo dica con commit
 
             try {
-                // 1) Carrello della sessione (anonimo)
+
                 int sessionCartId = -1;
-                {
+                { //trova il carrello anonimo dela sessione
                     String sql = new QueryBuilder("carrelli", "c")
                             .select("id_carrello")
                             .where("c.session_id = ? AND c.id_utente IS NULL")
@@ -302,12 +312,13 @@ public class SqlCarrelloDao implements CarrelloDao {
                         }
                     }
                 }
+
                 if (sessionCartId == -1) {
                     conn.rollback(); // niente da trasferire
                     return true;
                 }
 
-                // 2) Carrello utente (trova o crea)
+                // Carrello utente: cerca se un utente ha già un carrello
                 Integer userCartId = null;
                 {
                     String sql = new QueryBuilder("carrelli", "c")
@@ -318,11 +329,14 @@ public class SqlCarrelloDao implements CarrelloDao {
                     try (PreparedStatement ps = conn.prepareStatement(sql)) {
                         ps.setInt(1, idUtente);
                         try (ResultSet rs = ps.executeQuery()) {
-                            if (rs.next()) userCartId = rs.getInt("id_carrello");
+                            if (rs.next())
+                                //se esiste lo prende
+                                userCartId = rs.getInt("id_carrello");
                         }
                     }
                 }
 
+                //lo crea se non lo tiene
                 if (userCartId == null) {
                     String insertUserCart = new QueryBuilder("carrelli", null)
                             .insert("id_utente")
@@ -335,12 +349,14 @@ public class SqlCarrelloDao implements CarrelloDao {
                         }
                     }
                 }
+                //Se per qualsiasi motivo non riesce ad avere l’ID fallisce
                 if (userCartId == null) {
                     conn.rollback();
                     return false;
                 }
 
 
+                //Fa l'insert select: prende tutti gli item del carrello di sessione e li inserisce nel carrello dell'utente
                 String transferItemsSql = """
                         INSERT INTO carrello_items (id_carrello, id_prodotto, quantita)
                         SELECT ?, id_prodotto, quantita FROM carrello_items WHERE id_carrello = ?
@@ -352,7 +368,7 @@ public class SqlCarrelloDao implements CarrelloDao {
                     ps.executeUpdate();
                 }
 
-                // 4) Pulisci carrello di sessione (righe + testata)
+                //Pulisce carrello di sessione
                 String delItems = new QueryBuilder("carrello_items", null)
                         .delete().where("id_carrello = ?").generateQuery();
                 try (PreparedStatement ps = conn.prepareStatement(delItems)) {
@@ -360,6 +376,7 @@ public class SqlCarrelloDao implements CarrelloDao {
                     ps.executeUpdate();
                 }
 
+                //Cancella anche dalla tabella carrelli
                 String delCart = new QueryBuilder("carrelli", null)
                         .delete().where("id_carrello = ?").generateQuery();
                 try (PreparedStatement ps = conn.prepareStatement(delCart)) {
@@ -367,10 +384,12 @@ public class SqlCarrelloDao implements CarrelloDao {
                     ps.executeUpdate();
                 }
 
+                //Se tutto è andato bene fa il commit dell'operazione
                 conn.commit();
                 return true;
 
             } catch (SQLException e) {
+                //se c'è un'eccezione annulla tutto
                 conn.rollback();
                 e.printStackTrace();
                 return false;

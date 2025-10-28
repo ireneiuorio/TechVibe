@@ -1,9 +1,12 @@
 package techvibe.Model.components;
 
+
+
+//Divide in pagine i record del database
 public class Paginator {
 
-    private final int limit;
-    private final int offset;
+    private final int limit;//quanti elementi mostrare per pagina
+    private final int offset;//da che riga iniziare a leggere dal database
 
 
     public Paginator(int page,int ItemsPerPage){
