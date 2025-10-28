@@ -29,6 +29,7 @@
       </div>
     </c:when>
     <c:otherwise>
+
       <!-- Carrello con prodotti -->
       <div class="griglia-carrello">
 
@@ -99,13 +100,6 @@
               </div>
             </div>
           </c:forEach>
-
-          <!-- Pulsante svuota carrello -->
-          <div class="sezione-svuota">
-            <button class="svuota-carrello">
-              Svuota Carrello
-            </button>
-          </div>
         </div>
 
         <!-- Riepilogo ordine -->
@@ -115,7 +109,7 @@
 
           <!-- Subtotale -->
           <div class="riga-subtotale">
-            <span>Subtotale (${carrello.items.size()} prodotti):</span>
+            <span>Subtotale (<span id="numero-prodotti">${carrello.items.size()}</span> prodotti):</span>
             <span id="carrello-totale">
               <fmt:formatNumber value="${carrello.total()}" type="currency" currencySymbol="€" minFractionDigits="2"/>
             </span>
@@ -130,7 +124,7 @@
           <!-- Totale finale -->
           <div class="riga-totale">
             <span>Totale:</span>
-            <span>
+            <span id="totale-finale">
               <fmt:formatNumber value="${carrello.total()}" type="currency" currencySymbol="€" minFractionDigits="2"/>
             </span>
           </div>
@@ -164,13 +158,120 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    const checkoutBtn = document.getElementById('checkout-btn');
-    if (checkoutBtn) {
-      checkoutBtn.addEventListener('click', function() {
-        window.location.href = '${pageContext.request.contextPath}/checkout';
+    const contextPath = '<%= request.getContextPath() %>';
+
+    // Gestione rimozione prodotto
+    document.querySelectorAll('.remove-from-cart').forEach(button => {
+      button.addEventListener('click', function() {
+        const prodottoId = this.getAttribute('data-id');
+        rimuoviProdotto(prodottoId);
       });
+    });
+
+    // Gestione aggiornamento quantità
+    document.querySelectorAll('.quantita-carrello').forEach(input => {
+      input.addEventListener('change', function() {
+        const prodottoId = this.getAttribute('data-prodotto-id');
+        const nuovaQuantita = parseInt(this.value);
+
+        if (nuovaQuantita < 1) {
+          this.value = 1;
+          return;
+        }
+
+        aggiornaQuantita(prodottoId, nuovaQuantita);
+      });
+    });
+
+    function rimuoviProdotto(prodottoId) {
+      fetch(contextPath + '/carrello/rimuovi', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: 'prodottoId=' + prodottoId
+      })
+              .then(response => response.json())
+              .then(data => {
+                if (data.success) {
+                  const cardProdotto = document.querySelector('.card-prodotto[data-prodotto-id="' + prodottoId + '"]');
+                  if (cardProdotto) {
+                    cardProdotto.remove();
+
+                    if (data.count === 0) {
+                      location.reload();
+                    } else {
+                      aggiornaRiepilogo(data.count, data.totale);
+                    }
+                  }
+                } else {
+                  alert(data.error || 'Errore durante la rimozione');
+                }
+              })
+              .catch(error => {
+                console.error('Errore:', error);
+                alert('Errore di connessione');
+              });
+    }
+
+    function aggiornaQuantita(prodottoId, nuovaQuantita) {
+      fetch(contextPath + '/carrello/aggiorna', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: 'prodottoId=' + prodottoId + '&quantita=' + nuovaQuantita
+      })
+              .then(response => response.json())
+              .then(data => {
+                if (data.success) {
+                  aggiornaItemTotale(prodottoId, nuovaQuantita);
+                  aggiornaRiepilogo(data.count, data.totale);
+                } else {
+                  alert(data.error || 'Errore durante aggiornamento');
+                  location.reload();
+                }
+              })
+              .catch(error => {
+                console.error('Errore:', error);
+                alert('Errore di connessione');
+              });
+    }
+
+    function aggiornaItemTotale(prodottoId, nuovaQuantita) {
+      const card = document.querySelector('.card-prodotto[data-prodotto-id="' + prodottoId + '"]');
+      if (!card) return;
+
+      const prezzoText = card.querySelector('.prezzo-unitario').textContent;
+      const prezzo = parseFloat(prezzoText.replace('€', '').replace(',', '.').trim());
+      const nuovoTotale = prezzo * nuovaQuantita;
+
+      card.querySelector('.totale-riga').textContent = formatCurrency(nuovoTotale);
+      card.querySelector('.dettaglio-riga').innerHTML = nuovaQuantita + ' x ' + formatCurrency(prezzo);
+    }
+
+    function aggiornaRiepilogo(count, totale) {
+      const numeroProdotti = document.getElementById('numero-prodotti');
+      if (numeroProdotti) {
+        numeroProdotti.textContent = count;
+      }
+
+      const carrelloTotale = document.getElementById('carrello-totale');
+      if (carrelloTotale) {
+        carrelloTotale.textContent = formatCurrency(totale);
+      }
+
+      const totaleFinale = document.getElementById('totale-finale');
+      if (totaleFinale) {
+        totaleFinale.textContent = formatCurrency(totale);
+      }
+    }
+
+    function formatCurrency(value) {
+      return new Intl.NumberFormat('it-IT', {
+        style: 'currency',
+        currency: 'EUR',
+        minimumFractionDigits: 2
+      }).format(value);
     }
   });
 </script>
+
 </body>
 </html>

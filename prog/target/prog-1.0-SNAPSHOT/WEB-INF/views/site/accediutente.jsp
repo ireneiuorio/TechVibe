@@ -20,6 +20,7 @@
     <div class="auth-card">
       <h2>Accesso Cliente</h2>
 
+      <!--Mostra il messaggio di errore impostato in back-end-->
       <c:if test="${not empty loginError}">
         <div class="notification error">
           <c:out value="${loginError}"/>
@@ -34,7 +35,7 @@
 
         <label for="password">
           <span>Password</span>
-          <input type="password" id="password" name="password" placeholder="*****" required>
+          <input type="password" id="password" name="password" placeholder="*******" required>
         </label>
 
         <button type="submit" class="btn primary">Accedi</button>

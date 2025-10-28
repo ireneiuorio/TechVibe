@@ -45,6 +45,7 @@
             <div class="griglia-2">
               <div>
                 <label class="etichetta">Nome *</label>
+                <!--Se è presente mostro il valore del nome altrimenti null-->
                 <input type="text" name="nome" required value="${utente.nome != null ? utente.nome : ''}" class="campo">
               </div>
               <div>
