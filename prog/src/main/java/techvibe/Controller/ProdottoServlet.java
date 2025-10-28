@@ -47,6 +47,7 @@ public class ProdottoServlet extends Controller implements ErrorHandler {
         switch (path) {
 
             case "/":
+                //Verifica si tratti di un Admin
                 authorize(request.getSession(false));
                 int intPage=parsePage(request);
                 Paginator paginator=new Paginator(intPage,10);
@@ -66,32 +67,11 @@ public class ProdottoServlet extends Controller implements ErrorHandler {
                 request.setAttribute("prodotti",prodotti);
                 request.getRequestDispatcher("/WEB-INF/views/crm/prodotti.jsp").forward(request,response);
                 break;
-
-
             case "/create":
                 authorize(request.getSession(false));
                 request.getRequestDispatcher("/WEB-INF/views/crm/prodotto.jsp").forward(request,response);
                break;
 
-
-
-            case "/show":
-                authorize(request.getSession(false));
-                int id=Integer.parseInt(request.getParameter("idp"));
-                Optional<Prodotto> optionalProdotto;
-                try {
-                    optionalProdotto=prodottoDao.fetchProdotto(id);
-                } catch (SQLException e) {
-                    throw new RuntimeException(e);
-                }
-                if(optionalProdotto.isPresent())
-                {
-                    request.setAttribute("prodotto",optionalProdotto.get());
-                    request.getRequestDispatcher("/WEB-INF/views/crm/prodotto.jsp").forward(request,response);
-                }else{
-                    notFound();
-                }
-                break;
 
             case "/searchsmartphone":
                 // Non serve autorizzazione per la ricerca pubblica
@@ -130,12 +110,14 @@ public class ProdottoServlet extends Controller implements ErrorHandler {
 
 
             case "/searchtablet":
-                // Non serve autorizzazione per la ricerca pubblica
-                // authorize(request.getSession(false)); // Rimuovi se è per utenti pubblici
+
+
+                //Restituisce una lista di condizioni che servono per filtrare i prodotti nel DB
                 List<Condition> conditions1 = new ProdottoSearch().buildSearch(request);
                 List<Prodotto> risultati;
 
                 try {
+                    //Nessuna condizione di ricerca:mostro tutti i prodotti
                     if (conditions1.isEmpty()) {
                         int page = Math.max(1, parsePage(request));
                         Paginator paginator1 = new Paginator(page, 12);
@@ -144,12 +126,14 @@ public class ProdottoServlet extends Controller implements ErrorHandler {
                         request.setAttribute("pages", paginator1.getPages(totalCount));
                         request.setAttribute("currentPage", page);
                     } else {
+                        //ottenere solo i prodotti che rispettano la condizione
                         risultati = prodottoDao.search(conditions1);
                     }
                 } catch (SQLException e) {
                     risultati = new ArrayList<>();
                     request.setAttribute("errorMessage", "Errore nella ricerca. Riprova più tardi.");
                 }
+
 
                 request.setAttribute("prodotti", risultati);
                 request.getRequestDispatcher("/WEB-INF/views/site/tablet.jsp").forward(request, response);
@@ -165,6 +149,7 @@ public class ProdottoServlet extends Controller implements ErrorHandler {
                     throw new RuntimeException(e);
                 }
 
+                //nel caso il prodotto esiste recupera l'oggetto e fa la forward
                 if (optionalProdotto1.isPresent()) {
                     request.setAttribute("prodotto", optionalProdotto1.get());
                     request.getRequestDispatcher("/WEB-INF/views/site/prodotto.jsp").forward(request, response);
@@ -194,7 +179,7 @@ public class ProdottoServlet extends Controller implements ErrorHandler {
 
             case "/edit":
                 authorize(request.getSession(false));
-                int id1 = Integer.parseInt(request.getParameter("id"));  // Usa "id" non "idProdotto"
+                int id1 = Integer.parseInt(request.getParameter("id"));
 
                 try {
                     Optional<Prodotto> prodotto = prodottoDao.fetchProdotto(id1);
@@ -235,12 +220,8 @@ public class ProdottoServlet extends Controller implements ErrorHandler {
                 request.getRequestDispatcher("/WEB-INF/views/site/offerte.jsp").forward(request, response);
                 break;
 
-
-
-
-
             default:
-                request.getRequestDispatcher("/WEB-INF/views/crm/prodotti.jsp").forward(request, response);
+                request.getRequestDispatcher("/WEB-INF/views/crm/secret.jsp").forward(request, response);
                 break;
         }
     }
@@ -279,15 +260,6 @@ public class ProdottoServlet extends Controller implements ErrorHandler {
                     categoria.setIdCategoria(safeInt(request.getParameter("idCategoria")));
                     prodotto.setCategoria(categoria);
 
-                    String scontoParam = request.getParameter("percentualeSconto");
-                    System.out.println("=== DEBUG SCONTO ===");
-                    System.out.println("Parametro ricevuto: '" + scontoParam + "'");
-                    double sconto = safeDouble(scontoParam);
-                    System.out.println("Sconto convertito: " + sconto);
-
-                    prodotto.setPercentualeSconto(sconto);
-                    System.out.println("Sconto nel prodotto: " + prodotto.getPercentualeSconto());
-                    System.out.println("==================");
 
                     // Salva
                     if (prodottoDao.createProdotto(prodotto)) {
@@ -298,27 +270,6 @@ public class ProdottoServlet extends Controller implements ErrorHandler {
 
                     break;
                 }
-
-
-
-
-
-                case "/edit":
-                    authorize(request.getSession(false));
-                    int editId = Integer.parseInt(request.getParameter("id"));
-
-                    try {
-                        Optional<Prodotto> prodotto = prodottoDao.fetchProdotto(editId);
-                        if (prodotto.isPresent()) {
-                            request.setAttribute("prodotto", prodotto.get());
-                            request.getRequestDispatcher("/WEB-INF/views/crm/edit-prodotto.jsp").forward(request, response);
-                        } else {
-                            response.sendRedirect(request.getContextPath() + "/prodotti/");
-                        }
-                    } catch (SQLException e) {
-                        throw new RuntimeException(e);
-                    }
-                    break;
 
 
                 case "/update":
@@ -360,14 +311,14 @@ public class ProdottoServlet extends Controller implements ErrorHandler {
                     categoria.setIdCategoria(safeInt(request.getParameter("idCategoria")));
                     prodotto.setCategoria(categoria);
 
-                    // Validazione minima
+                    // Validazione minima: modello e marca non vuoti e prezzo non negativo
                     if (prodotto.getModello().isEmpty() || prodotto.getMarca().isEmpty() || prodotto.getPrezzo() <= 0) {
                         response.sendRedirect(request.getContextPath() + "/prodotti/edit?id=" + id + "&error=validation");
                         return;
                     }
 
                     // Salva nel database
-                    try {
+                    try {// fa l'update nel db
                         boolean success = prodottoDao.updateProdotto(prodotto);
                         if (success) {
                             response.sendRedirect(request.getContextPath() + "/prodotti/manage?id=" + id);
@@ -388,16 +339,20 @@ public class ProdottoServlet extends Controller implements ErrorHandler {
         }
     }
 
+    //Mai null: trasforma null in "" e fa trim().
     private String safe(String s) {
         return s == null ? "" : s.trim();
     }
 
+    //Supporta la virgola come separatore decimale (es. 12,5 → 12.5).
+    //Su input non numerico ritorna 0.0
     private double safeDouble(String v) {
         if (v == null) return 0d;
         v = v.trim().replace(',', '.');
         try { return Double.parseDouble(v); } catch (NumberFormatException e) { return 0d; }
     }
 
+    //Su input non valido ritorna 0
     private int safeInt(String v) {
         try { return Integer.parseInt(v); } catch (Exception e) { return 0; }
 
