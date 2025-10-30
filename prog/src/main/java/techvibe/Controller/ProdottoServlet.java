@@ -221,8 +221,9 @@ public class ProdottoServlet extends Controller implements ErrorHandler {
                 break;
 
             default:
-                request.getRequestDispatcher("/WEB-INF/views/crm/secret.jsp").forward(request, response);
-                break;
+                response.sendError(HttpServletResponse.SC_NOT_FOUND);
+
+
         }
     }
 

@@ -58,7 +58,7 @@
               </td>
               <td>
                 <c:choose>
-                  <c:when test="${utente.stato == 'ATTIVO'}">
+                  <c:when test="${utente.stato == 'ATTIVO'|| utente.stato=='attivo'}">
                     <span class="stato-attivo">Attivo</span>
                   </c:when>
                   <c:otherwise>
@@ -69,7 +69,7 @@
               <td>
                 <c:if test="${!utente.admin}">
                   <c:choose>
-                    <c:when test="${utente.stato == 'ATTIVO'}">
+                    <c:when test="${utente.stato == 'ATTIVO'|| utente.stato=='attivo'}">
                       <form method="post" action="${pageContext.request.contextPath}/utente/cambiastato" style="display: inline;">
                         <input type="hidden" name="id" value="${utente.idUtente}">
                         <input type="hidden" name="azione" value="disattiva">

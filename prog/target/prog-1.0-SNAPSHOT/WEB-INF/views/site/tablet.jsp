@@ -204,7 +204,7 @@
         <c:if test="${empty prodotti}">
           <div class="card" style="grid-column: 1 / -1; text-align:center; padding: 3rem;">
             <h3>Nessuno tablet trovato</h3>
-            <p>Prova a modificare i filtri di ricerca o <a href="${pageContext.request.contextPath}/prodotti/search">visualizza tutti i prodotti</a>!</p>
+            <p>Prova a modificare i filtri di ricerca!</p>
           </div>
         </c:if>
       </div>

@@ -200,6 +200,10 @@
                       location.reload();
                     } else {
                       aggiornaRiepilogo(data.count, data.totale);
+                      // Aggiorna anche il badge nell'header
+                      if (typeof aggiornaConteggioBadge === 'function') {
+                        aggiornaConteggioBadge();
+                      }
                     }
                   }
                 } else {
@@ -223,6 +227,10 @@
                 if (data.success) {
                   aggiornaItemTotale(prodottoId, nuovaQuantita);
                   aggiornaRiepilogo(data.count, data.totale);
+                  // Aggiorna anche il badge nell'header
+                  if (typeof aggiornaConteggioBadge === 'function') {
+                    aggiornaConteggioBadge();
+                  }
                 } else {
                   alert(data.error || 'Errore durante aggiornamento');
                   location.reload();
