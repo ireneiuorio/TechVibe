@@ -14,7 +14,7 @@
       <tr>
         <th>IdProdotto</th>
         <th>Dimensione Schermo</th>
-        <th>Connettività</th>
+        <th>Conn</th>
         <th>Prezzo</th>
         <th>Modello</th>
         <th>Marca</th>
