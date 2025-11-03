@@ -225,7 +225,7 @@ public class CheckoutServlet extends HttpServlet {
         }
     }
 
-//Capisce chi è l'utente loggato leggendo la sessione e recupera i suoi dati dal database
+    //Capisce chi è l'utente loggato leggendo la sessione e recupera i suoi dati dal database
     private Utente resolveUtenteFromSession(HttpSession session) {
         if (session == null) return null;
 

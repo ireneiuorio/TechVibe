@@ -1,4 +1,6 @@
-/* ===== Hero ===== */
+
+
+/*Benvenuto su techvibe*/
 .hero-home {
     background: white;
     color: var(--primary-light);
@@ -19,11 +21,12 @@
     color: #666;
 }
 
-/* ===== Vetrina Offerte ===== */
+/*  Vetrina Offerte */
 .sezione-offerte {
     padding: 3rem 2rem;
     background: var(--white);
 }
+
 
 .contenitore-centrato {
     max-width: 1200px;
@@ -45,7 +48,7 @@
 
 .griglia-prodotti {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /*griglia responsive automatica*/
     gap: 1.5rem;
     margin-bottom: 2rem;
 }
@@ -57,8 +60,8 @@
     padding: 1.25rem;
     text-align: center;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    position: relative;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);/*Ombre*/
+    position: relative; /*punto di riferimento per il badge*/
 }
 
 .card-prodotto:hover {
@@ -88,7 +91,7 @@
 .immagine-prodotto {
     width: 100%;
     height: 180px;
-    object-fit: cover;
+    object-fit: cover; /*riempie completamente il contenitore con l'immagine*/
     margin-bottom: 1rem;
     border-radius: 8px;
 }
@@ -125,7 +128,7 @@
     font-weight: 700;
 }
 
-.btn-full {
+.btn-full {   /*Bottone aggiungi al carrello*/
     width: 100%;
 }
 
@@ -158,7 +161,7 @@
 
 .griglia-categorie {
     display: grid;
-    grid-template-columns: repeat(2, minmax(200px, 1fr));
+    grid-template-columns: repeat(2, minmax(200px, 1fr)); /*Crea una griglia con due colonne dim minima 200px)*/
     gap: 1.5rem;
     max-width: 700px;
     margin: 0 auto;
@@ -191,7 +194,7 @@
     border-color: var(--primary-light);
 }
 
-/* ===== Responsive Migliorato ===== */
+/*Responsive*/
 @media (max-width: 992px) {
     .hero-titolo { font-size: 2.2rem; }
     .immagine-prodotto { height: 170px; }

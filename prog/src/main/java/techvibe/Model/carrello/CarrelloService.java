@@ -331,9 +331,10 @@ public class CarrelloService {
         if (session == null) {
             return 0.0;
         }
-
         Carrello carrello = getCarrello(session);
         return carrello.total();
+
+
     }
 
 

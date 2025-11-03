@@ -1,4 +1,4 @@
-/* ===== HERO ===== */
+/* HERO */
 .hero-offerte {
     background: var(--primary-light);
     color: white;
@@ -16,14 +16,14 @@
     opacity: 0.9;
 }
 
-/* ===== CONTENITORE PAGINA ===== */
+/*CONTENITORE PAGINA*/
 .contenitore-offerte {
     max-width: 1400px;
     margin: 0 auto;
     padding: 2rem;
 }
 
-/* ===== INTESTAZIONE RISULTATI ===== */
+/*  INTESTAZIONE RISULTATI */
 .intestazione-risultati {
     display: flex;
     justify-content: space-between;
@@ -42,7 +42,7 @@
     font-size: 0.95rem;
 }
 
-/* ===== GRIGLIA PRODOTTI ===== */
+/*  GRIGLIA PRODOTTI */
 .griglia-offerte {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -50,7 +50,7 @@
     padding: 0 1rem;
 }
 
-/* ===== CARD PRODOTTO ===== */
+/* CARD PRODOTTO  */
 .card-offerta {
     background: white;
     border: 1px solid #eee;
@@ -100,7 +100,7 @@
     font-weight: 600;
 }
 
-/* ===== BOX PREZZO ===== */
+/*BOX PREZZO*/
 .box-prezzo {
     margin: 0.75rem 0;
     border-radius: 10px;
@@ -127,11 +127,11 @@
     color: white;
 }
 
-/* ===== BOTTONI ===== */
+/* BOTTONI */
 .btn-full { width: 100%; }
 .btn.primary:hover { background: var(--primary-light) !important; }
 
-/* ===== MESSAGGIO VUOTO ===== */
+/*MESSAGGIO VUOTO*/
 .box-nessuna-offerta {
     grid-column: 1 / -1;
     text-align: center;
@@ -157,7 +157,7 @@
     font-weight: 600;
 }
 
-/* ===== SEZIONE INFORMATIVA ===== */
+/*SEZIONE INFORMATIVA */
 .box-informativo {
     margin-top: 3rem;
     padding: 2rem;
@@ -175,7 +175,7 @@
     margin: 0;
 }
 
-/* ===== RESPONSIVE MIGLIORATO ===== */
+/* RESPONSIVE MIGLIORATO */
 @media (max-width: 992px) {
     .hero-titolo { font-size: 2.2rem; }
     .immagine-prodotto { height: 170px; }

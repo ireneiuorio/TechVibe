@@ -109,7 +109,7 @@
 
           <!-- Subtotale -->
           <div class="riga-subtotale">
-            <span>Subtotale (<span id="numero-prodotti">${carrello.items.size()}</span> prodotti):</span>
+            <span>Subtotale (<span id="numero-prodotti">${sessionScope.carrello.numeroTotaleArticoli}</span> prodotti):</span>
             <span id="carrello-totale">
               <fmt:formatNumber value="${carrello.total()}" type="currency" currencySymbol="€" minFractionDigits="2"/>
             </span>

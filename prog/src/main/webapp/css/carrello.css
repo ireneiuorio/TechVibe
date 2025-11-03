@@ -39,7 +39,7 @@
     font-weight: 500;
 }
 
-/* --- Layout con prodotti --- */
+/* Layout con prodotti */
 .griglia-carrello {
     display: grid;
     grid-template-columns: 1fr 350px;
@@ -63,12 +63,12 @@
     height: 120px;
     object-fit: cover;
     border-radius: 8px;
-    flex-shrink: 0;
+    flex-shrink: 0; /* BLOCCATO - l'elemento NON si restringe */
 }
 
 /* Dettagli prodotto (colonna centrale) */
 .dettagli-prodotto {
-    flex: 1;
+    flex: 1; /*L'elemento si espande per coprire tutto lo spazio*/
 }
 .dettagli-prodotto h3 {
     margin: 0 0 0.5rem 0;
@@ -130,27 +130,13 @@
     color: #888;
 }
 
-/* Pulsante: svuota carrello */
-.svuota-carrello {
-    background: #6c757d;
-    color: #fff;
-    border: none;
-    padding: 0.75rem 1.5rem;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 0.9rem;
-}
-.sezione-svuota {
-    text-align: center;
-    margin-top: 2rem;
-}
 
-/* --- Riepilogo ordine (colonna destra) --- */
+/*Riepilogo ordine (colonna destra) */
 .riepilogo-ordine {
     background: var(--white);
     padding: 2rem;
     border-radius: 12px;
-    height: fit-content;
+    height: fit-content;/*Elemento alto quanto il suo contenuto*/
     box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 .riepilogo-ordine .riepilogo-titolo {
@@ -159,7 +145,7 @@
 }
 .riga-subtotale {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-between; /*Mette spazio tra*/
     margin-bottom: 1rem;
     padding-bottom: 1rem;
     border-bottom: 1px solid #eee;
@@ -211,7 +197,7 @@
 }
 
 
-/* --- Responsive per mobile --- */
+/*Responsive per mobile */
 @media (max-width: 768px) {
     .griglia-carrello {
         grid-template-columns: 1fr !important;

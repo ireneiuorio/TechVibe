@@ -547,9 +547,7 @@ a {
     width: 100%;
 }
 
-/* ============================================
-   MEDIA QUERIES - RESPONSIVE
-   ============================================ */
+/* MEDIA QUERIES - RESPONSIVE */
 
 /* TABLET (768px - 1023px) */
 @media (max-width: 1023px) {

@@ -7,7 +7,6 @@
 <title><c:out value="${param.title}" default="TechVibe"/></title>
 <meta name="description" content="Vendita di smartphone e tablet">
 
-<link rel="icon" type="image/png" href="${context}/images/logo.png">
 
 <meta name="format-detection" content="telephone=no"><%-- evita numeri trattati come telefono --%>
 
@@ -15,8 +14,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="TechVibe">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="apple-touch-icon" href="${context}/images/logo.png">
-<link rel="apple-touch-startup-image" href="${context}/images/logo.png">
+
 
 <meta name="theme-color" content="#A8D0E6">
 

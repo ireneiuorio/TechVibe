@@ -1,11 +1,11 @@
-/* ===== Layout Principale ===== */
+/* Layout Principale */
 .sezione-ordine {
     max-width: 800px;
     margin: 2rem auto;
     padding: 0 1rem;
 }
 
-/* ===== Pulsante "Torna indietro" ===== */
+/*  Pulsante "Torna indietro" */
 .link-torna-profilo {
     display: inline-flex;
     align-items: center;
@@ -15,7 +15,7 @@
     font-weight: 600;
 }
 
-/* ===== Intestazione Ordine ===== */
+/* Intestazione Ordine  */
 .blocco-ordine {
     background: white;
     padding: 2rem;
@@ -59,7 +59,7 @@
     font-weight: bold;
 }
 
-/* ===== Sezione Prodotti ===== */
+/*Sezione Prodotti */
 .blocco-prodotti {
     background: white;
     padding: 2rem;
@@ -126,14 +126,14 @@
     color: var(--primary-light);
 }
 
-/* ===== Messaggio Nessun Prodotto ===== */
+/* Messaggio Nessun Prodotto */
 .messaggio-vuoto {
     text-align: center;
     padding: 2rem;
     color: #666;
 }
 
-/* ===== Responsive ===== */
+/* Responsive */
 @media (max-width: 768px) {
     .griglia-dettagli {
         grid-template-columns: 1fr !important;

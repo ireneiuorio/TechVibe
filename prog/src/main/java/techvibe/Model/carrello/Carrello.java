@@ -78,27 +78,6 @@ public class Carrello {
         return totale;
     }
 
-    public double totalescontato() {
-        double totale = 0.0;
-        double sconto=0.0;
-
-        for (CarrelloItem item : items) {
-            totale += item.total(); // somma il totale di ogni prodotto (prezzo * quantità)
-        }
-
-        if(this.getNumeroTotaleArticoli()>10)
-        {
-            sconto=(totale*10)/100;
-            totale-=sconto;
-        }
-
-        return totale;
-    }
-
-
-
-
-
 
 
     public boolean isEmpty() {
