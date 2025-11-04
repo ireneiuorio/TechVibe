@@ -169,9 +169,9 @@
     });
 
     // Chiudi dropdown quando clicchi su un link interno
-    const dropdownLinks = document.querySelectorAll('.dropdown-content a'); //Seleziona 
+    const dropdownLinks = document.querySelectorAll('.dropdown-content a'); //Seleziona tutti i link dento dropdown
     dropdownLinks.forEach(link => {
-        link.addEventListener('click', function() {
+        link.addEventListener('click', function() { //per onuno aggiunger un listner al click
             dropdowns.forEach(dropdown => {
                 dropdown.classList.remove('open');
                 const btn = dropdown.querySelector('.dropbtn');
