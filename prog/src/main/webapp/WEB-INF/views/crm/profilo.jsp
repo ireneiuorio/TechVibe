@@ -180,43 +180,55 @@
 
 <script>
     function showTab(evt, tabName) {
-        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-        document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-        document.getElementById('tab-' + tabName).classList.add('active');
-        if (evt && evt.currentTarget) evt.currentTarget.classList.add('active');
+        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));//Nasconde tutti i contenuti della tab content
+        document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));//Disattiva tutti io bottoni
+        document.getElementById('tab-' + tabName).classList.add('active');//Mostra il contenuto della tab richiesta
+        if (evt && evt.currentTarget) evt.currentTarget.classList.add('active');//Attiva il bottone cliccato
     }
 
+    //VALIDAZIONE PASSWORD PRIMA DI INVIARE IL FORM
     function validatePasswordForm() {
+        //Prende i valori in input
         const newPassword = document.getElementById('newPassword').value;
         const confirmPassword = document.getElementById('confirmPassword').value;
 
+        //Controlla se le password coincidono
         if (newPassword !== confirmPassword) {
             alert('Le nuove password non coincidono');
             return false;
         }
+        //Controlla la lunghezza minima
         if (newPassword.length < 6) {
             alert('La password deve essere di almeno 6 caratteri');
             return false;
         }
+        //Chiede la conferma finale
         return confirm('Sei sicuro di voler cambiare la password?');
     }
 
+    //VALIDA IL CAMBIO PASSWORD
     function validateEmailForm() {
+        //Prendi il valore dell'email
         const newEmail = document.getElementById('newEmail').value;
+        //Definisce il pattern di validazione
         const emailRegex = /^[A-Za-z0-9+_.-]+@(.+)$/;
-        if (!emailRegex.test(newEmail)) {
+        //Testa l'email con la regex
+        if (!emailRegex.test(newEmail)) {//Se l'email non rispetta ritorna true
             alert('Formato email non valido');
             return false;
         }
         return confirm('Sei sicuro di voler cambiare l\'email? Dovrai usare la nuova email per accedere.');
     }
 
+    //Quando la pagina finisce di caricare, esegui questo codice
     document.addEventListener('DOMContentLoaded', function() {
-        const urlParams = new URLSearchParams(window.location.search);
+        const urlParams = new URLSearchParams(window.location.search);//Legge i parametri dell'URL
+       //Prende il parametro tab
         const tab = urlParams.get('tab');
+       //In base al parametro dell'URL apri la tab giusta
         if (tab === 'email') showTab(null,'email');
         else if (tab === 'password') showTab(null,'password');
-        else showTab(null,'info');
+        else showTab(null,'info');//Default tab info
     });
 </script>
 

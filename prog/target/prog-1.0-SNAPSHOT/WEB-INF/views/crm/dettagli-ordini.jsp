@@ -288,16 +288,24 @@
 </main>
 
 <script>
+    //Mostra/Nascondi tab
     function showTab(evt, tabName) {
-        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
-        document.getElementById('tab-' + tabName).classList.add('active');
+       //MOSTRA IL CONTENUTO DELLA TAB CLCCATA
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active')); //Trova tutti gli elementi con classe tab-content e rimuovi la classe active da ognuno (Visibile quando ho active)
+        //RIMUOVE EVIDENZIAZIONE DAI BOTTONI
+        document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));//Trova TUTTI i bottoni delle tab e rimuovi la classe active da ognuno
+        //MOSTRA IL CONTENUTO DELLA TAB CLICCATA
+        document.getElementById('tab-' + tabName).classList.add('active'); //Trova l'elemennto con id tab-dettagli e aggiunge la classe active
+        //EVIDENZIA IL BOTTONE CLICCATO
         evt.currentTarget.classList.add('active');
     }
 
+    //Mostra la finestra di conferma
     function confirmCancel() {
         if (confirm('Annullare questo ordine? Questa azione non può essere annullata.')) {
+            //Se l'utente conferma ok cambia stato
             document.getElementById('stato').value = 'ANNULLATO';
+            //Invia il form
             document.forms[0].submit();
         }
     }

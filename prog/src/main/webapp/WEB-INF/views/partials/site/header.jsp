@@ -89,58 +89,67 @@
 <script>
     // Toggle menu mobile
     (function() {
-        const toggle = document.getElementById('navbarToggle');
-        const navLinks = document.getElementById('navLinks');
+        const toggle = document.getElementById('navbarToggle');//Bottone hamburger
+        const navLinks = document.getElementById('navLinks');//Menù di navigazione
 
-        if (toggle && navLinks) {
-            toggle.addEventListener('click', function() {
-                // Toggle classi
-                this.classList.toggle('active');
+        if (toggle && navLinks) {//Controlla che esistano
+            toggle.addEventListener('click', function() {//Click sul bottone hamburger
+
+                //NavbarToggle in CSS
+                this.classList.toggle('active');//Aggiunge se non c'è, rimuove se c'è
                 navLinks.classList.toggle('open');
 
-                // Aggiorna aria-expanded
+                //Se il menù ha la classe open restituisce true
                 const isOpen = navLinks.classList.contains('open');
+                //Imposta l'attributo aria-expanded sul bottone dice se è aperto o chiuso
                 this.setAttribute('aria-expanded', isOpen);
             });
 
             // Chiudi menu quando si clicca su un link
-            const links = navLinks.querySelectorAll('a');
+            const links = navLinks.querySelectorAll('a'); //Chiude un menù quando clicco un link
             links.forEach(link => {
-                link.addEventListener('click', function() {
+                link.addEventListener('click', function() {//Per ogni link nel menu aggiungi un event listner per il click
                     toggle.classList.remove('active');
                     navLinks.classList.remove('open');
                     toggle.setAttribute('aria-expanded', 'false');
                 });
             });
         }
-    })();
+    })();//Chiude il menù e va alla pagina del link
 
-    // ===== GESTIONE DROPDOWN CATEGORIE =====
-    const dropdowns = document.querySelectorAll('.nav-links .dropdown');
+
+
+
+
+
+    //GESTIONE DROPDOWN CATEGORIE
+
+    //Seleziona tutti gli elementi dropdown che si trovano in nav-links
+    const dropdowns = document.querySelectorAll('.nav-links .dropdown');//restituisce un array con tutti i dropdown trovati
 
     dropdowns.forEach(dropdown => {
-        const btn = dropdown.querySelector('.dropbtn');
+        const btn = dropdown.querySelector('.dropbtn'); //Cerca il dropbtn in ogni dropdown e restituisce solo il primo trovato
 
         if (btn) {
             // Click sul pulsante dropdown
             btn.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
+                e.preventDefault(); //blocca i comportamneto predefinito
+                e.stopPropagation();//impedisce che l'evento salga verso i genitori, blocca la propagazione
 
                 // Chiudi altri dropdown aperti
                 dropdowns.forEach(other => {
-                    if (other !== dropdown) {
+                    if (other !== dropdown) { //Se non è quello cliccato lo chiude
                         other.classList.remove('open');
                         const otherBtn = other.querySelector('.dropbtn');
                         if (otherBtn) otherBtn.setAttribute('aria-expanded', 'false');
                     }
                 });
 
-                // Toggle questo dropdown
+                // Toggle questo dropdown: se la classe opern c'è la rimuove, se non c'è la aggiunge
                 dropdown.classList.toggle('open');
 
                 // Aggiorna aria-expanded
-                const isOpen = dropdown.classList.contains('open');
+                const isOpen = dropdown.classList.contains('open'); //Controlla se è aperto
                 btn.setAttribute('aria-expanded', isOpen);
             });
         }
@@ -148,21 +157,21 @@
 
     // Chiudi dropdown quando clicchi fuori
     document.addEventListener('click', function(e) {
-        if (!e.target.closest('.dropdown')) {
+        if (!e.target.closest('.dropdown')) { //cerca se l'elemento cliccato è un dropdown se non lo è chiude
             dropdowns.forEach(dropdown => {
                 dropdown.classList.remove('open');
-                const btn = dropdown.querySelector('.dropbtn');
+                const btn = dropdown.querySelector('.dropbtn');//Rimuoe open da tutti i dropdown
                 if (btn) {
-                    btn.setAttribute('aria-expanded', 'false');
+                    btn.setAttribute('aria-expanded', 'false');//Resetta aria-expanded su tutti i pulsanti
                 }
             });
         }
     });
 
     // Chiudi dropdown quando clicchi su un link interno
-    const dropdownLinks = document.querySelectorAll('.dropdown-content a');
+    const dropdownLinks = document.querySelectorAll('.dropdown-content a'); //Seleziona tutti i link dento dropdown
     dropdownLinks.forEach(link => {
-        link.addEventListener('click', function() {
+        link.addEventListener('click', function() { //per onuno aggiunger un listner al click
             dropdowns.forEach(dropdown => {
                 dropdown.classList.remove('open');
                 const btn = dropdown.querySelector('.dropbtn');

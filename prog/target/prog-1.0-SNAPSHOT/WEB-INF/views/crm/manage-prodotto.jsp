@@ -311,10 +311,11 @@
 
 <script>
     function showTab(evt, tabName) {
-        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-        document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-        document.getElementById('tab-' + tabName).classList.add('active');
-        if (evt && evt.currentTarget) evt.currentTarget.classList.add('active');
+        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));//Nascondi tutti i contenuti
+        document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));//Disattiva tutti i bottoni
+        document.getElementById('tab-' + tabName).classList.add('active');//Mostra il contenuto della tab cliccata
+        //Aggiunge active su ciò su cui io clicco
+        if (evt && evt.currentTarget) evt.currentTarget.classList.add('active');//In caso di errore
     }
 
     function confirmDelete() {

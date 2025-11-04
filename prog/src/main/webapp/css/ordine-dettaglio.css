@@ -41,9 +41,9 @@
     flex: 1; padding: 1rem; background: none; border: none;
     border-radius: 8px; cursor: pointer; font-weight: 600; transition: all .3s;
 }
-.tab-button.active { background: var(--primary-light); color: #fff; }
-.tab-content { display: none; }
-.tab-content.active { display: block; }
+.tab-button.active { background: var(--primary-light); color: #fff; } /*JS Blu per indicare quale è attivo*/
+.tab-content { display: none; } /*Js*/ /*NON VISIBILE*/
+.tab-content.active { display: block; } /*VISIBILE*/
 
 /* Griglia informazioni */
 .info-grid {

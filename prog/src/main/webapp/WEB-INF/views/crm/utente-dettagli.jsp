@@ -227,13 +227,13 @@
 
 <script>
   function showTab(evt, tabName) {
-    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-    document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));//Nasconde tutti i contenuti della tab
+    document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));//Disattiva tutti i bottoni della tab
 
-    const el = document.getElementById('tab-' + tabName);
-    if (el) el.classList.add('active');
+    const el = document.getElementById('tab-' + tabName); //Mostra il contenuto della tab richiesta
+    if (el) el.classList.add('active'); //Se l'elemento esiste aggiunge la classe active
 
-    if (evt && evt.currentTarget) evt.currentTarget.classList.add('active');
+    if (evt && evt.currentTarget) evt.currentTarget.classList.add('active');//Attiva  il bottone cliccato
   }
 </script>
 

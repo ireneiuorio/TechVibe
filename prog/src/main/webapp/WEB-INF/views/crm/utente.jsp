@@ -77,6 +77,7 @@
 
 <script>
     (function () {
+        //Prendi il campo email
         const email = document.getElementById('email');
 
         // Se il server ha rilevato l'email occupata, imposta l'errore nativo

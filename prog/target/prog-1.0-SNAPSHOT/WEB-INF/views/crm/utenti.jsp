@@ -28,9 +28,6 @@
             </section>
         </div>
 
-
-
-
     </section>
 
 </main>
