@@ -97,6 +97,8 @@
 <!-- Validazione client-side -->
 <script>
     (function () {
+
+        //Seleziona gli elementi
         const form = document.getElementById('form-registrazione');
         if (!form) return;
 
@@ -108,7 +110,7 @@
             if (pwd.value.length < 8) {
                 pwd.setCustomValidity('La password deve avere almeno 8 caratteri.');
             } else {
-                pwd.setCustomValidity('');
+                pwd.setCustomValidity(''); //per messaggi di errori personalizzati
             }
             if (confirm.value !== pwd.value) {
                 confirm.setCustomValidity('Le password non coincidono.');
@@ -125,15 +127,20 @@
             }
         }
 
+        //Si attiva ogni volta che l'utente digita
         email.addEventListener('input', validaEmail);
         pwd.addEventListener('input', validaPassword);
         confirm.addEventListener('input', validaPassword);
 
         form.addEventListener('submit', function (e) {
+            //Esegue validazioni
             validaEmail();
             validaPassword();
+            //Controlla validità del form
             if (!form.checkValidity()) {
+                //Previene submit
                 e.preventDefault();
+                //Mostra errori
                 form.reportValidity();
             }
         });

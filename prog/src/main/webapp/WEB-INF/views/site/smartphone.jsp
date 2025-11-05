@@ -217,17 +217,20 @@
 </main>
 
 <script>
+    //Apre e chiude il menù filtri su Mobile
     function toggleMobileFiltri() {
         const sidebar = document.getElementById('filtri-sidebar');
-        sidebar.classList.toggle('show');
+        sidebar.classList.toggle('show'); //Se una classe non c'è la aggiunge se c'è la rimuove
     }
 
-    // Chiudi filtri mobile quando si clicca fuori (opzionale)
+    // Chiudi filtri mobile quando si clicca fuori
+    //document e non button quindi click ovunque nella pagina
     document.addEventListener('click', function(event) {
         const sidebar = document.getElementById('filtri-sidebar');
         const toggle = document.querySelector('.mobile-filter-toggle');
 
         if (window.innerWidth <= 768) {
+            //Controlliamo se l''elemnto cliccato è dentro alla sidebar perchè se è dentro non vogliamo che si chiuda
             if (!sidebar.contains(event.target) && !toggle.contains(event.target)) {
                 sidebar.classList.remove('show');
             }

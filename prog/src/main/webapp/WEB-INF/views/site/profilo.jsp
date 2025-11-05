@@ -237,8 +237,12 @@
   }
 
   // Scheda iniziale basata su parametri URL
+  //Metodo per registrare un listner su un evento
   document.addEventListener('DOMContentLoaded', function() {
+
+    //Oggetto che contiene info sull'URL corrente
     const urlParams = new URLSearchParams(window.location.search);
+    //Ottiene il valore del parmetro TAB
     const tab = urlParams.get('tab');
 
     if (tab === 'password') {
@@ -248,7 +252,6 @@
     } else {
       showTab('edit');
     }
-    // (Rimosso JS hover: gestito in CSS via :hover)
   });
 </script>
 
