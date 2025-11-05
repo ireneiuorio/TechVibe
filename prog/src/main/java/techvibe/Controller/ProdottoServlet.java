@@ -92,7 +92,7 @@ public class ProdottoServlet extends Controller implements ErrorHandler {
                         request.setAttribute("pages", paginator1.getPages(totalCount));
                         request.setAttribute("currentPage", page);
                     } else {
-                        // Con filtri, mostra tutti i risultati (nessuna paginazione)
+                        // Con filtri, mostra tutti i risultati
                         searchProdotti = prodottoDao.search(conditions);
                     }
 
@@ -110,7 +110,6 @@ public class ProdottoServlet extends Controller implements ErrorHandler {
 
 
             case "/searchtablet":
-
 
                 //Restituisce una lista di condizioni che servono per filtrare i prodotti nel DB
                 List<Condition> conditions1 = new ProdottoSearch().buildSearch(request);

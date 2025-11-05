@@ -158,21 +158,21 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    const contextPath = '<%= request.getContextPath() %>';
+    const contextPath = '<%= request.getContextPath() %>';//Ottiene il percorso dell'applicazione
 
-    // Gestione rimozione prodotto
+    // Gestione rimozione prodotto //Trova tutti i bottoni con questa classe
     document.querySelectorAll('.remove-from-cart').forEach(button => {
       button.addEventListener('click', function() {
-        const prodottoId = this.getAttribute('data-id');
-        rimuoviProdotto(prodottoId);
+        const prodottoId = this.getAttribute('data-id'); //itera su ogni bottone
+        rimuoviProdotto(prodottoId); //chiama la funzione rimuovi prodotto
       });
     });
 
-    // Gestione aggiornamento quantità
+    // Gestione aggiornamento quantità, triva gli input quantità carrello
     document.querySelectorAll('.quantita-carrello').forEach(input => {
       input.addEventListener('change', function() {
         const prodottoId = this.getAttribute('data-prodotto-id');
-        const nuovaQuantita = parseInt(this.value);
+        const nuovaQuantita = parseInt(this.value); //converte il valore da stringa a numero
 
         if (nuovaQuantita < 1) {
           this.value = 1;
@@ -183,22 +183,30 @@
       });
     });
 
+
+  //CHIAMATA AJAX
     function rimuoviProdotto(prodottoId) {
       fetch(contextPath + '/carrello/rimuovi', {
         method: 'POST',
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},//Fromato dati
         body: 'prodottoId=' + prodottoId
       })
-              .then(response => response.json())
+              .then(response => response.json()) //Converte la risposta del server in json
               .then(data => {
                 if (data.success) {
+                  //Trova il card HTML del prodotto usando ll'id
                   const cardProdotto = document.querySelector('.card-prodotto[data-prodotto-id="' + prodottoId + '"]');
                   if (cardProdotto) {
+                    //Elimina l'elemento del DOM
                     cardProdotto.remove();
 
+
+
+                    //Se il carrello è vuoto ricarica la pagina
                     if (data.count === 0) {
                       location.reload();
                     } else {
+                      //Aggiorna il riepilogo
                       aggiornaRiepilogo(data.count, data.totale);
                       // Aggiorna anche il badge nell'header
                       if (typeof aggiornaConteggioBadge === 'function') {
@@ -225,7 +233,9 @@
               .then(response => response.json())
               .then(data => {
                 if (data.success) {
+                  //Aggiorna il totale della riga prodotto
                   aggiornaItemTotale(prodottoId, nuovaQuantita);
+                  //Aggiorna il riepilogo generale
                   aggiornaRiepilogo(data.count, data.totale);
                   // Aggiorna anche il badge nell'header
                   if (typeof aggiornaConteggioBadge === 'function') {
@@ -242,15 +252,22 @@
               });
     }
 
-    function aggiornaItemTotale(prodottoId, nuovaQuantita) {
-      const card = document.querySelector('.card-prodotto[data-prodotto-id="' + prodottoId + '"]');
-      if (!card) return;
 
+    function aggiornaItemTotale(prodottoId, nuovaQuantita) {
+      const card = document.querySelector('.card-prodotto[data-prodotto-id="' + prodottoId + '"]'); //query selector il primo elemento html
+      if (!card) return; //Trova la card del prodotto se non esiste esce
+
+      //Legge il prezzo unitario del DOM
       const prezzoText = card.querySelector('.prezzo-unitario').textContent;
       const prezzo = parseFloat(prezzoText.replace('€', '').replace(',', '.').trim());
+
+      //Calcola il nuovo totale
       const nuovoTotale = prezzo * nuovaQuantita;
 
+
+      //Aggiorna il totale nella riga
       card.querySelector('.totale-riga').textContent = formatCurrency(nuovoTotale);
+      //Aggiorna il dettaglio
       card.querySelector('.dettaglio-riga').innerHTML = nuovaQuantita + ' x ' + formatCurrency(prezzo);
     }
 
@@ -259,6 +276,8 @@
       if (numeroProdotti) {
         numeroProdotti.textContent = count;
       }
+
+      //Aggiorna il numero totale di prodotti nel carrello
 
       const carrelloTotale = document.getElementById('carrello-totale');
       if (carrelloTotale) {
@@ -271,11 +290,12 @@
       }
     }
 
+    //Formattazione
     function formatCurrency(value) {
-      return new Intl.NumberFormat('it-IT', {
-        style: 'currency',
+      return new Intl.NumberFormat('it-IT', { //formatta i numeri in italiano
+        style: 'currency', //come valuta euro
         currency: 'EUR',
-        minimumFractionDigits: 2
+        minimumFractionDigits: 2 //sempre due decimali
       }).format(value);
     }
   });

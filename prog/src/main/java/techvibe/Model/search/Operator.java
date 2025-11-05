@@ -1,5 +1,7 @@
 package techvibe.Model.search;
 
+
+//Definisce i tipi di confronto
 public enum Operator {
 
     GT, LT, EQ, NE, GE, LE, MATCH;

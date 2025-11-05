@@ -7,6 +7,7 @@ import java.sql.SQLException;
 
 public class UtenteExtractor implements ResultSetExtractor<Utente> {
 
+    //Trasforma i dati estratti dal database in oggetti java
     public Utente extract(ResultSet resultSet) throws SQLException
     {
         Utente u = new Utente();

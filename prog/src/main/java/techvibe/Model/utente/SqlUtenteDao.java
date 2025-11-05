@@ -20,7 +20,7 @@ public class SqlUtenteDao extends SqlDao implements UtenteDao<SQLException> {
         super(source);
     }
 
-    // nuova firma
+    //RECUPERA LA LISTA PAGINATA DI TUTTI GL UTENTI
     public List<Utente> fetchUtenti(Paginator paginator) throws SQLException {
         try (Connection conn = source.getConnection()) {
             // se la tabella è "utente"
@@ -32,14 +32,13 @@ public class SqlUtenteDao extends SqlDao implements UtenteDao<SQLException> {
                     .generateQuery();
 
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                // In MySQL/MariaDB: LIMIT offset, row_count
-                ps.setInt(1, paginator.getOffset());
-                ps.setInt(2, paginator.getLimit());
+                ps.setInt(1, paginator.getOffset()); //Da quale utente partire
+                ps.setInt(2, paginator.getLimit());//Quanti utenti prendere
 
                 try (ResultSet rs = ps.executeQuery()) {
                     UtenteExtractor extractor = new UtenteExtractor();
                     List<Utente> utenti = new ArrayList<>();
-                    while (rs.next()) {
+                    while (rs.next()) {//Vai il prossima riga
                         utenti.add(extractor.extract(rs));
                     }
                     return utenti;
@@ -48,6 +47,8 @@ public class SqlUtenteDao extends SqlDao implements UtenteDao<SQLException> {
         }
     }
 
+
+    //Recupera un utente
     @Override
     public Optional<Utente> fetchUtente(int id) throws SQLException {
         try (Connection conn = source.getConnection()) {
@@ -65,6 +66,7 @@ public class SqlUtenteDao extends SqlDao implements UtenteDao<SQLException> {
         }
     }
 
+    //Crea un utente
     @Override
     public Boolean createUtente(Utente utente) throws SQLException {
         try (Connection conn = source.getConnection()) {
@@ -87,6 +89,7 @@ public class SqlUtenteDao extends SqlDao implements UtenteDao<SQLException> {
     }
 
 
+    //Aggiornamento Utente
     @Override
     public Boolean updateUtente(Utente utente) throws SQLException {
         try (Connection conn = source.getConnection()) {
@@ -106,6 +109,7 @@ public class SqlUtenteDao extends SqlDao implements UtenteDao<SQLException> {
         }
     }
 
+    //Cancella utente con tutte le relazioni
     public boolean deleteAccountWithRelations(int userId) throws SQLException {
         try (Connection c = source.getConnection()) {
             try {
@@ -143,7 +147,7 @@ public class SqlUtenteDao extends SqlDao implements UtenteDao<SQLException> {
     }
 
 
-    // NUOVO METODO: Cambia stato utente
+    // Cambia stato utente
     public Boolean cambiaStatoUtente(int idUtente, String nuovoStato) throws SQLException {
         try (Connection conn = source.getConnection()) {
             QueryBuilder queryBuilder = new QueryBuilder("utente", "ute");
@@ -158,16 +162,17 @@ public class SqlUtenteDao extends SqlDao implements UtenteDao<SQLException> {
         }
     }
 
-    // NUOVO METODO: Attiva utente
+    // Attiva utente
     public Boolean attivaUtente(int idUtente) throws SQLException {
         return cambiaStatoUtente(idUtente, "ATTIVO");
     }
 
-    // NUOVO METODO: Disattiva utente
+    //Disattiva utente
     public Boolean disattivaUtente(int idUtente) throws SQLException {
         return cambiaStatoUtente(idUtente, "DISATTIVATO");
     }
 
+    //Trova utente
     @Override
     public Optional<Utente> findUtente(String email, String passwordHash, boolean admin) throws SQLException {
         String sql = new QueryBuilder("utente", "ute")
@@ -193,6 +198,7 @@ public class SqlUtenteDao extends SqlDao implements UtenteDao<SQLException> {
         }
     }
 
+    //Verifica se l'utente è disattivato
     public boolean isUtenteDisattivato(String email, String passwordHash, boolean admin) throws SQLException {
         String sql = new QueryBuilder("utente", "ute")
                 .select()
@@ -212,6 +218,7 @@ public class SqlUtenteDao extends SqlDao implements UtenteDao<SQLException> {
         }
     }
 
+    //Conta tutti
     public int countAll() throws SQLException {
         final String sql = "SELECT COUNT(*) AS total FROM utente ute";
         try (Connection c = source.getConnection();
@@ -221,6 +228,9 @@ public class SqlUtenteDao extends SqlDao implements UtenteDao<SQLException> {
         }
     }
 
+
+
+    //Verifica se esiste un utente con una determibara mail
     public boolean existsByEmail(String email) throws SQLException {
         final String sql = "SELECT 1 FROM utente WHERE Email = ? LIMIT 1";
         try (Connection conn = source.getConnection();
@@ -232,28 +242,7 @@ public class SqlUtenteDao extends SqlDao implements UtenteDao<SQLException> {
         }
     }
 
-    public Optional<Utente> findUtenteNormale(String email, String passwordHash) throws SQLException {
-        String sql = new QueryBuilder("utente", "ute")
-                .select()
-                .where("ute.email = ? AND ute.passwordhash = ? AND ute.isadmin = false AND ute.stato = 'ATTIVO'")
-                .generateQuery();
-
-        try (Connection c = source.getConnection();
-             PreparedStatement ps = c.prepareStatement(sql)) {
-
-            ps.setString(1, email);
-            ps.setString(2, passwordHash);
-
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    Utente u = new UtenteExtractor().extract(rs);
-                    return Optional.of(u);
-                }
-                return Optional.empty();
-            }
-        }
-    }
-
+   //Aggiorna la password
     public Boolean updatePassword(int idUtente, String newPassword) throws SQLException, NoSuchAlgorithmException, NoSuchAlgorithmException {
         // Usa il metodo della classe Utente per fare l'hash
         Utente tempUtente = new Utente();
@@ -273,13 +262,7 @@ public class SqlUtenteDao extends SqlDao implements UtenteDao<SQLException> {
         }
     }
 
-    /**
-     * Aggiorna solo l'email di un utente
-     * @param idUtente ID dell'utente
-     * @param newEmail nuova email
-     * @return true se l'aggiornamento è andato a buon fine
-     * @throws SQLException in caso di errore database
-     */
+   //Aggiorno solo l'email
     public Boolean updateEmail(int idUtente, String newEmail) throws SQLException {
         try (Connection conn = source.getConnection()) {
             QueryBuilder queryBuilder = new QueryBuilder("utente", "ute");

@@ -84,6 +84,7 @@ public class SqlOrdineDao extends SqlDao implements OrdineDao<SQLException> {
             }
         }
     }
+
     public boolean createOrdine(Ordine ordine) throws SQLException {
         try (Connection conn = source.getConnection()) {
             conn.setAutoCommit(false);
@@ -210,17 +211,11 @@ public class SqlOrdineDao extends SqlDao implements OrdineDao<SQLException> {
     }
 
 
-
-
-
-
-
-
-
     public Optional<Ordine> fetchOrdineConProdottiById(int ordineId, int utenteId) throws SQLException {
         try (Connection conn = source.getConnection()) {
             String query = """
-            SELECT ord.*, pro.*, cat.*, com.quantita
+            
+                    SELECT ord.*, pro.*, cat.*, com.quantita
             FROM ordine ord
             INNER JOIN composizioneordine com ON com.idordine = ord.idordine
             INNER JOIN prodotto pro ON pro.idprodotto = com.idprodotto
@@ -258,12 +253,18 @@ public class SqlOrdineDao extends SqlDao implements OrdineDao<SQLException> {
     public Optional<Ordine> fetchOrdineCompletoById(int ordineId) throws SQLException {
         try (Connection conn = source.getConnection()) {
             String query = """
-        SELECT ord.*, ute.*, pro.*, cat.*, com.quantita
-        FROM ordine ord
-        INNER JOIN utente ute ON ute.idaccount = ord.idaccount
-        LEFT JOIN composizioneordine com ON com.idordine = ord.idordine
-        LEFT JOIN prodotto pro ON pro.idprodotto = com.idprodotto
-        LEFT JOIN categoria cat ON cat.idcategoria = pro.idcategoria
+        SELECT ord.*, ute.*, pro.*, cat.*, com.
+                    quantita
+                            FROM ordine ord
+        INNER JOIN utente ute ON ute.
+                    idaccount = ord.idaccount
+        LEFT JOIN composizioneordine com
+                    ON com.idordine = ord.idordine
+        LEFT JOIN prodotto
+                    pro ON pro.idprodotto = com.idprodotto
+        LEFT JOIN
+                    categoria cat ON cat.
+                    idcategoria = pro.idcategoria
         WHERE ord.idordine = ?
         """;
 
@@ -325,10 +326,12 @@ public class SqlOrdineDao extends SqlDao implements OrdineDao<SQLException> {
      * Recupera un ordine con le informazioni utente (senza prodotti)
      */
     public Optional<Ordine> fetchOrdineConUtente(int ordineId) throws SQLException {
-        try (Connection conn = source.getConnection()) {
+        try (Connection
+                    conn = source.
+                    getConnection()) {
             String query = """
-        SELECT ord.*, ute.*
-        FROM ordine ord
+        SELECT ord.*, ute
+                      FROM ordine ord
         INNER JOIN utente ute ON ute.idaccount = ord.idaccount
         WHERE ord.idordine = ?
         """;
@@ -363,12 +366,18 @@ public class SqlOrdineDao extends SqlDao implements OrdineDao<SQLException> {
      */
     public Optional<Ordine> fetchOrdineCompleto(int ordineId) throws SQLException {
         try (Connection conn = source.getConnection()) {
-            String query = """
-        SELECT ord.*, ute.*, pro.*, cat.*, com.quantita
+            String query =
+                    """
+        SELECT ord.*, ute.*, pro.*, cat.*, com.
+                    quantita
         FROM ordine ord
-        INNER JOIN utente ute ON ute.idaccount = ord.idaccount
-        LEFT JOIN composizioneordine com ON com.idordine = ord.idordine
-        LEFT JOIN prodotto pro ON pro.idprodotto = com.idprodotto
+        INNER JOIN utente ute ON ute.
+                    idaccount = ord.idaccount
+        LEFT JOIN
+                    composizioneordine com ON com.idordine = ord.idordine
+        LEFT JOIN
+                    prodotto pro ON pro.
+                    idprodotto = com.idprodotto
         LEFT JOIN categoria cat ON cat.idcategoria = pro.idcategoria
         WHERE ord.idordine = ?
         """;
@@ -409,7 +418,9 @@ public class SqlOrdineDao extends SqlDao implements OrdineDao<SQLException> {
     /**
      * Aggiorna un ordine esistente (solo stato e sconto)
      */
-    public boolean updateOrdine(Ordine ordine) throws SQLException {
+    public boolean
+                    updateOrdine(Ordine
+                    ordine) throws SQLException {
         try (Connection conn = source.getConnection()) {
             String query = """
         UPDATE ordine 
@@ -428,11 +439,4 @@ public class SqlOrdineDao extends SqlDao implements OrdineDao<SQLException> {
         }
     }
 
-// E aggiungi anche questi metodi nell'interfaccia OrdineDao:
-// Optional<Ordine> fetchOrdineCompleto(int ordineId) throws SQLException;
-// boolean updateOrdine(Ordine ordine) throws SQLException;
-
-// E aggiungi anche questi metodi nell'interfaccia OrdineDao:
-// Optional<Ordine> fetchOrdineConUtente(int ordineId) throws SQLException;
-// boolean updateOrdine(Ordine ordine) throws SQLException;
 }

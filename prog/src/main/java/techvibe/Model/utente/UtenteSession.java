@@ -6,6 +6,7 @@ public class UtenteSession {
     private final int id;
     private final boolean isAdmin;
 
+
     public UtenteSession(Utente utente) {
         this.nome = utente.getNome();
         this.cognome = utente.getCognome();
@@ -14,7 +15,7 @@ public class UtenteSession {
     }
 
 
-
+//Contiene solo info minime in modo da tenere traccia dell'utente mentre è loggato nella sessione HTTP
     public String getNome() {
         return nome;
     }

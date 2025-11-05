@@ -11,7 +11,7 @@
 <jsp:include page="../partials/head.jsp">
     <jsp:param name="title" value="Pannello di Controllo · TechVibe"/>
     <jsp:param name="styles" value="crm,dashboard,home-dashboardcrm"/>
-    <jsp:param name="scripts" value="crm,home"/>
+    <jsp:param name="scripts" value="crm"/>
 </jsp:include>
 
 <body>

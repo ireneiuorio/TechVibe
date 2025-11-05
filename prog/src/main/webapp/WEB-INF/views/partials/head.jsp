@@ -11,7 +11,7 @@
 <meta name="format-detection" content="telephone=no"><%-- evita numeri trattati come telefono --%>
 
 <%-- Apple --%>
-<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="TechVibe">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 
@@ -28,7 +28,6 @@
   </c:forTokens>
 </c:if>
 
-<script src="${context}/js/library.js" defer></script>
 
 <c:if test="${not empty param.scripts}">
   <c:forTokens items="${param.scripts}" delims="," var="script">

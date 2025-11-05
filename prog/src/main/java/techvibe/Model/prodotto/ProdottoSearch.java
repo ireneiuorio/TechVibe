@@ -15,10 +15,13 @@ public class ProdottoSearch implements SearchBuilder {
         List<Condition> conditions = new ArrayList<>();
         Enumeration<String> parameterNames = request.getParameterNames();
 
+
+
         while (parameterNames.hasMoreElements()) {
             String param = parameterNames.nextElement();
             String value = request.getParameter(param);
 
+            //Traduce i parametri in condizioni logiche
             if (value != null && !value.trim().isEmpty()) {
                 switch (param) {
                     case "Marca":

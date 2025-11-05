@@ -6,6 +6,7 @@ public class Condition {
     private final Object value;
 
 
+    //Singola condizione di ricerca
     public Condition(String name, Operator operator, Object value) {
         this.name = name;
         this.operator = operator;

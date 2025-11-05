@@ -168,25 +168,36 @@
     function cambiaImmagine(src) {
         const grande = document.getElementById('img-grande');
         if (!grande) return;
+       //Cambia sorgente immagine
         grande.src = src;
 
-        // Aggiorna stato "attiva"
+        //Rimuove la classe attiva da tutte le miniature (nessuna miniatura ha il bordo evidenziato)
         document.querySelectorAll('.mini').forEach(m => m.classList.remove('attiva'));
-        document.querySelectorAll('.mini').forEach(m => { if (m.src === src) m.classList.add('attiva'); });
+        //Aggiunge classe attiva alla miniatura corrente
+        document.querySelectorAll('.mini').forEach(m => {
+            // Confronta solo il nome del file, non l'URL completo
+            if (m.getAttribute('src') === src) {
+                m.classList.add('attiva');
+            }
+        });
     }
 
-    // Aggiungi al carrello con quantità
+    // Aggiungi al carrello con quantità scelta dall'utente
     function aggiungiAlCarrelloConQuantita(prodottoId) {
+        //Legge la quantità dall'input
         const quantita = parseInt(document.getElementById('quantity').value) || 1;
+        //Trova il bottone aggiungi al carrello
         const btn = document.querySelector('.add-to-cart');
         if (btn) btn.setAttribute('data-qty', quantita);
         // funzione globale del tuo progetto
+        //fa un controllo se esiste
         if (typeof aggiungiAlCarrello === 'function') {
+            //Chiama la funzione globale
             aggiungiAlCarrello(prodottoId, quantita);
         }
     }
 
-    // Sync data-qty quando cambia la quantità
+    // Sincronizzazione automatica quantità. Aggiorna automaticamente l'attributo data-qty quando l'utente cambia quantità
     (function () {
         const q = document.getElementById('quantity');
         if (!q) return;

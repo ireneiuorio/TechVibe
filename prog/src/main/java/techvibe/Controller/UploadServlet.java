@@ -31,7 +31,7 @@ public class UploadServlet extends HttpServlet {
         File uploadDir = new File(UPLOAD_FOLDER);
         if (!uploadDir.exists()) {
             uploadDir.mkdirs();
-            System.out.println("✅ Cartella persistente creata: " + UPLOAD_FOLDER);
+            System.out.println(" Cartella persistente creata: " + UPLOAD_FOLDER);
         }
     }
 

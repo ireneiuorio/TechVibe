@@ -211,16 +211,21 @@
 <script>
   // Attiva/disattiva dettagli carta
   function selezionaMetodoPagamento(metodo) {
+    //Trova il div con i campi della crat di credito
     const dettagliCarta = document.getElementById('dettagli-carta');
+    //trova tutte le opzioni di pagamneto
     const opzioni = document.querySelectorAll('.opzione-pagamento');
+    //rimuove la classe CSS selezionata da tutte le opzioni
     opzioni.forEach(l => l.classList.remove('selezionata'));
 
+    //Mostra il form della crta
     if (metodo === 'carta') {
       dettagliCarta.style.display = 'block';
-      opzioni[0]?.classList.add('selezionata');
+      opzioni[0]?.classList.add('selezionata');//Aggiunge una classe css alla prima opzione
       document.querySelector('input[name="metodoPagamento"][value="carta"]').checked = true;
     } else {
       dettagliCarta.style.display = 'none';
+      //Aggiunge una classe css alla seconda opzione
       opzioni[1]?.classList.add('selezionata');
       document.querySelector('input[name="metodoPagamento"][value="paypal"]').checked = true;
     }
@@ -228,19 +233,24 @@
 
   // Gestione submit form
   document.getElementById('checkout-form').addEventListener('submit', function(e) {
-    e.preventDefault();
+    e.preventDefault();//blocca il comportamento di default
 
+    //Raccoglie tutti i dati del form automaticamente
     const formData = new FormData(this);
     const confermaBtn = document.getElementById('conferma-ordine');
 
+    //Trova il bottone di conferma e lo disbailita per evitare doppi click
     confermaBtn.disabled = true;
     confermaBtn.textContent = 'Elaborazione...';
 
+
+    //INVIO RICHIESTA AL SERVER
     fetch('${pageContext.request.contextPath}/checkout/conferma', {
       method: 'POST',
       body: formData
     })
-            .then(r => r.json())
+            //Gestione risposta successo
+            .then(r => r.json()) //converte la risposta in json
             .then(data => {
               if (data.success) {
                 window.location.href = '${pageContext.request.contextPath}/checkout/conferma?ordineId=' + data.ordineId;
@@ -260,15 +270,20 @@
 
   // Formattazione numero carta
   document.querySelector('input[name="numeroCarta"]')?.addEventListener('input', function(e) {
+   //Trova tutti gli spazi, trova tutte le non cifre globalmente
     let v = e.target.value.replace(/\s/g, '').replace(/\D/g, '');
+    //Aggiunge spazio ogni 4 cifre
     let f = v.replace(/(.{4})/g, '$1 ').trim();
+    //Limita a 19 caratteri
     if (f.length > 19) f = f.substr(0, 19);
     e.target.value = f;
   });
 
   // Formattazione scadenza
   document.querySelector('input[name="scadenza"]')?.addEventListener('input', function(e) {
+    //Rimuove tutto tranne le cifre
     let v = e.target.value.replace(/\D/g, '');
+    //Se almeno due cifre sono state digitate aggiunge lo slash, successivi due caratteri
     if (v.length >= 2) v = v.substr(0, 2) + '/' + v.substr(2, 2);
     e.target.value = v;
   });
@@ -276,10 +291,12 @@
   // Solo numeri per CVV
   document.querySelector('input[name="cvv"]')?.addEventListener('input', function(e) {
     e.target.value = e.target.value.replace(/\D/g, '');
+    //Rimuove qualsiasi caratttere che non sia una cifra
   });
 
   // Cambio opzione pagamento
   document.querySelectorAll('input[name="metodoPagamento"]').forEach(r => {
+    //trova tutti i radio button e quando l'utente clicca cambia selezione
     r.addEventListener('change', function() {
       selezionaMetodoPagamento(this.value);
     });
