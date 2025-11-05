@@ -6,7 +6,7 @@
     <jsp:include page="../partials/head.jsp">
         <jsp:param name="title" value="TechVibe"/>
         <jsp:param name="styles" value="crm,prodotti"/>
-        <jsp:param name="scripts" value="crm,home"/>
+        <jsp:param name="scripts" value="crm"/>
     </jsp:include>
 
     <style >

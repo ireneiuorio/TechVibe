@@ -3,6 +3,7 @@
 <%
   List<String> uploadedList = (List<String>) request.getAttribute("uploadedList");
 
+ // prende un attributo della request HTTP chiamato "uploadedList" e lo trasforma in una lista di stringhe.
   // Estrai fino a 4 immagini dalla lista
   String img1 = (uploadedList != null && uploadedList.size() > 0) ? uploadedList.get(0) : "";
   String img2 = (uploadedList != null && uploadedList.size() > 1) ? uploadedList.get(1) : "";
