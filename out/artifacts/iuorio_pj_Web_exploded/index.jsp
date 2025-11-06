@@ -7,19 +7,18 @@
         <jsp:param name="title" value="Homepage"/>
     </jsp:include>
 
-    <style>
-        html, body {
-            font-family: "Poppins", sans-serif;
-            font-weight: normal;
-            font-style: normal;
-            margin: 0;
-            padding: 0;
-        }
-    </style>
+
 </head>
 <body>
 
-Hello Home page
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%
+    request.getRequestDispatcher("/WEB-INF/views/pages/index.jsp").forward(request, response);
+    return;
+%>
+
+
+
 
 </body>
 </html>

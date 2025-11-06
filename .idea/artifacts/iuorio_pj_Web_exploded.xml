@@ -6,6 +6,10 @@
       <element id="directory" name="WEB-INF">
         <element id="directory" name="classes">
           <element id="module-output" name="iuorio_pj" />
+          <element id="library" level="project" name="Maven: com.mysql:mysql-connector-j:9.2.0" />
+          <element id="library" level="project" name="Maven: org.glassfish.web:jakarta.servlet.jsp.jstl:3.0.1" />
+          <element id="library" level="project" name="Maven: org.apache.tomcat:tomcat-jdbc:11.0.5" />
+          <element id="library" level="project" name="Maven: org.apache.tomcat:tomcat-juli:11.0.5" />
         </element>
       </element>
       <element id="module-output" name="prog" />

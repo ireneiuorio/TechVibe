@@ -21,6 +21,18 @@
         <res-auth>Container</res-auth>
     </resource-ref>
 
+    <dependency>
+        <groupId>com.mysql</groupId>
+        <artifactId>mysql-connector-j</artifactId>
+        <version>9.2.0</version>
+    </dependency>
+
+    <dependency>
+        <groupId>org.apache.tomcat</groupId>
+        <artifactId>tomcat-jdbc</artifactId>
+        <version>11.0.5</version>
+    </dependency>
+
     <context-param>
         <param-name>basePath</param-name>
         <param-value>/WEB-INF/views/</param-value>
