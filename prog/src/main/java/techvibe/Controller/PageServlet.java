@@ -179,6 +179,7 @@ public class PageServlet extends Controller implements ErrorHandler {
                         v.getErrors().add("Le password non coincidono");
                     }
 
+                    //Se ci sono errori li raccoglie tutti man mano e li invia all'utente
                     if (v.hasErrors()) {
                         request.setAttribute("errors", v.getErrors());
                         // ripopolo i campi "sicuri" per non farli riscrivere all'utente

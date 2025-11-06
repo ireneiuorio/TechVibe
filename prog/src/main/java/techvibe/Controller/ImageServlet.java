@@ -13,8 +13,9 @@ import java.nio.file.Paths;
 
 @WebServlet("/img/*")
 public class ImageServlet extends HttpServlet { //File.separator serve per mettere la barra giusta C:/techvibe_images
-    private static final String UPLOAD_FOLDER = "C:" + File.separator + "techvibe_images"; //Cartella dove salvo fisicamente le immagini
+    //private static final String UPLOAD_FOLDER = System.getProperty("user.home") + File.separator + "techvibe_images";
 
+    private static final String UPLOAD_FOLDER = "C:" + File.separator + "techvibe_images"; //Cartella dove salvo fisicamente le immagini
     //Riceve la richiesta, trova il file su disco, verifica che esiste e imposta il tipo corretto e invia i byte al browser
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)

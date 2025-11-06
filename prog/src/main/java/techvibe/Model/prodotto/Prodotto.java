@@ -146,23 +146,18 @@ public class Prodotto {
 
     // === GESTIONE PREZZI E SCONTI ===
 
-    /**
-     * Imposta il prezzo originale (senza sconto)
-     */
+    //Imposta il prezzo originale (senza sconto)
     public void setPrezzo(double prezzo) {
         this.Prezzo = prezzo;
     }
 
-    /**
-     * Restituisce il prezzo originale (prima dello sconto)
-     */
+    //senza sconto
     public double getPrezzoOriginale() {
         return this.Prezzo;
     }
 
-    /**
-     * Restituisce il prezzo finale (con sconto applicato se presente)
-     */
+    //Restituisce il prezzo finale (con sconto applicato se presente)
+
     public Double getPrezzo() {
         if (percentualeSconto > 0) {
             return this.Prezzo * (1 - this.percentualeSconto / 100);
@@ -170,37 +165,30 @@ public class Prodotto {
         return this.Prezzo;
     }
 
-    /**
-     * Alias per getPrezzo() - restituisce il prezzo finale
-     */
+    //Alias per getPrezzo() - restituisce il prezzo finale
     public Double getPrezzoFinale() {
         return getPrezzo();
     }
 
-    /**
-     * Restituisce la percentuale di sconto
-     */
+    //Restituisce la percentuale di sconto
+
     public double getPercentualeSconto() {
         return percentualeSconto;
     }
 
-    /**
-     * Imposta la percentuale di sconto
-     */
+    //Imposta la percentuale di sconto
+
     public void setPercentualeSconto(double percentualeSconto) {
         this.percentualeSconto = percentualeSconto; // Clamp tra 0 e 100
     }
 
-    /**
-     * Verifica se il prodotto è in sconto
-     */
+
     public boolean isInSconto() {
         return percentualeSconto > 0;
     }
 
-    /**
-     * Calcola l'importo risparmiato
-     */
+     //Calcola l'importo risparmiato
+
     public double getImportoRisparmiato() {
         if (isInSconto()) {
             return getPrezzoOriginale() - getPrezzoFinale();
@@ -208,9 +196,9 @@ public class Prodotto {
         return 0.0;
     }
 
-    /**
-     * Rimuove lo sconto (imposta percentuale a 0)
-     */
+
+     //Rimuove lo sconto (imposta percentuale a 0)
+
     public void rimuoviSconto() {
         this.percentualeSconto = 0.0;
     }

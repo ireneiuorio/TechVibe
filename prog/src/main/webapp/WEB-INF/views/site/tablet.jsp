@@ -10,7 +10,7 @@
     <jsp:param name="styles" value="site"/>
   </jsp:include>
 </head>
-<body>
+<body><!--PageServlet-->
 <main class="app">
   <%@ include file="../partials/site/header.jsp" %>
 

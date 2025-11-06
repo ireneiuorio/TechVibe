@@ -18,6 +18,7 @@ public class SqlCarrelloDao implements CarrelloDao {
     public SqlCarrelloDao(DataSource dataSource, SqlProdottoDao prodottoDao) {
         this.dataSource = dataSource;
         this.prodottoDao = prodottoDao;
+
     }
 
 

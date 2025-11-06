@@ -11,7 +11,7 @@
     </jsp:include>
 
 
-</head>
+</head><!--PageServlet-->
 <body>
 <main class="app">
     <%@ include file="../partials/site/header.jsp" %>

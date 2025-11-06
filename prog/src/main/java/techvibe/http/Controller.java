@@ -12,11 +12,12 @@ import techvibe.Model.utente.UtenteSession;
 
 import javax.sql.DataSource;
 
+//astratta
 public abstract class Controller extends HttpServlet {
 
     @Resource(name ="jdbc/TechVibe")
 
-    protected DataSource source;
+    protected DataSource source; //inietta la connessione al database
 
 
     protected void validate(RequestValidator validator) throws InvalidRequestException{
@@ -25,6 +26,8 @@ public abstract class Controller extends HttpServlet {
             throw new InvalidRequestException("Validation Error", validator.getErrors(), HttpServletResponse.SC_BAD_REQUEST);
         }
     }
+
+    //se il parametro di paginazione non c'è restituisce 1
     public static int parsePage(HttpServletRequest request) {
         String raw = request.getParameter("page");
         int page = 1; // default

@@ -16,6 +16,8 @@ public class ProdottoSearch implements SearchBuilder {
         Enumeration<String> parameterNames = request.getParameterNames();
 
 
+        //La servel gli passa l'oggetto request scorre i parametri scorre lo switch e crea la lista di  condizione
+        //usata nella servlet per costruire la query
 
         while (parameterNames.hasMoreElements()) {
             String param = parameterNames.nextElement();

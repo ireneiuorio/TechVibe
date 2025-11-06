@@ -21,7 +21,9 @@ public class SqlProdottoDao extends SqlDao implements ProdottoDao<SQLException> 
         super(source);
     }
 
+    //Il dao esegue la query e poi passa il result set all'extractor per renderlo una classe java
 
+    //richiamo nella servelt
     public List<Prodotto> fetchProdotti(Paginator paginator) throws SQLException {
         try (Connection conn = source.getConnection()) {
             QueryBuilder qb = new QueryBuilder("prodotto", "pro");
